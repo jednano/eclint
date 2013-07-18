@@ -1,0 +1,32 @@
+{
+    "name": "editorconfig-tools",
+    "version": "0.0.1-dev",
+    "description": "Validate or fix code that doesn't adhere to EditorConfig settings or infer settings from existing code.",
+    "keywords": [
+        "editorconfig",
+        "tools",
+        "validate",
+        "fix",
+        "enforce",
+        "infer"
+    ],
+    "scripts": {
+        "test": "mocha -R spec"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/editorconfig/editorconfig-tools-js.git"
+    },
+    "bugs": "https://github.com/editorconfig/editorconfig-tools-js/issues",
+    "author": "EditorConfig Team",
+    "license": "MIT",
+    "dependencies": {
+        "cli-color": "~0.2.2",
+        "editorconfig": "~0.11.3",
+        "gitlike-cli": "~0.0.10"
+    },
+    "devDependencies": {
+        "mocha": "~1.12.0",
+        "should": "~1.2.2"
+    }
+}

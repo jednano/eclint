@@ -1,0 +1,5 @@
+node_modules/
+.editorconfig
+.gitattributes
+.npmignore
+.travis.yml
