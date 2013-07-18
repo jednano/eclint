@@ -1,12 +1,18 @@
-﻿EditorConfig Tools
-==================
+﻿ECLint
+=====================
+
+ECLint is a tool for validating or fixing code that doesn't adhere to settings
+defined in `.editorconfig`. It also infers settings from existing code. See the
+[EditorConfig Project][] for details about the `.editorconfig` file.
+
 
 Features
----------------------
+--------
 
 * Infer `.editorconfig` settings from one or more files.
 * Check (validate) that file(s) adhere to `.editorconfig` settings.
 * Fix formatting errors that disobey `.editorconfig` settings.
+
 
 Examples
 --------
@@ -53,3 +59,6 @@ Running Tests
 -------------
 
     $ npm test
+
+
+[EditorConfig Project]: http://editorconfig.org/
