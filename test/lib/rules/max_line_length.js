@@ -1,12 +1,19 @@
-﻿var expect = require('chai').expect;
+﻿var base = require('./base');
 
-var rule = require('../../lib/rules/max_line_length');
+var rule = require('../../../lib/rules/max_line_length');
 
+
+var expect = base.expect;
+var sinon = base.sinon;
+var context = base.context;
+var reporter = context.report;
 
 describe('max_line_length rule', function() {
 
-    it('supports "80" setting');
+    beforeEach(function() {
+        reporter.reset();
+    });
 
-    it('supports "120" setting');
+    describe('numeric setting');
 
 });

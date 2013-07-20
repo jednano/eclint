@@ -1,18 +1,21 @@
-﻿var expect = require('chai').expect;
+﻿var base = require('./base');
 
-var rule = require('../../lib/rules/indent_size');
+var rule = require('../../../lib/rules/indent_size');
 
+
+var expect = base.expect;
+var sinon = base.sinon;
+var context = base.context;
+var reporter = context.report;
 
 describe('indent_size rule', function() {
 
-    it('supports "tab" setting');
+    beforeEach(function() {
+        reporter.reset();
+    });
 
-    it('supports "0" setting');
+    describe('tab setting');
 
-    it('supports "1" setting');
-
-    it('supports "4" setting');
-
-    it('supports "8" setting');
+    describe('integer setting');
 
 });

@@ -1,12 +1,21 @@
-﻿var expect = require('chai').expect;
+﻿var base = require('./base');
 
-var rule = require('../../lib/rules/insert_final_newline');
+var rule = require('../../../lib/rules/insert_final_newline');
 
+
+var expect = base.expect;
+var sinon = base.sinon;
+var context = base.context;
+var reporter = context.report;
 
 describe('insert_final_newline rule', function() {
 
-    it('supports "true" setting');
+    beforeEach(function() {
+        reporter.reset();
+    });
 
-    it('supports "false" setting');
+    describe('true setting');
+
+    describe('false setting');
 
 });

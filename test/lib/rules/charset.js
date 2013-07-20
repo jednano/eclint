@@ -1,18 +1,27 @@
-﻿var expect = require('chai').expect;
+﻿var base = require('./base');
 
-var rule = require('../../lib/rules/charset');
+var rule = require('../../../lib/rules/charset');
 
+
+var expect = base.expect;
+var sinon = base.sinon;
+var context = base.context;
+var reporter = context.report;
 
 describe('charset rule', function() {
 
-    it('supports "latin1"');
+    beforeEach(function() {
+        reporter.reset();
+    });
 
-    it('supports "utf-8"');
+    describe('latin1 setting');
 
-    it('supports "utf-8-bom"');
+    describe('utf-8 setting');
 
-    it('supports "utf-16be"');
+    describe('utf-8-bom setting');
 
-    it('supports "utf-16le"');
+    describe('utf-16be setting');
+
+    describe('utf-16le setting');
 
 });
