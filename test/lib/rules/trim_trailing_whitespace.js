@@ -12,8 +12,16 @@ describe('trim_trailing_whitespace rule', function() {
         it('reports trailing whitespace', function() {
             rule.check(context, true, 'foo \n');
             rule.check(context, true, 'foo	 \r\n');
-            expect(reporter).to.have.been.calledTwice;
+            rule.check(context, true, '	 	\r');
+            expect(reporter).to.have.been.calledThrice;
             expect(reporter.alwaysCalledWithExactly('Trailing whitespace found.')).to.be.ok;
+        });
+
+        it('remains silent when no trailing whitespace', function() {
+            rule.check(context, true, 'foo\n');
+            rule.check(context, true, 'foo\r\n');
+            rule.check(context, true, '\r');
+            expect(reporter).to.not.have.been.called;
         });
 
     });
@@ -22,7 +30,16 @@ describe('trim_trailing_whitespace rule', function() {
 
         it('ignores trailing whitespace', function() {
             rule.check(context, false, 'foo \n');
-            expect(reporter).to.not.have.been.calledWith('Trailing whitespace found.');
+            rule.check(context, false, 'foo	 \r\n');
+            rule.check(context, false, '	 	\r');
+            expect(reporter).to.not.have.been.called;
+        });
+
+        it('ignores no trailing whitespace', function() {
+            rule.check(context, false, 'foo\n');
+            rule.check(context, false, 'foo\r\n');
+            rule.check(context, false, '\r');
+            expect(reporter).to.not.have.been.called;
         });
 
     });
