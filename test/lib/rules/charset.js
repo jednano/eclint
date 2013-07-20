@@ -1,12 +1,5 @@
-﻿var base = require('./base');
+﻿var rule = require('../../../lib/rules/charset');
 
-var rule = require('../../../lib/rules/charset');
-
-
-var expect = base.expect;
-var sinon = base.sinon;
-var context = base.context;
-var reporter = context.report;
 
 describe('charset rule', function() {
 
@@ -14,14 +7,24 @@ describe('charset rule', function() {
         reporter.reset();
     });
 
-    describe('latin1 setting');
+    describe.skip('latin1 setting', function() {
 
-    describe('utf-8 setting');
+    });
 
-    describe('utf-8-bom setting');
+    describe.skip('utf-8 setting', function() {
 
-    describe('utf-16be setting');
+    });
 
-    describe('utf-16le setting');
+    describe.skip('utf-8-bom setting', function() {
+
+    });
+
+    describe.skip('utf-16be setting', function() {
+
+    });
+
+    describe.skip('utf-16le setting', function() {
+
+    });
 
 });

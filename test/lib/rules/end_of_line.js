@@ -1,12 +1,5 @@
-﻿var base = require('./base');
+﻿var rule = require('../../../lib/rules/end_of_line');
 
-var rule = require('../../../lib/rules/end_of_line');
-
-
-var expect = base.expect;
-var sinon = base.sinon;
-var context = base.context;
-var reporter = context.report;
 
 describe('end_of_line rule', function() {
 
@@ -14,10 +7,16 @@ describe('end_of_line rule', function() {
         reporter.reset();
     });
 
-    describe('lf setting');
+    describe.skip('lf setting', function() {
 
-    describe('cr setting');
+    });
 
-    describe('crlf setting');
+    describe.skip('cr setting', function() {
+
+    });
+
+    describe.skip('crlf setting', function() {
+
+    });
 
 });

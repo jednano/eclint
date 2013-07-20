@@ -1,4 +1,7 @@
-﻿var rules = [];
+﻿require('./common');
+
+
+var rules = [];
 
 [
     'charset',

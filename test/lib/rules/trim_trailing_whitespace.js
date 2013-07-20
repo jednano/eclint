@@ -1,12 +1,5 @@
-﻿var base = require('./base');
+﻿var rule = require('../../../lib/rules/trim_trailing_whitespace');
 
-var rule = require('../../../lib/rules/trim_trailing_whitespace');
-
-
-var expect = base.expect;
-var sinon = base.sinon;
-var context = base.context;
-var reporter = context.report;
 
 describe('trim_trailing_whitespace rule', function() {
 
@@ -18,7 +11,9 @@ describe('trim_trailing_whitespace rule', function() {
 
         it('reports trailing whitespace', function() {
             rule.check(context, true, 'foo \n');
-            expect(reporter).to.have.been.calledWith('Trailing whitespace found.');
+            rule.check(context, true, 'foo	 \r\n');
+            expect(reporter).to.have.been.calledTwice;
+            expect(reporter.alwaysCalledWithExactly('Trailing whitespace found.')).to.be.ok;
         });
 
     });

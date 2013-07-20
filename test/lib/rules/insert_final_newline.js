@@ -1,12 +1,5 @@
-﻿var base = require('./base');
+﻿var rule = require('../../../lib/rules/insert_final_newline');
 
-var rule = require('../../../lib/rules/insert_final_newline');
-
-
-var expect = base.expect;
-var sinon = base.sinon;
-var context = base.context;
-var reporter = context.report;
 
 describe('insert_final_newline rule', function() {
 
@@ -14,8 +7,12 @@ describe('insert_final_newline rule', function() {
         reporter.reset();
     });
 
-    describe('true setting');
+    describe.skip('true setting', function() {
 
-    describe('false setting');
+    });
+
+    describe.skip('false setting', function() {
+
+    });
 
 });

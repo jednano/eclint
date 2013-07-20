@@ -1,1 +1,1 @@
-﻿require('./lib/rules/index');
+﻿require('./lib/rules');

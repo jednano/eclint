@@ -1,12 +1,5 @@
-﻿var base = require('./base');
+﻿var rule = require('../../../lib/rules/indent_style');
 
-var rule = require('../../../lib/rules/indent_style');
-
-
-var expect = base.expect;
-var sinon = base.sinon;
-var context = base.context;
-var reporter = context.report;
 
 describe('indent_style rule', function() {
 
@@ -14,8 +7,12 @@ describe('indent_style rule', function() {
         reporter.reset();
     });
 
-    describe('tab setting');
+    describe.skip('tab setting', function() {
 
-    describe('space setting');
+    });
+
+    describe.skip('space setting', function() {
+
+    });
 
 });
