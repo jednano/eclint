@@ -1,29 +1,37 @@
-﻿var rule = require('../../../lib/rules/charset');
+﻿var Line = require('../../../lib/Line');
+var rule = require('../../../lib/rules/charset');
 
 
 describe('charset rule', function() {
+
+    var settings = {};
+    var charsets = [
+        'latin1',
+        'utf-8',
+        'utf-8-bom',
+        'utf-16be',
+        'utf-16le',
+        'utf-32le',
+        'utf-32be'
+    ];
+
+    charsets.forEach(function(setting) {
+        settings[setting] = { charset: setting };
+    });
 
     beforeEach(function() {
         reporter.reset();
     });
 
-    describe.skip('latin1 setting', function() {
+    describe.skip('check command', function() {
 
     });
 
-    describe.skip('utf-8 setting', function() {
+    describe.skip('fix command', function() {
 
     });
 
-    describe.skip('utf-8-bom setting', function() {
-
-    });
-
-    describe.skip('utf-16be setting', function() {
-
-    });
-
-    describe.skip('utf-16le setting', function() {
+    describe.skip('infer command', function() {
 
     });
 

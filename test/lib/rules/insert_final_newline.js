@@ -1,4 +1,5 @@
-﻿var rule = require('../../../lib/rules/insert_final_newline');
+﻿var Line = require('../../../lib/Line');
+var rule = require('../../../lib/rules/insert_final_newline');
 
 
 describe('insert_final_newline rule', function() {
@@ -7,11 +8,15 @@ describe('insert_final_newline rule', function() {
         reporter.reset();
     });
 
-    describe.skip('true setting', function() {
+    describe.skip('check command', function() {
 
     });
 
-    describe.skip('false setting', function() {
+    describe.skip('fix command', function() {
+
+    });
+
+    describe.skip('infer command', function() {
 
     });
 

@@ -1,4 +1,5 @@
-﻿var rule = require('../../../lib/rules/indent_size');
+﻿var Line = require('../../../lib/Line');
+var rule = require('../../../lib/rules/indent_size');
 
 
 describe('indent_size rule', function() {
@@ -7,11 +8,15 @@ describe('indent_size rule', function() {
         reporter.reset();
     });
 
-    describe.skip('tab setting', function() {
+    describe.skip('check command', function() {
 
     });
 
-    describe.skip('integer setting', function() {
+    describe.skip('fix command', function() {
+
+    });
+
+    describe.skip('infer command', function() {
 
     });
 

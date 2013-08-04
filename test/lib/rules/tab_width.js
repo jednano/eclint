@@ -1,4 +1,5 @@
-﻿var rule = require('../../../lib/rules/tab_width');
+﻿var Line = require('../../../lib/Line');
+var rule = require('../../../lib/rules/tab_width');
 
 
 describe('tab_width rule', function() {
@@ -7,6 +8,16 @@ describe('tab_width rule', function() {
         reporter.reset();
     });
 
-    // No idea yet what tests could possibly go here, if any.
+    describe.skip('check command', function() {
+
+    });
+
+    describe.skip('fix command', function() {
+
+    });
+
+    describe.skip('infer command', function() {
+
+    });
 
 });

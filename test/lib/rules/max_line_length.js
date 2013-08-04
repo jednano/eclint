@@ -1,4 +1,5 @@
-﻿var rule = require('../../../lib/rules/max_line_length');
+﻿var Line = require('../../../lib/Line');
+var rule = require('../../../lib/rules/max_line_length');
 
 
 describe('max_line_length rule', function() {
@@ -7,7 +8,15 @@ describe('max_line_length rule', function() {
         reporter.reset();
     });
 
-    describe.skip('numeric setting', function() {
+    describe.skip('check command', function() {
+
+    });
+
+    describe.skip('fix command', function() {
+
+    });
+
+    describe.skip('infer command', function() {
 
     });
 
