@@ -1,1 +1,2 @@
-﻿require('./lib/rules');
+﻿require('./lib/Line');
+require('./lib/rules');
