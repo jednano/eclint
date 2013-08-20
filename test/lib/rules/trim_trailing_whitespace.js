@@ -61,7 +61,7 @@ describe('trim_trailing_whitespace rule', function() {
             line = rule.fix(settings.true, new Line('foo\t '));
             expect(line.text).to.equal('foo');
             line = rule.fix(settings.true, new Line('\t \t'));
-            expect(line.text).to.equal('');
+            expect(line.text).to.be.undefined;
         });
 
         it('false setting leaves trailing whitespace alone', function() {

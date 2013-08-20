@@ -50,12 +50,12 @@ describe('end_of_line rule', function() {
 
         it('replaces newline character with "lf" when "lf" is the setting', function() {
             var line = rule.fix(settings.lf, new Line('foo\r\n'));
-            expect(line.all).to.equal('foo\n');
+            expect(line.raw).to.equal('foo\n');
         });
 
         it('does nothing when there is no setting', function() {
             var line = rule.fix({}, new Line('foo\r\n'));
-            expect(line.all).to.equal('foo\r\n');
+            expect(line.raw).to.equal('foo\r\n');
         });
 
     });
