@@ -1,6 +1,6 @@
 var clc = require('cli-color');
 var cli = require('gitlike-cli');
-var package = require('../package');
+var pkg = require('../package');
 
 
 cli.on('error', function(err) {
@@ -15,8 +15,8 @@ cli.on('error', function(err) {
 
 cli
 
-    .version(package.version)
-    .description(package.description)
+    .version(pgk.version)
+    .description(pgk.description)
 
     .command('infer <files>...')
         .description('Infer .editorconfig settings from one or more files')
