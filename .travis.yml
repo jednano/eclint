@@ -16,3 +16,6 @@ before_script:
   - npm install -g bower grunt-cli typescript
   - bower install
   - grunt
+
+after_success:
+  - set +e
