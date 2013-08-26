@@ -1,12 +1,21 @@
 language: node_js
 
 node_js:
-    - "0.8"
-    - "0.9"
-    - "0.10"
-    - "0.11"
+  - "0.8"
+  - "0.9"
+  - "0.10"
+  - "0.11"
 
 notifications:
-    email:
-        on_success: change
-        on_failure: always
+  email:
+    on_success: change
+    on_failure: always
+
+before_script:
+  - set -e
+  - npm install -g bower grunt-cli typescript
+  - bower install
+  - grunt
+
+after_success:
+  - set +e
