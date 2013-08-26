@@ -13,5 +13,5 @@ notifications:
 
 before_script:
   - set -e
-  - npm install -g typescript
+  - npm install -g typescript grunt-cli
   - grunt
