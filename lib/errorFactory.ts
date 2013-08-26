@@ -1,13 +1,16 @@
+///<reference path='../vendor/dt-node/node.d.ts'/>
 var util = require('util');
 
 
-Error.extend = function(options) {
-    function Err(message) {
-        this.message = message;
-    }
-    util.inherits(Err, Error);
-    Err.prototype.name = options.name;
-    return Err;
-};
+export interface ErrorOptions {
+	name: string;
+}
 
-module.exports = Error;
+export function create(options: ErrorOptions) {
+	function Err(message: string) {
+		this.message = message;
+	}
+	util.inherits(Err, Error);
+	Err.prototype.name = options.name;
+	return Err;
+}

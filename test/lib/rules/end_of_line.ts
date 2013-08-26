@@ -1,96 +1,101 @@
-﻿var Line = require('../../../lib/Line');
-var rule = require('../../../lib/rules/end_of_line');
+﻿///<reference path='../../../vendor/dt-node/node.d.ts'/>
+///<reference path='../../../vendor/dt-mocha/mocha.d.ts'/>
+///<reference path='../../../vendor/dt-sinon-chai/sinon-chai.d.ts'/>
+import common = require('../common');
+import _line = require('../../../lib/line');
+import rule = require('../../../lib/rules/end_of_line');
 
+
+var expect = common.expect;
+var reporter = common.reporter;
+var context = common.context;
+var Line = _line.Line;
+var Newlines = rule.Newlines;
 
 describe('end_of_line rule', function() {
 
-    var settings = {};
-    ['lf', 'crlf', 'cr', 'ls', 'ps'].forEach(function(setting) {
-        settings[setting] = { end_of_line: setting };
-    });
+	beforeEach(function() {
+		reporter.reset();
+	});
 
-    beforeEach(function() {
-        reporter.reset();
-    });
+	describe('check command', function() {
 
-    describe('check command', function() {
+		it('validates "lf" setting', function() {
+			rule.check(context, { end_of_line: Newlines.lf }, new Line('foo\r'));
+			expect(reporter).to.have.been.calledOnce;
+			expect(reporter).to.have.been.calledWithExactly('Incorrect newline character found: cr');
+		});
 
-        it('validates "lf" setting', function() {
-            rule.check(context, settings.lf, new Line('foo\nbar\r'));
-            expect(reporter).to.have.been.calledOnce;
-            expect(reporter).to.have.been.calledWithExactly('Incorrect newline character found: cr');
-        });
+		it('validates "crlf" setting', function() {
+			rule.check(context, { end_of_line: Newlines.crlf }, new Line('foo\n'));
+			expect(reporter).to.have.been.calledOnce;
+			expect(reporter).to.have.been.calledWithExactly('Incorrect newline character found: lf');
+		});
 
-        it('validates "crlf" setting', function() {
-            rule.check(context, settings.crlf, new Line('foo\r\nbar\n'));
-            expect(reporter).to.have.been.calledOnce;
-            expect(reporter).to.have.been.calledWithExactly('Incorrect newline character found: lf');
-        });
+		it('validates "cr" setting', function() {
+			rule.check(context, { end_of_line: Newlines.cr }, new Line('foo\r\n'));
+			expect(reporter).to.have.been.calledOnce;
+			expect(reporter).to.have.been.calledWithExactly('Incorrect newline character found: crlf');
+		});
 
-        it('validates "cr" setting', function() {
-            rule.check(context, settings.cr, new Line('foo\rbar\r\n'));
-            expect(reporter).to.have.been.calledOnce;
-            expect(reporter).to.have.been.calledWithExactly('Incorrect newline character found: crlf');
-        });
+		it('validates "ls" setting', function() {
+			rule.check(context, { end_of_line: Newlines.ls }, new Line('foo\u2029'));
+			expect(reporter).to.have.been.calledOnce;
+			expect(reporter).to.have.been.calledWithExactly('Incorrect newline character found: ps');
+		});
 
-        it('validates "ls" setting', function() {
-            rule.check(context, settings.ls, new Line('foo\u2028bar\u2029'));
-            expect(reporter).to.have.been.calledOnce;
-            expect(reporter).to.have.been.calledWithExactly('Incorrect newline character found: ps');
-        });
+		it('validates "ps" setting', function() {
+			rule.check(context, { end_of_line: Newlines.ps }, new Line('foo\n'));
+			expect(reporter).to.have.been.calledOnce;
+			expect(reporter).to.have.been.calledWithExactly('Incorrect newline character found: lf');
+		});
+	});
 
-        it('validates "ps" setting', function() {
-            rule.check(context, settings.ps, new Line('foo\u2029bar\n'));
-            expect(reporter).to.have.been.calledOnce;
-            expect(reporter).to.have.been.calledWithExactly('Incorrect newline character found: lf');
-        });
-    });
+	describe('fix command', function() {
 
-    describe('fix command', function() {
+		it('replaces newline character with "lf" when "lf" is the setting', function() {
+			var line = rule.fix({ end_of_line: Newlines.lf }, new Line('foo\r\n'));
+			expect(line.Raw).to.equal('foo\n');
+		});
 
-        it('replaces newline character with "lf" when "lf" is the setting', function() {
-            var line = rule.fix(settings.lf, new Line('foo\r\n'));
-            expect(line.raw).to.equal('foo\n');
-        });
+		it('does nothing when there is no setting', function () {
+			var line = rule.fix({}, new Line('foo\r\n'));
+			expect(line.Raw).to.equal('foo\r\n');
+		});
 
-        it('does nothing when there is no setting', function() {
-            var line = rule.fix({}, new Line('foo\r\n'));
-            expect(line.raw).to.equal('foo\r\n');
-        });
+	});
 
-    });
+	describe('infer command', function() {
 
-    describe('infer command', function() {
+		it('infers "lf" setting', function() {
+			var inferred = rule.infer(new Line('foo\n'));
+			expect(inferred).to.equal(Newlines.lf);
+		});
 
-        it('infers "lf" setting', function() {
-            var inferred = rule.infer(new Line('foo\nbar\r\nbaz\n'));
-            expect(inferred).to.equal('lf');
-        });
+		it('infers "crlf" setting', function() {
+			var inferred = rule.infer(new Line('foo\r\n'));
+			expect(inferred).to.equal(Newlines.crlf);
+		});
 
-        it('infers "crlf" setting', function() {
-            var inferred = rule.infer(new Line('foo\r\nbar\nbaz\r\n'));
-            expect(inferred).to.equal('crlf');
-        });
+		it('infers "cr" setting', function() {
+			var inferred = rule.infer(new Line('foo\r'));
+			expect(inferred).to.equal(Newlines.cr);
+		});
 
-        it('infers "cr" setting', function() {
-            var inferred = rule.infer(new Line('foo\rbar\nbaz\r'));
-            expect(inferred).to.equal('cr');
-        });
+		it('infers "ls" setting', function() {
+			var inferred = rule.infer(new Line('foo\u2028'));
+			expect(inferred).to.equal(Newlines.ls);
+		});
 
-        it('infers "ls" setting', function() {
-            var inferred = rule.infer(new Line('foo\u2028bar\nbaz\u2028'));
-            expect(inferred).to.equal('ls');
-        });
+		it('infers "ps" setting', function() {
+			var inferred = rule.infer(new Line('foo\u2029'));
+			expect(inferred).to.equal(Newlines.ps);
+		});
 
-        it('infers "ps" setting', function() {
-            var inferred = rule.infer(new Line('foo\u2029bar\nbaz\u2029'));
-            expect(inferred).to.equal('ps');
-        });
-
-        it('infers nothing when no newline characters exist', function() {
-            var inferred = rule.infer(new Line('foobarbaz'));
-            expect(inferred).to.be.undefined;
-        });
-    });
+		it('infers nothing when no newline characters exist', function() {
+			var inferred = rule.infer(new Line('foobarbaz'));
+			expect(inferred).to.be.undefined;
+		});
+	});
 
 });

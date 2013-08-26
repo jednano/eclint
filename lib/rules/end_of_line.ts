@@ -1,27 +1,27 @@
-﻿var newline = require('../newline');
+﻿///<reference path='../../vendor/dt-node/node.d.ts'/>
+import eclint = require('../eclint');
+import _line = require('../line');
 
 
-exports.check = function(context, settings, line) {
-    if (line.newline && line.newline.name !== settings.end_of_line) {
-        context.report('Incorrect newline character found: ' +
-            line.newline.name);
-    }
-};
+export enum Newlines { lf, crlf, cr, ls, ps };
 
-exports.fix = function(settings, line) {
-    var setting = settings.end_of_line;
-    if (isSupportedSetting(setting) && line.newline) {
-        line.newline.name = setting;
-    }
-    return line;
-};
+export function check(context: eclint.Context, settings: eclint.Settings,
+	line: _line.Line): void {
 
-exports.infer = function(line) {
-    return line.newline && line.newline.name;
-};
+	if (line.Newline && line.Newline.Name !== Newlines[settings.end_of_line]) {
+		context.report('Incorrect newline character found: ' +
+			line.Newline.Name);
+	}
+}
 
-var supportedSettings = ['lf', 'crlf', 'cr', 'ls', 'ps'];
+export function fix(settings: eclint.Settings, line: _line.Line): _line.Line {
+	var settingName = Newlines[settings.end_of_line];
+	if (line.Newline && settingName) {
+		line.Newline.Name = settingName;
+	}
+	return line;
+}
 
-function isSupportedSetting(setting) {
-    return ~supportedSettings.indexOf(setting);
+export function infer(line: _line.Line): Newlines {
+	return line.Newline && Newlines[line.Newline.Name];
 }

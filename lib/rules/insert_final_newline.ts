@@ -1,11 +1,19 @@
-﻿exports.check = function(context, setting, data) {
-    // context.report(msg)
-};
+﻿///<reference path='../../vendor/dt-node/node.d.ts'/>
+import eclint = require('../eclint');
+import _line = require('../line');
 
-exports.fix = function(setting, data) {
-    return data;
-};
 
-exports.infer = function(data) {
-    // return setting (e.g., true, false)
-};
+export function check(context: eclint.Context, settings: eclint.Settings,
+	data: string): void {
+
+	// context.report(msg)
+}
+
+export function fix(settings: eclint.Settings, data: string): string {
+	return data;
+}
+
+export function infer(data: string): boolean {
+	return true;
+	// return setting (e.g., true, false)
+}
