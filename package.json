@@ -1,37 +1,46 @@
 {
-    "name": "eclint",
-    "version": "0.11.3-dev",
-    "description": "Validate or fix code that doesn't adhere to EditorConfig settings or infer settings from existing code.",
-    "keywords": [
-        "editorconfig",
-        "tools",
-        "validate",
-        "fix",
-        "enforce",
-        "infer"
-    ],
-    "bin": {
-        "eclint": "./bin/eclint.js"
-    },
-    "scripts": {
-        "test": "mocha -R spec"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/editorconfig/editorconfig-tools-js.git"
-    },
-    "bugs": "https://github.com/editorconfig/editorconfig-tools-js/issues",
-    "author": "EditorConfig Team",
-    "license": "MIT",
-    "dependencies": {
-        "cli-color": "~0.2.2",
-        "editorconfig": "~0.11.3",
-        "gitlike-cli": "~0.0.10"
-    },
-    "devDependencies": {
-        "chai": "~1.7.2",
-        "mocha": "~1.12.0",
-        "sinon": "~1.7.3",
-        "sinon-chai": "~2.4.0"
-    }
+  "name": "eclint",
+  "version": "0.11.3-dev",
+  "description": "Validate or fix code that doesn't adhere to EditorConfig settings or infer settings from existing code.",
+  "keywords": [
+    "editorconfig",
+    "tools",
+    "validate",
+    "fix",
+    "enforce",
+    "infer"
+  ],
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/editorconfig/editorconfig-tools-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/editorconfig/editorconfig-tools-js/issues"
+  },
+  "author": "EditorConfig Team",
+  "license": "MIT",
+  "dependencies": {
+    "cli-color": "~0.2.2",
+    "editorconfig": "~0.11.3",
+    "gitlike-cli": "~0.0.10"
+  },
+  "devDependencies": {
+    "chai": "~1.7.2",
+    "grunt": "~0.4.1",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-typescript": "~0.2.3",
+    "mocha": "~1.12.0",
+    "sinon": "~1.7.3",
+    "sinon-chai": "~2.4.0"
+  },
+  "main": "bin/eclint.js",
+  "bin": {
+    "eclint": "eclint.js"
+  },
+  "directories": {
+    "test": "test"
+  }
 }
