@@ -34,7 +34,8 @@
     "grunt-typescript": "~0.2.3",
     "mocha": "~1.12.0",
     "sinon": "~1.7.3",
-    "sinon-chai": "~2.4.0"
+    "sinon-chai": "~2.4.0",
+    "bower": "~1.2.7"
   },
   "main": "bin/eclint.js",
   "bin": {
