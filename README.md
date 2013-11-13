@@ -57,6 +57,12 @@ This project is not yet completed.  Feel free to play with the existing code,
 but don't expect it to work well (or at all) yet.
 
 
+Installation
+------------
+
+    $ ./install
+
+
 Running Tests
 -------------
 
