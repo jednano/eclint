@@ -13,9 +13,8 @@ notifications:
 
 before_script:
   - set -e
-  - npm install -g bower grunt-cli typescript
-  - bower install
-  - grunt
+  - ./install.sh
+  - ./build.sh
 
 after_success:
   - set +e
