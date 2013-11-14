@@ -4,7 +4,7 @@ var cli = require('gitlike-cli');
 var pkg = require('../package');
 
 
-cli.on('error', function(err) {
+cli.on('error', err => {
 	console.log('');
 	console.log(clc.red('  ' + err.name + ':', err.message));
 	err.command.outputUsage();

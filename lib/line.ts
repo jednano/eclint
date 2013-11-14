@@ -5,11 +5,11 @@ import Newline = require('./Newline');
 
 
 export interface LineOptions {
-	number?: number
-	bom?: string
-	charset?: Charsets
-	newline?: Newline
-	text?: string
+	number?: number;
+	bom?: string;
+	charset?: Charsets;
+	newline?: Newline;
+	text?: string;
 }
 
 export enum Charsets {
@@ -127,12 +127,11 @@ export class Line {
 			return (this._bom || '') + (this._text || '') +
 				(this._newline || '');
 		}
-		return undefined;
 	}
 
 	private parseLineForText(s: string): string {
 		if (!s) {
-			return undefined;
+			return;
 		}
 		var start = this._bom ? this._bom.length : 0;
 		var length = s.length - start - (this._newline ? this._newline.Length : 0);

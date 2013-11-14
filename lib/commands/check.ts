@@ -7,7 +7,7 @@ var path = require('path');
 function check(args, options, callback) {
 
 	if (typeof callback !== 'function') {
-		callback = function() {};
+		callback = () => {};
 	}
 
 	if (typeof options === 'function') {
@@ -24,10 +24,10 @@ function check(args, options, callback) {
 
 	var count = 0;
 
-	files.forEach(function(filename) {
+	files.forEach(filename => {
 		var settings = editorconfig.parse(filename);
 		var reporter = {
-			report: function(msg) {
+			report: msg => {
 				messages.push({
 					filename: filename,
 					msg: msg
@@ -36,11 +36,11 @@ function check(args, options, callback) {
 		};
 
 		var ruleNames = Object.keys(settings);
-		ruleNames.forEach(function(ruleName) {
+		ruleNames.forEach(ruleName => {
 			var rule = require('../rules/' + ruleName);
 			var setting = settings[ruleName];
 
-			fs.readFile(filename, {encoding: 'utf8'}, function(err, data) {
+			fs.readFile(filename, {encoding: 'utf8'}, (err, data) => {
 				if (err) throw err;
 				rule.check(reporter, setting, data);
 
@@ -53,7 +53,7 @@ function check(args, options, callback) {
 
 	function done() {
 		if (!options.boring) {
-			messages.forEach(function(message) {
+			messages.forEach(message => {
 				console.log(message.filename + ':', message.msg);
 			});
 		}
