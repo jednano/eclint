@@ -60,13 +60,19 @@ but don't expect it to work well (or at all) yet.
 Installation
 ------------
 
-    $ ./install
+    $ ./install.sh
 
 
-Running Tests
--------------
+Building
+--------
 
-    $ npm test
+    $ ./build.sh
+
+
+Testing
+-------
+
+    $ ./test.sh
 
 
 [Build Status]: https://travis-ci.org/jedhunsaker/eclint.png?branch=master
