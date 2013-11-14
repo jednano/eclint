@@ -13,8 +13,8 @@ notifications:
 
 before_script:
   - set -e
-  - ./install.sh
-  - ./build.sh
+  - sh install.sh
+  - sh build.sh
 
 after_success:
   - set +e
