@@ -1,7 +1,7 @@
 ﻿ECLint
 =====================
 
-[![Build Status][]](https://travis-ci.org/jedhunsaker/eclint)
+[![Build Status][]](https://travis-ci.org/jedmao/eclint)
 
 ECLint is a tool for validating or fixing code that doesn't adhere to settings
 defined in `.editorconfig`. It also infers settings from existing code. See the
@@ -75,5 +75,5 @@ Testing
     $ ./test.sh
 
 
-[Build Status]: https://travis-ci.org/jedhunsaker/eclint.png?branch=master
+[Build Status]: https://travis-ci.org/jedmao/eclint.png?branch=master
 [EditorConfig Project]: http://editorconfig.org/
