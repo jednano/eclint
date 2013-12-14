@@ -1,7 +1,11 @@
 ﻿ECLint
 =====================
 
-[![Build Status][]](https://travis-ci.org/jedhunsaker/eclint)
+[![Build Status][]](https://travis-ci.org/jedmao/eclint)
+[![Dependency Status][]](https://gemnasium.com/jedhunsaker/eclint)
+[![NPM version][]](http://badge.fury.io/js/eclint)
+[![Views][]](https://sourcegraph.com/github.com/jedmao/eclint)
+
 
 ECLint is a tool for validating or fixing code that doesn't adhere to settings
 defined in `.editorconfig`. It also infers settings from existing code. See the
@@ -63,5 +67,9 @@ Running Tests
     $ npm test
 
 
-[Build Status]: https://travis-ci.org/jedhunsaker/eclint.png?branch=master
+[Build Status]: https://travis-ci.org/jedmao/eclint.png?branch=master
+[Dependency Status]: https://gemnasium.com/jedhunsaker/eclint.png
+[NPM Version]: https://badge.fury.io/js/eclint.png
+[Views]: https://sourcegraph.com/api/repos/github.com/jedmao/eclint/counters/views-24h.png
+[NPM]: (https://nodei.co/npm/codepainter.png?downloads=true)
 [EditorConfig Project]: http://editorconfig.org/
