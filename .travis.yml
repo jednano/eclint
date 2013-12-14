@@ -12,9 +12,6 @@ notifications:
     on_failure: always
 
 before_script:
-  - set -e
-  - sh install.sh
-  - sh build.sh
-
-after_success:
-  - set +e
+  - npm install -g bower grunt-cli
+  - bower install
+  - grunt

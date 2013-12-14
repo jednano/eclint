@@ -11,9 +11,9 @@ var reporter = common.reporter;
 var context = common.context;
 var Line = _line.Line;
 
-describe('trim_trailing_whitespace rule', function() {
+describe('trim_trailing_whitespace rule', () => {
 
-	beforeEach(function() {
+	beforeEach(() => {
 		reporter.reset();
 	});
 
@@ -22,11 +22,11 @@ describe('trim_trailing_whitespace rule', function() {
 		settings[setting.toString()] = { trim_trailing_whitespace: setting };
 	});
 
-	describe('check command', function() {
+	describe('check command', () => {
 
-		describe('true setting', function() {
+		describe('true setting', () => {
 
-			it('reports trailing whitespace', function() {
+			it('reports trailing whitespace', () => {
 				rule.check(context, settings['true'], new Line('foo '));
 				rule.check(context, settings['true'], new Line('foo\t '));
 				rule.check(context, settings['true'], new Line('\t \t'));
@@ -34,23 +34,23 @@ describe('trim_trailing_whitespace rule', function() {
 				expect(reporter).to.always.have.been.calledWithExactly('Trailing whitespace found.');
 			});
 
-			it('remains silent when no trailing whitespace is found', function() {
+			it('remains silent when no trailing whitespace is found', () => {
 				rule.check(context, settings['true'], new Line('foo'));
 				rule.check(context, settings['true'], new Line(''));
 				expect(reporter).to.not.have.been.called;
 			});
 		});
 
-		describe('false setting', function() {
+		describe('false setting', () => {
 
-			it('remains silent when trailing whitespace is found', function() {
+			it('remains silent when trailing whitespace is found', () => {
 				rule.check(context, settings['false'], new Line('foo '));
 				rule.check(context, settings['false'], new Line('foo\t '));
 				rule.check(context, settings['false'], new Line('\t \t'));
 				expect(reporter).to.not.have.been.called;
 			});
 
-			it('remains silent when no trailing whitespace is found', function() {
+			it('remains silent when no trailing whitespace is found', () => {
 				rule.check(context, settings['false'], new Line('foo'));
 				rule.check(context, settings['false'], new Line(''));
 				expect(reporter).to.not.have.been.called;
@@ -58,9 +58,9 @@ describe('trim_trailing_whitespace rule', function() {
 		});
 	});
 
-	describe('fix command', function() {
+	describe('fix command', () => {
 
-		it('true setting replaces trailing whitespace with nothing', function() {
+		it('true setting replaces trailing whitespace with nothing', () => {
 			var line = rule.fix(settings['true'], new Line('foo '));
 			expect(line.Text).to.equal('foo');
 			line = rule.fix(settings['true'], new Line('foo\t '));
@@ -69,7 +69,7 @@ describe('trim_trailing_whitespace rule', function() {
 			expect(line.Text).to.be.undefined;
 		});
 
-		it('false setting leaves trailing whitespace alone', function() {
+		it('false setting leaves trailing whitespace alone', () => {
 			var line = rule.fix(settings['false'], new Line('foo '));
 			expect(line.Text).to.equal('foo ');
 			line = rule.fix(settings['false'], new Line('foo\t '));
@@ -78,7 +78,7 @@ describe('trim_trailing_whitespace rule', function() {
 			expect(line.Text).to.equal('\t \t');
 		});
 
-		it('no setting does not affect the line', function() {
+		it('no setting does not affect the line', () => {
 			var line = rule.fix({}, new Line('foo '));
 			expect(line.Text).to.equal('foo ');
 			line = rule.fix({}, new Line('foo\t '));
@@ -88,16 +88,16 @@ describe('trim_trailing_whitespace rule', function() {
 		});
 	});
 
-	describe('infer command', function() {
+	describe('infer command', () => {
 
-		it('infers "true" setting when no trailing whitespace is found', function() {
+		it('infers "true" setting when no trailing whitespace is found', () => {
 			var setting = rule.infer(new Line('foo'));
 			expect(setting).to.be.true;
 			setting = rule.infer(new Line(''));
 			expect(setting).to.be.true;
 		});
 
-		it('infers "false" setting when trailing whitespace is found', function() {
+		it('infers "false" setting when trailing whitespace is found', () => {
 			var setting = rule.infer(new Line('foo '));
 			expect(setting).to.be.false;
 			setting = rule.infer(new Line('foo\t '));

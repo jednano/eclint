@@ -1,5 +1,6 @@
 node_modules/
 vendor/
 *.js
-!bin/eclint.js
 !Gruntfile.js
+!bin/eclint.js
+*.suo

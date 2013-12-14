@@ -127,11 +127,12 @@ export class Line {
 			return (this._bom || '') + (this._text || '') +
 				(this._newline || '');
 		}
+		return undefined;
 	}
 
 	private parseLineForText(s: string): string {
 		if (!s) {
-			return;
+			return undefined;
 		}
 		var start = this._bom ? this._bom.length : 0;
 		var length = s.length - start - (this._newline ? this._newline.Length : 0);

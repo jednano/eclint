@@ -1,7 +1,7 @@
 ﻿///<reference path='../../../vendor/dt-node/node.d.ts'/>
 
 
-var rules = [];
+export var rules = [];
 
 [
 	'charset',
@@ -15,5 +15,3 @@ var rules = [];
 ].forEach((ruleName) => {
 	rules.push(require('./' + ruleName));
 });
-
-module.exports = rules;

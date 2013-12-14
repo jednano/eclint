@@ -34,4 +34,4 @@ cli
 	    .action(require('./commands/fix'))
 	    .parent;
 
-module.exports = cli;
+export = cli;

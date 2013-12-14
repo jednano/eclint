@@ -5,6 +5,6 @@
 require('../../eclint');
 
 
-describe('eclint', function() {
+describe('eclint', () => {
 
 });
