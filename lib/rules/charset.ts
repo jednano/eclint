@@ -5,23 +5,26 @@ import eclint = require('../eclint');
 
 var Charsets = _line.Charsets;
 
-export function check(context: eclint.Context, settings: eclint.Settings,
-	line: _line.Line): void {
+class CharsetRule implements eclint.LineRule {
 
-	checkByteOrderMark(context, settings, line);
-	checkLatin1TextRange(context, settings, line);
-}
+	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line):
+	    void {
 
-export function fix(settings: eclint.Settings, line: _line.Line): _line.Line {
-	var setting = settings.charset;
-	if (setting) {
-		line.Charsets = setting;
+		checkByteOrderMark(context, settings, line);
+		checkLatin1TextRange(context, settings, line);
 	}
-	return line;
-}
 
-export function infer(line: _line.Line): _line.Charsets {
-	return line.Charsets;
+	fix(settings: eclint.Settings, line: _line.Line): _line.Line {
+		var setting = settings.charset;
+		if (setting) {
+			line.Charsets = setting;
+		}
+		return line;
+	}
+
+	infer(line: _line.Line): _line.Charsets {
+		return line.Charsets;
+	}
 }
 
 function checkByteOrderMark(context: eclint.Context, settings: eclint.Settings,
@@ -31,7 +34,7 @@ function checkByteOrderMark(context: eclint.Context, settings: eclint.Settings,
 	if (line.Charsets) {
 		if (charset && charset !== line.Charsets) {
 			context.report('Invalid charset: ' +
-				Charsets[line.Charsets].replace(/_/g, '-'));
+			    Charsets[line.Charsets].replace(/_/g, '-'));
 		}
 	} else if (line.Number === 1 && charset) {
 		context.report('Expected charset: ' + charset);
@@ -52,3 +55,5 @@ function checkLatin1TextRange(context: eclint.Context,
 		}
 	}
 }
+
+export = CharsetRule;

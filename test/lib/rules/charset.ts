@@ -1,10 +1,10 @@
 ﻿///<reference path='../../../vendor/dt-mocha/mocha.d.ts'/>
 import common = require('../common');
-import eclint = require('../../../lib/eclint');
 import _line = require('../../../lib/line');
-import rule = require('../../../lib/rules/charset');
+import CharsetRule = require('../../../lib/rules/charset');
 
 
+var rule = new CharsetRule();
 var expect = common.expect;
 var reporter = common.reporter;
 var context = common.context;
