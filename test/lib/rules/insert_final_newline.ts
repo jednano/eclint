@@ -1,6 +1,4 @@
-﻿///<reference path='../../../vendor/dt-node/node.d.ts'/>
-///<reference path='../../../vendor/dt-mocha/mocha.d.ts'/>
-///<reference path='../../../vendor/dt-sinon-chai/sinon-chai.d.ts'/>
+﻿///<reference path='../../../vendor/dt-mocha/mocha.d.ts'/>
 import common = require('../common');
 import _line = require('../../../lib/line');
 import rule = require('../../../lib/rules/insert_final_newline');
@@ -11,6 +9,7 @@ var reporter = common.reporter;
 var context = common.context;
 var Line = _line.Line;
 
+// ReSharper disable WrongExpressionStatement
 describe('insert_final_newline rule', () => {
 
 	beforeEach(() => {

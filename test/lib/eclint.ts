@@ -5,6 +5,7 @@
 require('../../eclint');
 
 
+// ReSharper disable WrongExpressionStatement
 describe('eclint', () => {
 
 });

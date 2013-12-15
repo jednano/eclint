@@ -1,7 +1,4 @@
-///<reference path='../../vendor/dt-node/node.d.ts'/>
 ///<reference path='../../vendor/dt-mocha/mocha.d.ts'/>
-///<reference path='../../vendor/dt-chai/chai.d.ts'/>
-///<reference path='../../vendor/dt-sinon/sinon.d.ts'/>
 import common = require('./common');
 import _line = require('../../lib/line');
 
@@ -12,6 +9,7 @@ var context = common.context;
 var Line = _line.Line;
 var Charsets = _line.Charsets;
 
+// ReSharper disable WrongExpressionStatement
 describe('Line class', () => {
 
 	describe('Byte Order Mark (BOM signature)', () => {

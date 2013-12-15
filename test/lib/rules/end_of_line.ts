@@ -1,6 +1,4 @@
-﻿///<reference path='../../../vendor/dt-node/node.d.ts'/>
-///<reference path='../../../vendor/dt-mocha/mocha.d.ts'/>
-///<reference path='../../../vendor/dt-sinon-chai/sinon-chai.d.ts'/>
+﻿///<reference path='../../../vendor/dt-mocha/mocha.d.ts'/>
 import common = require('../common');
 import _line = require('../../../lib/line');
 import EndOfLineRule = require('../../../lib/rules/end_of_line');
@@ -14,6 +12,7 @@ var context = common.context;
 var Line = _line.Line;
 var Newlines = rulesCommon.Newlines;
 
+// ReSharper disable WrongExpressionStatement
 describe('end_of_line rule', () => {
 
 	beforeEach(() => {

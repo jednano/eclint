@@ -1,15 +1,13 @@
-﻿///<reference path='../../vendor/dt-node/node.d.ts'/>
-///<reference path='../../vendor/dt-chai/chai.d.ts'/>
-///<reference path='../../vendor/dt-sinon/sinon.d.ts'/>
-var chai = require('chai');
-var sinon = require('sinon');
-
+﻿///<reference path='../../vendor/dt-sinon/sinon.d.ts'/>
+///<reference path='../../vendor/dt-sinon-chai/sinon-chai.d.ts'/>
+var chai: SinonChaiStatic = require('chai');
+import sinon = require('sinon');
 
 chai.use(require('sinon-chai'));
 
 export var context = {
-	report: (message: string) => { }
+	report: (message: string) => {}
 };
 
-export var expect: chai.ExpectStatic = chai.expect;
+export var expect = chai.expect;
 export var reporter: SinonSpy = sinon.spy(context, 'report');

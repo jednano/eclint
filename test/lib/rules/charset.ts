@@ -1,6 +1,4 @@
-﻿///<reference path='../../../vendor/dt-node/node.d.ts'/>
-///<reference path='../../../vendor/dt-mocha/mocha.d.ts'/>
-///<reference path='../../../vendor/dt-sinon-chai/sinon-chai.d.ts'/>
+﻿///<reference path='../../../vendor/dt-mocha/mocha.d.ts'/>
 import common = require('../common');
 import eclint = require('../../../lib/eclint');
 import _line = require('../../../lib/line');
@@ -13,6 +11,7 @@ var context = common.context;
 var Line = _line.Line;
 var Charsets = _line.Charsets;
 
+// ReSharper disable WrongExpressionStatement
 describe('charset rule', () => {
 
 	beforeEach(() => {
