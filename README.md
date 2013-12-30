@@ -2,7 +2,7 @@
 =====================
 
 [![Build Status][]](https://travis-ci.org/jedmao/eclint)
-[![Dependency Status][]](https://gemnasium.com/jedhunsaker/eclint)
+[![Dependency Status][]](https://gemnasium.com/jedmao/eclint)
 [![NPM version][]](http://badge.fury.io/js/eclint)
 [![Views][]](https://sourcegraph.com/github.com/jedmao/eclint)
 
@@ -68,7 +68,7 @@ Running Tests
 
 
 [Build Status]: https://travis-ci.org/jedmao/eclint.png?branch=master
-[Dependency Status]: https://gemnasium.com/jedhunsaker/eclint.png
+[Dependency Status]: https://gemnasium.com/jedmao/eclint.png
 [NPM Version]: https://badge.fury.io/js/eclint.png
 [Views]: https://sourcegraph.com/api/repos/github.com/jedmao/eclint/counters/views-24h.png
 [NPM]: (https://nodei.co/npm/codepainter.png?downloads=true)
