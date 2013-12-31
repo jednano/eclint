@@ -10,8 +10,8 @@ import common = require('./rules/common');
 export interface Settings {
 	charset?: line.Charsets;
 	end_of_line?: common.Newlines;
-	indent_size?: indent_size.IndentSizes;
-	indent_style?: indent_style.IndentStyles;
+	indent_size?: any;
+	indent_style?: common.IndentStyles;
 	insert_final_newline?: boolean;
 	max_line_length?: number;
 	tab_width?: number;
@@ -26,4 +26,14 @@ export interface LineRule {
 	check(context: Context, settings: Settings, line: line.Line): void;
 	fix(settings: Settings, line: line.Line): line.Line;
 	infer(line: line.Line): any;
+}
+
+export interface LinesRule {
+	check(context: Context, settings: Settings, lines: line.Line[]): void;
+	fix(settings: Settings, lines: line.Line[]): line.Line[];
+	infer(line: line.Line[]): any;
+}
+
+export interface HashTable<T> {
+	[key: string]: T;
 }

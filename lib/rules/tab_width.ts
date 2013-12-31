@@ -1,19 +1,21 @@
-﻿///<reference path='../../vendor/dt-node/node.d.ts'/>
-import eclint = require('../eclint');
+﻿import eclint = require('../eclint');
 import _line = require('../line');
 
 
-export function check(context: eclint.Context, settings: eclint.Settings,
-	data: string): void {
+class TabWidthRule implements eclint.LineRule {
 
-	// context.report(msg)
+	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line):
+		void {
+	}
+
+	fix(settings: eclint.Settings, line: _line.Line): _line.Line {
+		return line;
+	}
+
+	infer(line: _line.Line): number {
+		throw new Error('Tab width cannot be inferred');
+	}
+
 }
 
-export function fix(settings: eclint.Settings, data: string): string {
-	return data;
-}
-
-export function infer(data: string): boolean {
-	return true;
-	// return setting (e.g., true, false)
-}
+export = TabWidthRule;

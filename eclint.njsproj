@@ -27,6 +27,7 @@
     <Content Include="eclint.njsproj" />
     <Compile Include="Gruntfile.js" />
     <Content Include="install.sh" />
+    <Content Include="lib\helpers\string.ts" />
     <Content Include="lib\rules\common.ts" />
     <Content Include="package.json" />
     <Content Include="README.md" />
@@ -66,6 +67,7 @@
     <Folder Include="bin" />
     <Folder Include="lib" />
     <Folder Include="lib\commands" />
+    <Folder Include="lib\helpers\" />
     <Folder Include="lib\rules" />
     <Folder Include="test" />
     <Folder Include="test\lib" />

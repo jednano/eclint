@@ -1,21 +1,70 @@
-﻿///<reference path='../../vendor/dt-node/node.d.ts'/>
-import eclint = require('../eclint');
+﻿import eclint = require('../eclint');
 import _line = require('../line');
+import common = require('./common');
+var IndentStyles = common.IndentStyles;
+import s = require('../helpers/string');
 
+class IndentSizeRule implements eclint.LineRule {
 
-export enum IndentSizes { tab = -1, 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line): void {
+		var inferredSetting = this.infer(line);
+		if (inferredSetting !== settings.indent_size) {
+			context.report('Invalid indent size detected: ' + inferredSetting);
+		}
+	}
 
-export function check(context: eclint.Context, setting: eclint.Settings,
-	data: string): void {
+	infer(line: _line.Line): any {
+		if (line.Text[0] === '\t') {
+			return 'tab';
+		}
 
-	// context.report(msg)
-}
+		var m = line.Text.match(/^ +/);
+		if (!m) {
+			// ReSharper disable once InconsistentFunctionReturns
+			return;
+		}
 
-export function fix(settings: eclint.Settings, data: string): string {
-	return data;
-}
+		var leadingSpacesLength = m[0].length;
+		for (var i = 8; i > 0; i--) {
+			if (leadingSpacesLength % i === 0) {
+				return i;
+			}
+		}
+		return 0;
+	}
 
-export function infer(data): IndentSizes {
-	return IndentSizes.tab;
-	// return setting (e.g., true, false)
+	fix(settings: eclint.Settings, line: _line.Line): _line.Line {
+
+		var indentSize = this.applyRule(settings);
+
+		switch (settings.indent_style) {
+
+			case IndentStyles.tab:
+				line.Text = line.Text.replace(/^ +/, (match: string) => {
+					var indentLevel = Math.floor(match.length / indentSize);
+					var extraSpaces = s.repeat(' ', match.length % indentSize);
+					return s.repeat('\t', indentLevel) + extraSpaces;
+				});
+				break;
+
+			case IndentStyles.space:
+				line.Text = line.Text.replace(/^\t+/, (match: string) => {
+					return s.repeat(s.repeat('\s', indentSize), match.length);
+				});
+				break;
+
+			default:
+				return line;
+		}
+
+		return line;
+	}
+
+	private applyRule(settings: eclint.Settings): number {
+		if (settings.indent_size === 'tab') {
+			return settings.tab_width;
+		}
+		return settings.indent_size;
+	}
+
 }
