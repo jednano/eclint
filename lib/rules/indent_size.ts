@@ -4,11 +4,12 @@ import common = require('./common');
 var IndentStyles = common.IndentStyles;
 import s = require('../helpers/string');
 
+
 class IndentSizeRule implements eclint.LineRule {
 
 	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line): void {
 		var inferredSetting = this.infer(line);
-		if (inferredSetting !== settings.indent_size) {
+		if (inferredSetting && inferredSetting % settings.indent_size !== 0) {
 			context.report('Invalid indent size detected: ' + inferredSetting);
 		}
 	}
@@ -34,7 +35,6 @@ class IndentSizeRule implements eclint.LineRule {
 	}
 
 	fix(settings: eclint.Settings, line: _line.Line): _line.Line {
-
 		var indentSize = this.applyRule(settings);
 
 		switch (settings.indent_style) {
@@ -49,7 +49,7 @@ class IndentSizeRule implements eclint.LineRule {
 
 			case IndentStyles.space:
 				line.Text = line.Text.replace(/^\t+/, (match: string) => {
-					return s.repeat(s.repeat('\s', indentSize), match.length);
+					return s.repeat(s.repeat(' ', indentSize), match.length);
 				});
 				break;
 
@@ -68,3 +68,5 @@ class IndentSizeRule implements eclint.LineRule {
 	}
 
 }
+
+export = IndentSizeRule;
