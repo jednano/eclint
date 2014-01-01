@@ -66,53 +66,44 @@ describe('indent_size rule', () => {
 			expect(rule.infer(new Line('\t\t foo'))).to.equal('tab');
 		});
 
-		it('infers 1 space setting', () => {
-			var settings = { indent_size: 1 };
-			rule.check(context, settings, new Line(' \tfoo'));
+		it('infers 1-space setting', () => {
+			expect(rule.infer(new Line(' \tfoo'))).to.equal(1);
 		});
 
-		it('infers 2 space setting', () => {
-			var settings = { indent_size: 2 };
-			rule.check(context, settings, new Line('  \tfoo'));
+		it('infers 2-space setting', () => {
+			expect(rule.infer(new Line('  \tfoo'))).to.equal(2);
 		});
 
-		it('infers 3 space setting', () => {
-			var settings = { indent_size: 3 };
-			rule.check(context, settings, new Line('   \tfoo'));
+		it('infers 3-space setting', () => {
+			expect(rule.infer(new Line('   \tfoo'))).to.equal(3);
 		});
 
-		it('infers 4 space setting', () => {
-			var settings = { indent_size: 4 };
-			rule.check(context, settings, new Line('    \tfoo'));
+		it('infers 4-space setting', () => {
+			expect(rule.infer(new Line('    \tfoo'))).to.equal(4);
 		});
 
-		it('infers 5 space setting', () => {
-			var settings = { indent_size: 5 };
-			rule.check(context, settings, new Line('     \tfoo'));
-			rule.check(context, settings, new Line('          \tfoo'));
+		it('infers 5-space setting', () => {
+			expect(rule.infer(new Line('     \tfoo'))).to.equal(5);
+			expect(rule.infer(new Line('          \tfoo'))).to.equal(5);
 		});
 
-		it('infers 6 space setting', () => {
-			var settings = { indent_size: 6 };
-			rule.check(context, settings, new Line('      \tfoo'));
-			rule.check(context, settings, new Line('            \tfoo'));
+		it('infers 6-space setting', () => {
+			expect(rule.infer(new Line('      \tfoo'))).to.equal(6);
+			expect(rule.infer(new Line('            \tfoo'))).to.equal(6);
 		});
 
-		it('infers 7 space setting', () => {
-			var settings = { indent_size: 7 };
-			rule.check(context, settings, new Line('       \tfoo'));
-			rule.check(context, settings, new Line('              \tfoo'));
+		it('infers 7-space setting', () => {
+			expect(rule.infer(new Line('       \tfoo'))).to.equal(7);
+			expect(rule.infer(new Line('              \tfoo'))).to.equal(7);
 		});
 
-		it('infers 8 space setting', () => {
-			var settings = { indent_size: 8 };
-			rule.check(context, settings, new Line('        \tfoo'));
-			rule.check(context, settings, new Line('                \tfoo'));
+		it('infers 8-space setting', () => {
+			expect(rule.infer(new Line('        \tfoo'))).to.equal(8);
+			expect(rule.infer(new Line('                \tfoo'))).to.equal(8);
 		});
 
 		it('remains indeterminate when no indentation is detected', () => {
-			var settings = { indent_size: 4 };
-			rule.check(context, settings, new Line('foo'));
+			expect(rule.infer(new Line('foo'))).to.be.undefined;
 		});
 
 	});
