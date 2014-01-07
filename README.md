@@ -73,3 +73,7 @@ Running Tests
 [Views]: https://sourcegraph.com/api/repos/github.com/jedmao/eclint/counters/views-24h.png
 [NPM]: (https://nodei.co/npm/codepainter.png?downloads=true)
 [EditorConfig Project]: http://editorconfig.org/
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jedmao/eclint/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
