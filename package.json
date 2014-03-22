@@ -1,6 +1,6 @@
 {
   "name": "eclint",
-  "version": "0.11.3-dev",
+  "version": "0.1.0-dev",
   "description": "Validate or fix code that doesn't adhere to EditorConfig settings or infer settings from existing code.",
   "keywords": [
     "editorconfig",
@@ -10,7 +10,12 @@
     "enforce",
     "infer"
   ],
+  "main": "lib/api.js",
+  "bin": {
+    "eclint": "bin/eclint.js"
+  },
   "scripts": {
+    "postinstall": "bower install --production",
     "test": "grunt test"
   },
   "repository": {
@@ -23,27 +28,27 @@
   "author": "EditorConfig Team",
   "license": "MIT",
   "dependencies": {
+    "bower": "~1.3.1",
     "cli-color": "~0.2.2",
     "editorconfig": "~0.11.3",
     "gitlike-cli": "~0.0.10",
-    "grunt-contrib-clean": "~0.5.0",
-    "grunt-typescript": "~0.2.3"
+    "globule": "~0.2.0",
+    "grunt-typescript": "~0.2.3",
+    "node.extend": "~1.0.9",
+    "linez": "~1.0.3",
+    "iconv-lite": "~0.2.11"
   },
   "devDependencies": {
     "chai": "~1.7.2",
     "grunt": "~0.4.1",
+    "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-watch": "~0.5.3",
     "grunt-mocha-test": "~0.8.1",
+    "grunt-typescript-compile": "~0.2.0",
+    "load-grunt-tasks": "~0.4.0",
     "mocha": "~1.12.0",
     "sinon": "~1.7.3",
     "sinon-chai": "~2.4.0",
-    "bower": "~1.2.8"
-  },
-  "main": "bin/eclint.js",
-  "bin": {
-    "eclint": "eclint.js"
-  },
-  "directories": {
-    "test": "test"
+    "time-grunt": "~0.2.10"
   }
 }

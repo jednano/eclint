@@ -1,9 +1,33 @@
 {
   "name": "eclint",
-  "version": "0.11.3-dev",
+  "version": "0.1.0-dev",
+  "description": "Validate or fix code that doesn't adhere to EditorConfig settings or infer settings from existing code.",
+  "homepage": "https://github.com/jedmao/eclint",
+  "authors": [
+    "Jed Hunsaker <jed.hunsaker+npm@gmail.com>"
+  ],
+  "main": "./lib/api.js",
+  "keywords": [
+    "editorconfig",
+    "tools",
+    "validate",
+    "fix",
+    "enforce",
+    "infer"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "dt-node": "*"
+  },
   "devDependencies": {
     "dt-mocha": "~1.9.0",
-    "dt-node": "https://github.com/jedhunsaker/dt-node.git",
     "dt-sinon": "~1.5.0",
     "dt-sinon-chai": "~2.4.0"
   }

@@ -1,52 +1,61 @@
 ﻿module.exports = function(grunt) {
 
-    // Project configuration.
-    grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json'),
-        clean: tsFiles.map(function(glob) {
-            return glob.replace(/\.ts$/, '.js');
-        }),
-        typescript: {
-            base: {
-                src: ['lib/**/*.ts', 'test/**/*.ts'],
-                dest: '',
-                options: {
-                    module: 'commonjs',
-                    target: 'es5'
-                }
-            }
-        },
-        mochaTest: {
-            test: {
-                options: {
-                    reporter: 'spec',
-                    clearRequireCache: true
-                },
-                src: ['test/**/*.js']
-            }
-        },
-        watch: {
-            ts: {
-                files: '**/*.ts',
-                tasks: ['test']
-            }
-        }
-    });
+	require('time-grunt')(grunt);
 
-    // Load the plugin that provides the "uglify" task.
-    grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-mocha-test');
-    grunt.loadNpmTasks('grunt-typescript');
+	grunt.initConfig({
+		pkg: grunt.file.readJSON('package.json'),
+		clean: {
+			files: [
+				'lib/**/*.js',
+				'!lib/api.js',
+				'test/**/*.js'
+			]
+		},
+		typescript: {
+			options: {
+				module: 'commonjs',
+				target: 'es5'
+			},
+			test: {
+				src: 'test/**/*.ts',
+				dest: ''
+			}
+		},
+		mochaTest: {
+			test: {
+				options: {
+					reporter: 'spec',
+					clearRequireCache: true
+				},
+				src: 'test/**/*.js'
+			}
+		},
+		watch: {
+			ts: {
+				files: [
+					'lib/**/*.ts',
+					'test/**/*.ts'
+				],
+				tasks: ['typescript']
+			},
+			js: {
+				files: [
+					'lib/**/*.js',
+					'test/**/*.js'
+				],
+				tasks: ['mochaTest']
+			}
+		} 
+	});
 
-    // Default task(s).
-    grunt.registerTask('default', ['test']);
-    grunt.registerTask('test', ['build', 'mochaTest']);
-    grunt.registerTask('build', ['clean', 'typescript']);
+	require('load-grunt-tasks')(grunt);
+
+	// Default task(s).
+	grunt.registerTask('default', ['build', 'mochaTest', 'watch']);
+	grunt.registerTask('test', ['build', 'mochaTest', 'clean']);
+	grunt.registerTask('build', ['clean', 'typescript']);
+
+	// Note: dev task requires compile-on-save in your text editor
+	grunt.registerTask('dev', ['build', 'mochaTest', 'watch:js']);
 
 };
-
-var tsFiles = [
-    'lib/**/*.ts',
-    'test/**/*.ts'
-];

@@ -1,9 +1,7 @@
 language: node_js
 
 node_js:
-  - "0.8"
-  - "0.9"
-  - "0.10"
+  - 0.10
 
 notifications:
   email:
@@ -11,6 +9,4 @@ notifications:
     on_failure: always
 
 before_script:
-  - npm install -g bower grunt-cli
-  - bower install
-  - grunt
+  - npm install -g grunt-cli bower
