@@ -9,4 +9,5 @@ notifications:
     on_failure: always
 
 before_script:
-  - npm install -g grunt-cli bower
+  - npm install -g grunt-cli
+  - bower install
