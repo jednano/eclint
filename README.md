@@ -12,6 +12,12 @@ defined in `.editorconfig`. It also infers settings from existing code. See the
 [EditorConfig Project][] for details about the `.editorconfig` file.
 
 
+Related Projects
+----------------
+
+* [editorconfig-tools](https://github.com/treyhunner/editorconfig-tools)
+
+
 Features
 --------
 
