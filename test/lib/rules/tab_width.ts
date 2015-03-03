@@ -1,8 +1,6 @@
-﻿///<reference path='../../../vendor/dt-mocha/mocha.d.ts'/>
-import common = require('../common');
+﻿import common = require('../common');
 import _line = require('../../../lib/line');
 import rule = require('../../../lib/rules/tab_width');
-
 
 var expect = common.expect;
 var reporter = common.reporter;

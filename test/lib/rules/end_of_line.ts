@@ -1,10 +1,8 @@
-﻿///<reference path='../../../vendor/dt-mocha/mocha.d.ts'/>
-import common = require('../common');
+﻿import common = require('../common');
 import _line = require('../../../lib/line');
 import EndOfLineRule = require('../../../lib/rules/end_of_line');
 var rule = new EndOfLineRule();
 import rulesCommon = require('../../../lib/rules/common');
-
 
 var expect = common.expect;
 var reporter = common.reporter;

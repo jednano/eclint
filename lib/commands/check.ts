@@ -1,13 +1,13 @@
-﻿///<reference path='../../vendor/dt-node/node.d.ts'/>
-var editorconfig = require('editorconfig');
+﻿var editorconfig = require('editorconfig');
 var fs = require('fs');
 var path = require('path');
-
 
 function check(args, options, callback) {
 
 	if (typeof callback !== 'function') {
-		callback = () => {};
+		callback = () => {
+			// TODO
+		};
 	}
 
 	if (typeof options === 'function') {
@@ -41,7 +41,9 @@ function check(args, options, callback) {
 			var setting = settings[ruleName];
 
 			fs.readFile(filename, {encoding: 'utf8'}, (err, data) => {
-				if (err) throw err;
+				if (err) {
+					throw err;
+				}
 				rule.check(reporter, setting, data);
 
 				if (++count === files.length * ruleNames.length) {

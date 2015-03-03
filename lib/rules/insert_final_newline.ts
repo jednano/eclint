@@ -2,9 +2,8 @@
 import _line = require('../line');
 import common = require('./common');
 
-
 class InsertFinalNewlineRule implements eclint.LinesRule {
-	
+
 	check(context: eclint.Context, settings: eclint.Settings, lines: _line.Line[]):
 	    void {
 
@@ -17,7 +16,7 @@ class InsertFinalNewlineRule implements eclint.LinesRule {
 		}
 	}
 
-	fix(settings: eclint.Settings, lines: _line.Line[]): _line.Line[]{
+	fix(settings: eclint.Settings, lines: _line.Line[]): _line.Line[] {
 		if (this.infer(lines)) {
 			if (!settings.insert_final_newline) {
 				lines.push(new _line.Line('', {

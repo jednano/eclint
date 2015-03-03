@@ -1,10 +1,8 @@
-﻿///<reference path='../../../vendor/dt-mocha/mocha.d.ts'/>
-import common = require('../common');
+﻿import common = require('../common');
 import _line = require('../../../lib/line');
 import IndentSizeRule = require('../../../lib/rules/indent_size');
 import common2 = require('../../../lib/rules/common');
 var IndentStyles = common2.IndentStyles;
-
 
 var expect = common.expect;
 var reporter = common.reporter;

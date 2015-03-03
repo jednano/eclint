@@ -1,7 +1,5 @@
-﻿///<reference path='../../vendor/dt-node/node.d.ts'/>
-import eclint = require('../eclint');
+﻿import eclint = require('../eclint');
 import _line = require('../line');
-
 
 export function check(context: eclint.Context, settings: eclint.Settings,
 	line: _line.Line): void {

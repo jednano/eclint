@@ -1,7 +1,5 @@
-﻿///<reference path='../../vendor/dt-node/node.d.ts'/>
-
-function fix(args, options) {
-
+﻿function fix(args, options) {
+	// TODO
 }
 
 export = fix;

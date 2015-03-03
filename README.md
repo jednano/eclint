@@ -1,5 +1,4 @@
-﻿ECLint
-=====================
+﻿# ECLint
 
 [![Build Status][]](https://travis-ci.org/jedmao/eclint)
 [![Dependency Status][]](https://gemnasium.com/jedmao/eclint)
@@ -11,23 +10,22 @@ ECLint is a tool for validating or fixing code that doesn't adhere to settings
 defined in `.editorconfig`. It also infers settings from existing code. See the
 [EditorConfig Project][] for details about the `.editorconfig` file.
 
+This version of ECLint runs on EditorConfig Core 0.12.x.
 
-Related Projects
-----------------
+
+## Related Projects
 
 * [editorconfig-tools](https://github.com/treyhunner/editorconfig-tools)
 
 
-Features
---------
+# Features
 
 * Infer `.editorconfig` settings from one or more files.
 * Check (validate) that file(s) adhere to `.editorconfig` settings.
 * Fix formatting errors that disobey `.editorconfig` settings.
 
 
-Examples
---------
+# Examples
 
 Here is an example of the command-line API we want to support::
 
@@ -60,15 +58,13 @@ Here is an example of the command-line API we want to support::
     $ eclint check *
 
 
-Project Status
---------------
+# Project Status
 
 This project is not yet completed.  Feel free to play with the existing code,
 but don't expect it to work well (or at all) yet.
 
 
-Running Tests
--------------
+# Running Tests
 
     $ npm test
 
@@ -82,4 +78,3 @@ Running Tests
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jedmao/eclint/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-

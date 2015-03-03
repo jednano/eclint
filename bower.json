@@ -1,9 +1,9 @@
 {
   "name": "eclint",
-  "version": "0.11.3-dev",
+  "private": true,
   "devDependencies": {
-    "dt-mocha": "~1.9.0",
     "dt-node": "https://github.com/jedhunsaker/dt-node.git",
+    "dt-mocha": "~1.9.0",
     "dt-sinon": "~1.5.0",
     "dt-sinon-chai": "~2.4.0"
   }

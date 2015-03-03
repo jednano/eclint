@@ -1,11 +1,9 @@
-///<reference path='../vendor/dt-node/node.d.ts'/>
 import charset = require('./rules/charset');
 import end_of_line = require('./rules/end_of_line');
 import indent_size = require('./rules/indent_size');
 import indent_style = require('./rules/indent_style');
 import line = require('./line');
 import common = require('./rules/common');
-
 
 export interface Settings {
 	charset?: line.Charsets;

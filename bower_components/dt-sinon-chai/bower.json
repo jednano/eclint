@@ -1,0 +1,12 @@
+{
+  "name": "dt-sinon-chai",
+  "version": "2.4.0",
+  "ignore": [
+    "bower.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "dependencies": {
+    "dt-chai": "~1.7.2"
+  }
+}

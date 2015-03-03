@@ -1,7 +1,5 @@
-﻿///<reference path='../../vendor/dt-node/node.d.ts'/>
-import _line = require('../line');
+﻿import _line = require('../line');
 import eclint = require('../eclint');
-
 
 var Charsets = _line.Charsets;
 

@@ -1,7 +1,5 @@
-﻿///<reference path='../../vendor/dt-node/node.d.ts'/>
-
-function infer(args, options) {
-
+﻿function infer(args, options) {
+	// TODO
 }
 
 export = infer;

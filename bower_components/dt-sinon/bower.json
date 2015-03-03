@@ -1,0 +1,5 @@
+{
+  "name": "dt-sinon",
+  "version": "1.5.0",
+  "ignore": ["bower.json", "LICENSE", "README.md"]
+}

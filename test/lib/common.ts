@@ -1,13 +1,14 @@
-﻿///<reference path='../../vendor/dt-sinon/sinon.d.ts'/>
-///<reference path='../../vendor/dt-sinon-chai/sinon-chai.d.ts'/>
+﻿///<reference path='../../bower_components/dt-node/node.d.ts'/>
+///<reference path='../../bower_components/dt-mocha/mocha.d.ts'/>
+///<reference path='../../bower_components/dt-sinon/sinon.d.ts'/>
+///<reference path='../../bower_components/dt-sinon-chai/sinon-chai.d.ts'/>
 var chai: SinonChaiStatic = require('chai');
-import sinon = require('sinon');
-
+import _sinon = require('sinon');
 chai.use(require('sinon-chai'));
+export var expect = chai.expect;
 
 export var context = {
-	report: (message: string) => {}
+	report: (message: string) => { }
 };
 
-export var expect = chai.expect;
-export var reporter: SinonSpy = sinon.spy(context, 'report');
+export var reporter: SinonSpy = _sinon.spy(context, 'report');

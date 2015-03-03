@@ -1,0 +1,22 @@
+{
+  "name": "dt-sinon-chai",
+  "version": "2.4.0",
+  "ignore": [
+    "bower.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "dependencies": {
+    "dt-chai": "~1.7.2"
+  },
+  "homepage": "https://github.com/jedhunsaker/dt-sinon-chai",
+  "_release": "2.4.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v2.4.0",
+    "commit": "a5b05ab50e64c11a6649f251d1481fbe329405e3"
+  },
+  "_source": "git://github.com/jedhunsaker/dt-sinon-chai.git",
+  "_target": "~2.4.0",
+  "_originalSource": "dt-sinon-chai"
+}

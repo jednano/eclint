@@ -1,0 +1,5 @@
+{
+  "name": "dt-chai",
+  "version": "1.7.2",
+  "ignore": ["bower.json", "LICENSE", "README.md"]
+}

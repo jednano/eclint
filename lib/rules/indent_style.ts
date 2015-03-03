@@ -3,7 +3,6 @@ import _line = require('../line');
 import common = require('./common');
 var IndentStyles = common.IndentStyles;
 
-
 class IndentStyleRule implements eclint.LineRule {
 
 	private get map(): eclint.HashTable<string> {
@@ -54,8 +53,12 @@ class IndentStyleRule implements eclint.LineRule {
 
 		} else {
 			replace = '\t';
-			oneIndent = this.repeat('\s', ((settings.indent_size.toString() === 'tab') ? settings.tab_width : settings.indent_size) || 4);
-
+			oneIndent = this.repeat('\s',
+			(
+				(settings.indent_size.toString() === 'tab')
+					? settings.tab_width
+					: settings.indent_size
+			) || 4);
 		}
 		var replacer = new RegExp('^(?:' + replace + ')+');
 		var m = line.Text.match(replacer);

@@ -1,0 +1,5 @@
+{
+  "name": "dt-mocha",
+  "version": "1.9.0",
+  "ignore": ["bower.json", "LICENSE", "README.md"]
+}

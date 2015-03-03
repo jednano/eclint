@@ -4,7 +4,6 @@ import common = require('./common');
 var IndentStyles = common.IndentStyles;
 import s = require('../helpers/string');
 
-
 class IndentSizeRule implements eclint.LineRule {
 
 	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line): void {

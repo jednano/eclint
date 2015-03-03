@@ -1,6 +1,7 @@
-node_modules/
-vendor/
-*.js
-!Gruntfile.js
-!bin/eclint.js
-*.suo
+# Coverage directory used by tools like istanbul
+coverage
+
+# Dependency directory
+# Deployed apps should consider commenting this line out:
+# see https://npmjs.org/doc/faq.html#Should-I-check-my-node_modules-folder-into-git
+node_modules

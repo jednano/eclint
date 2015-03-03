@@ -1,11 +1,11 @@
 ﻿import eclint = require('../eclint');
 import _line = require('../line');
 
-
 class TabWidthRule implements eclint.LineRule {
 
 	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line):
 		void {
+		// TODO
 	}
 
 	fix(settings: eclint.Settings, line: _line.Line): _line.Line {

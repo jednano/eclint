@@ -1,0 +1,19 @@
+{
+  "name": "dt-chai",
+  "version": "1.7.2",
+  "ignore": [
+    "bower.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "homepage": "https://github.com/jedhunsaker/dt-chai",
+  "_release": "1.7.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.7.2",
+    "commit": "b52112e63303a2eda5e59b2e38ff8e20a6466b92"
+  },
+  "_source": "git://github.com/jedhunsaker/dt-chai.git",
+  "_target": "~1.7.2",
+  "_originalSource": "dt-chai"
+}

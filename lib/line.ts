@@ -1,8 +1,6 @@
-///<reference path='../vendor/dt-node/node.d.ts'/>
 import util = require('util');
 import errorFactory = require('./errorFactory');
 import Newline = require('./Newline');
-
 
 export interface LineOptions {
 	number?: number;

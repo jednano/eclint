@@ -1,0 +1,17 @@
+{
+  "name": "dt-node-jedmao",
+  "version": "0.12.0",
+  "ignore": [
+    "**/.*"
+  ],
+  "homepage": "https://github.com/jedhunsaker/dt-node",
+  "_release": "0.12.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.12.0",
+    "commit": "5a9c4cbc25ace95a964b8551e5729045fdd3e41e"
+  },
+  "_source": "https://github.com/jedhunsaker/dt-node.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/jedhunsaker/dt-node.git"
+}

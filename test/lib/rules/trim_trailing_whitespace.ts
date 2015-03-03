@@ -1,8 +1,6 @@
-﻿///<reference path='../../../vendor/dt-mocha/mocha.d.ts'/>
-import common = require('../common');
+﻿import common = require('../common');
 import _line = require('../../../lib/line');
 import rule = require('../../../lib/rules/trim_trailing_whitespace');
-
 
 var expect = common.expect;
 var reporter = common.reporter;

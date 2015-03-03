@@ -1,7 +1,4 @@
-﻿///<reference path='../../../vendor/dt-node/node.d.ts'/>
-
-
-export var rules = [];
+﻿export var rules = [];
 
 [
 	'charset',

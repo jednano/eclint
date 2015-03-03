@@ -1,8 +1,6 @@
-﻿///<reference path='../../../vendor/dt-mocha/mocha.d.ts'/>
-import common = require('../common');
+﻿import common = require('../common');
 import _line = require('../../../lib/line');
 import CharsetRule = require('../../../lib/rules/charset');
-
 
 var rule = new CharsetRule();
 var expect = common.expect;

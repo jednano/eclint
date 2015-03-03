@@ -1,8 +1,4 @@
-///<reference path='../../vendor/dt-node/node.d.ts'/>
-///<reference path='../../vendor/dt-mocha/mocha.d.ts'/>
-///<reference path='../../vendor/dt-chai/chai.d.ts'/>
-///<reference path='../../vendor/dt-sinon/sinon.d.ts'/>
-
+import common = require('./common');
 
 // ReSharper disable WrongExpressionStatement
 describe('eclint', () => {

@@ -1,6 +1,4 @@
-///<reference path='../vendor/dt-node/node.d.ts'/>
 var util = require('util');
-
 
 export interface ErrorOptions {
 	name: string;

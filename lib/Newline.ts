@@ -1,6 +1,4 @@
-///<reference path='../vendor/dt-node/node.d.ts'/>
 import errorFactory = require('./errorFactory');
-
 
 var map = {
 	// Line Feed, U+000A

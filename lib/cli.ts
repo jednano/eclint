@@ -1,4 +1,4 @@
-///<reference path='../vendor/dt-node/node.d.ts'/>
+///<reference path='../bower_components/dt-node/node.d.ts'/>
 var clc = require('cli-color');
 var cli = require('gitlike-cli');
 var pkg = require('../package');

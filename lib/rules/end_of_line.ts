@@ -1,8 +1,6 @@
-﻿///<reference path='../../vendor/dt-node/node.d.ts'/>
-import eclint = require('../eclint');
+﻿import eclint = require('../eclint');
 import _line = require('../line');
 import common = require('./common');
-
 
 class EndOfLineRule implements eclint.LineRule {
 
