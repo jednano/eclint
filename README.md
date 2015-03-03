@@ -71,7 +71,4 @@ but don't expect it to work well (or at all) yet.
     $ npm test
 
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jedmao/eclint/trend.svg)](https://bitdeli.com/free "Bitdeli Badge")
-
-
 [EditorConfig Project]: http://editorconfig.org/
