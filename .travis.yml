@@ -13,7 +13,7 @@ notifications:
 
 after_success:
   - npm install -g codeclimate-test-reporter
-  - cat coverage/lcov.info | codeclimate
+  - codeclimate < coverage/lcov.info
 
 addons:
   code_climate:

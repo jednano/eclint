@@ -7,7 +7,7 @@ function test() {
 	return gulp.src('js/lib/**/*.js')
 		.pipe(istanbul())
 		.on('finish', function() {
-			gulp.src(['js/test/*.js', 'js/test/spec/**/*.js'], { read: false })
+			gulp.src(['js/**/*.spec.js'], { read: false })
 				.pipe(plumber())
 				.pipe(mocha({
 					reporter: 'spec',
