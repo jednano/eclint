@@ -4,6 +4,7 @@
 [![Dependency Status](https://gemnasium.com/jedmao/eclint.svg)](https://gemnasium.com/jedmao/eclint)
 [![npm version](https://badge.fury.io/js/eclint.svg)](http://badge.fury.io/js/eclint)
 [![Code Climate](https://codeclimate.com/github/jedmao/eclint/badges/gpa.svg)](https://codeclimate.com/github/jedmao/eclint)
+[![Test Coverage](https://codeclimate.com/github/jedmao/eclint/badges/coverage.svg)](https://codeclimate.com/github/jedmao/eclint)
 [![Views](https://sourcegraph.com/api/repos/github.com/jedmao/eclint/counters/views-24h.svg)](https://sourcegraph.com/github.com/jedmao/eclint)
 
 
