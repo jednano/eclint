@@ -1,9 +1,10 @@
 ﻿# ECLint
 
-[![Build Status][]](https://travis-ci.org/jedmao/eclint)
-[![Dependency Status][]](https://gemnasium.com/jedmao/eclint)
-[![NPM version][]](http://badge.fury.io/js/eclint)
-[![Views][]](https://sourcegraph.com/github.com/jedmao/eclint)
+[![Build Status](https://travis-ci.org/jedmao/eclint.svg?branch=master)](https://travis-ci.org/jedmao/eclint)
+[![Dependency Status](https://gemnasium.com/jedmao/eclint.svg)](https://gemnasium.com/jedmao/eclint)
+[![npm version](https://badge.fury.io/js/eclint.svg)](http://badge.fury.io/js/eclint)
+[![Code Climate](https://codeclimate.com/github/jedmao/eclint/badges/gpa.svg)](https://codeclimate.com/github/jedmao/eclint)
+[![Views](https://sourcegraph.com/api/repos/github.com/jedmao/eclint/counters/views-24h.svg)](https://sourcegraph.com/github.com/jedmao/eclint)
 
 
 ECLint is a tool for validating or fixing code that doesn't adhere to settings
@@ -69,12 +70,7 @@ but don't expect it to work well (or at all) yet.
     $ npm test
 
 
-[Build Status]: https://travis-ci.org/jedmao/eclint.png?branch=master
-[Dependency Status]: https://gemnasium.com/jedmao/eclint.png
-[NPM Version]: https://badge.fury.io/js/eclint.png
-[Views]: https://sourcegraph.com/api/repos/github.com/jedmao/eclint/counters/views-24h.png
-[NPM]: (https://nodei.co/npm/codepainter.png?downloads=true)
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jedmao/eclint/trend.svg)](https://bitdeli.com/free "Bitdeli Badge")
+
+
 [EditorConfig Project]: http://editorconfig.org/
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jedmao/eclint/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
