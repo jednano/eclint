@@ -1,5 +1,3 @@
-var _line = require('../line');
-var Charsets = _line.Charsets;
 var CharsetRule = (function () {
     function CharsetRule() {
     }
@@ -23,7 +21,7 @@ function checkByteOrderMark(context, settings, line) {
     var charset = settings.charset;
     if (line.Charsets) {
         if (charset && charset !== line.Charsets) {
-            context.report('Invalid charset: ' + Charsets[line.Charsets].replace(/_/g, '-'));
+            context.report('Invalid charset: ' + line.Charsets.replace(/_/g, '-'));
         }
     }
     else if (line.Number === 1 && charset) {
@@ -31,7 +29,7 @@ function checkByteOrderMark(context, settings, line) {
     }
 }
 function checkLatin1TextRange(context, settings, line) {
-    if (settings.charset !== 0 /* latin1 */) {
+    if (settings.charset !== 'latin1') {
         return;
     }
     var text = line.Text;

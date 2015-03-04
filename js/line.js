@@ -1,15 +1,5 @@
 var errorFactory = require('./errorFactory');
 var Newline = require('./Newline');
-(function (Charsets) {
-    Charsets[Charsets["latin1"] = 0] = "latin1";
-    Charsets[Charsets["utf_8"] = 1] = "utf_8";
-    Charsets[Charsets["utf_8_bom"] = 2] = "utf_8_bom";
-    Charsets[Charsets["utf_16be"] = 3] = "utf_16be";
-    Charsets[Charsets["utf_16le"] = 4] = "utf_16le";
-    Charsets[Charsets["utf_32be"] = 5] = "utf_32be";
-    Charsets[Charsets["utf_32le"] = 6] = "utf_32le";
-})(exports.Charsets || (exports.Charsets = {}));
-var Charsets = exports.Charsets;
 var Line = (function () {
     function Line(raw, options) {
         options = options || {};
@@ -58,7 +48,7 @@ var Line = (function () {
                 delete this._charset;
                 return;
             }
-            var charset = Charsets[Charsets[reverseBomMap[value]]];
+            var charset = reverseBomMap[value];
             if (!charset) {
                 throw new Line.InvalidBomError('Invalid or unsupported BOM signature.');
             }
@@ -80,7 +70,7 @@ var Line = (function () {
                 return;
             }
             this._charset = value;
-            this._bom = bomMap[Charsets[value]];
+            this._bom = bomMap[value];
         },
         enumerable: true,
         configurable: true
@@ -165,7 +155,7 @@ var bomMap = {
 var reverseBomMap = {};
 var boms = Object.keys(bomMap).map(function (key) {
     var bom = bomMap[key];
-    reverseBomMap[bom] = Charsets[key];
+    reverseBomMap[bom] = key;
     return bom;
 });
 var startsWithBom = new RegExp('^(' + boms.join('|') + ')');

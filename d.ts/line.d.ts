@@ -2,18 +2,9 @@ import Newline = require('./Newline');
 export interface LineOptions {
     number?: number;
     bom?: string;
-    charset?: Charsets;
+    charset?: string;
     newline?: string;
     text?: string;
-}
-export declare enum Charsets {
-    latin1 = 0,
-    utf_8 = 1,
-    utf_8_bom = 2,
-    utf_16be = 3,
-    utf_16le = 4,
-    utf_32be = 5,
-    utf_32le = 6,
 }
 export declare class Line {
     private _number;
@@ -24,7 +15,7 @@ export declare class Line {
     constructor(raw?: string, options?: LineOptions);
     Number: number;
     BOM: string;
-    Charsets: Charsets;
+    Charsets: string;
     Text: string;
     Newline: Newline;
     Raw: string;

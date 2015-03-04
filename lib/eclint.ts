@@ -1,11 +1,7 @@
-import charset = require('./rules/charset');
-import end_of_line = require('./rules/end_of_line');
-import indent_size = require('./rules/indent_size');
-import indent_style = require('./rules/indent_style');
 import line = require('./line');
 
 export interface Settings {
-	charset?: line.Charsets;
+	charset?: string;
 	end_of_line?: string;
 	indent_size?: any;
 	indent_style?: string;

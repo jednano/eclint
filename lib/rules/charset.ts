@@ -1,8 +1,6 @@
 ﻿import _line = require('../line');
 import eclint = require('../eclint');
 
-var Charsets = _line.Charsets;
-
 class CharsetRule implements eclint.LineRule {
 
 	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line):
@@ -20,7 +18,7 @@ class CharsetRule implements eclint.LineRule {
 		return line;
 	}
 
-	infer(line: _line.Line): _line.Charsets {
+	infer(line: _line.Line): string {
 		return line.Charsets;
 	}
 }
@@ -32,7 +30,7 @@ function checkByteOrderMark(context: eclint.Context, settings: eclint.Settings,
 	if (line.Charsets) {
 		if (charset && charset !== line.Charsets) {
 			context.report('Invalid charset: ' +
-			    Charsets[line.Charsets].replace(/_/g, '-'));
+			    line.Charsets.replace(/_/g, '-'));
 		}
 	} else if (line.Number === 1 && charset) {
 		context.report('Expected charset: ' + charset);
@@ -42,7 +40,7 @@ function checkByteOrderMark(context: eclint.Context, settings: eclint.Settings,
 function checkLatin1TextRange(context: eclint.Context,
 	settings: eclint.Settings, line: _line.Line) {
 
-	if (settings.charset !== Charsets.latin1) {
+	if (settings.charset !== 'latin1') {
 		return;
 	}
 	var text = line.Text;

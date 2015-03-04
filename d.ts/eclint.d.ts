@@ -1,6 +1,6 @@
 import line = require('./line');
 export interface Settings {
-    charset?: line.Charsets;
+    charset?: string;
     end_of_line?: string;
     indent_size?: any;
     indent_style?: string;

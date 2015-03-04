@@ -4,19 +4,9 @@ import Newline = require('./Newline');
 export interface LineOptions {
 	number?: number;
 	bom?: string;
-	charset?: Charsets;
+	charset?: string;
 	newline?: string;
 	text?: string;
-}
-
-export enum Charsets {
-	latin1,
-	utf_8,
-	utf_8_bom,
-	utf_16be,
-	utf_16le,
-	utf_32be,
-	utf_32le
 }
 
 export class Line {
@@ -24,7 +14,7 @@ export class Line {
 	private _bom: string;
 	private _newline: Newline;
 	private _text: string;
-	private _charset: Charsets;
+	private _charset: string;
 
 	constructor(raw?: string, options?: LineOptions) {
 		options = options || {};
@@ -71,7 +61,7 @@ export class Line {
 			delete this._charset;
 			return;
 		}
-		var charset: Charsets = Charsets[Charsets[reverseBomMap[value]]];
+		var charset = reverseBomMap[value];
 		if (!charset) {
 			throw new Line.InvalidBomError(
 				'Invalid or unsupported BOM signature.');
@@ -81,18 +71,18 @@ export class Line {
 		this._number = 1;
 	}
 
-	get Charsets(): Charsets {
+	get Charsets(): string {
 		return this._charset;
 	}
 
-	set Charsets(value: Charsets) {
+	set Charsets(value: string) {
 		if (!value) {
 			delete this._charset;
 			delete this._bom;
 			return;
 		}
 		this._charset = value;
-		this._bom = bomMap[Charsets[value]];
+		this._bom = bomMap[value];
 	}
 
 	get Text(): string {
@@ -174,7 +164,7 @@ var bomMap = {
 var reverseBomMap = {};
 var boms = Object.keys(bomMap).map((key: string) => {
 	var bom: string = bomMap[key];
-	reverseBomMap[bom] = Charsets[key];
+	reverseBomMap[bom] = key;
 	return bom;
 });
 
