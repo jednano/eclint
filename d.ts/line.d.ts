@@ -3,7 +3,7 @@ export interface LineOptions {
     number?: number;
     bom?: string;
     charset?: Charsets;
-    newline?: Newline;
+    newline?: string;
     text?: string;
 }
 export declare enum Charsets {

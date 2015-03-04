@@ -1,8 +1,7 @@
 import line = require('./line');
-import common = require('./rules/common');
 export interface Settings {
     charset?: line.Charsets;
-    end_of_line?: common.Newlines;
+    end_of_line?: string;
     indent_size?: any;
     indent_style?: string;
     insert_final_newline?: boolean;

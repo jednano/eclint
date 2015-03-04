@@ -1,5 +1,4 @@
 var _line = require('../line');
-var common = require('./common');
 var InsertFinalNewlineRule = (function () {
     function InsertFinalNewlineRule() {
     }
@@ -17,7 +16,7 @@ var InsertFinalNewlineRule = (function () {
         if (this.infer(lines)) {
             if (!settings.insert_final_newline) {
                 lines.push(new _line.Line('', {
-                    newline: common.Newlines[common.Newlines[settings.end_of_line]]
+                    newline: settings.end_of_line
                 }));
             }
         }
