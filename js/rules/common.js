@@ -8,9 +8,4 @@ var _line = require('../line');
 })(exports.Newlines || (exports.Newlines = {}));
 var Newlines = exports.Newlines;
 ;
-(function (IndentStyles) {
-    IndentStyles[IndentStyles["space"] = 0] = "space";
-    IndentStyles[IndentStyles["tab"] = 1] = "tab";
-})(exports.IndentStyles || (exports.IndentStyles = {}));
-var IndentStyles = exports.IndentStyles;
 exports.Charsets = _line.Charsets;

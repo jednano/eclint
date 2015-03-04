@@ -1,8 +1,6 @@
 var common = require('../test-common');
 var _line = require('../line');
 var IndentSizeRule = require('./indent_size');
-var common2 = require('./common');
-var IndentStyles = common2.IndentStyles;
 var expect = common.expect;
 var reporter = common.reporter;
 var context = common.context;
@@ -88,20 +86,20 @@ describe('indent_size rule', function () {
     describe('fix command', function () {
         it('replaces leading spaces with tabs', function () {
             var line = rule.fix({
-                indent_style: 1 /* tab */,
+                indent_style: 'tab',
                 indent_size: 'tab',
                 tab_width: 4
             }, new Line('          foo'));
             expect(line.Text).to.equal('\t\t  foo');
             line = rule.fix({
-                indent_style: 1 /* tab */,
+                indent_style: 'tab',
                 indent_size: 4
             }, new Line('          foo'));
             expect(line.Text).to.equal('\t\t  foo');
         });
         it('replaces leading tabs with spaces', function () {
             var line = rule.fix({
-                indent_style: 0 /* space */,
+                indent_style: 'space',
                 indent_size: 4
             }, new Line('\t\t  foo'));
             expect(line.Text).to.equal('          foo');

@@ -9,7 +9,7 @@ export interface Settings {
 	charset?: line.Charsets;
 	end_of_line?: common.Newlines;
 	indent_size?: any;
-	indent_style?: common.IndentStyles;
+	indent_style?: string;
 	insert_final_newline?: boolean;
 	max_line_length?: number;
 	tab_width?: number;

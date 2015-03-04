@@ -172,7 +172,7 @@ var startsWithBom = new RegExp('^(' + boms.join('|') + ')');
 function parseNewline(s) {
     var m = s && s.match(new RegExp(Newline.pattern.source, 'g'));
     if (!m) {
-        return;
+        return void (0);
     }
     if (m.length > 1) {
         throw new Line.MultipleNewlinesError('A line cannot have more than one newline character.');

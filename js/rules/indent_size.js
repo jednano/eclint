@@ -1,5 +1,3 @@
-var common = require('./common');
-var IndentStyles = common.IndentStyles;
 var s = require('../helpers/string');
 var IndentSizeRule = (function () {
     function IndentSizeRule() {
@@ -30,14 +28,14 @@ var IndentSizeRule = (function () {
     IndentSizeRule.prototype.fix = function (settings, line) {
         var indentSize = this.applyRule(settings);
         switch (settings.indent_style) {
-            case 1 /* tab */:
+            case 'tab':
                 line.Text = line.Text.replace(/^ +/, function (match) {
                     var indentLevel = Math.floor(match.length / indentSize);
                     var extraSpaces = s.repeat(' ', match.length % indentSize);
                     return s.repeat('\t', indentLevel) + extraSpaces;
                 });
                 break;
-            case 0 /* space */:
+            case 'space':
                 line.Text = line.Text.replace(/^\t+/, function (match) {
                     return s.repeat(s.repeat(' ', indentSize), match.length);
                 });

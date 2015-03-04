@@ -1,4 +1,3 @@
-import util = require('util');
 import errorFactory = require('./errorFactory');
 import Newline = require('./Newline');
 
@@ -140,7 +139,7 @@ export class Line {
 		}
 	}
 
-	public toString() {
+	toString() {
 		return this._text;
 	}
 
@@ -184,7 +183,7 @@ var startsWithBom = new RegExp('^(' + boms.join('|') + ')');
 function parseNewline(s: string): Newline {
 	var m = s && s.match(new RegExp(Newline.pattern.source, 'g'));
 	if (!m) {
-		return;
+		return void(0);
 	}
 	if (m.length > 1) {
 		throw new Line.MultipleNewlinesError(

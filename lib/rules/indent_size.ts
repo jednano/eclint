@@ -1,7 +1,5 @@
 ﻿import eclint = require('../eclint');
 import _line = require('../line');
-import common = require('./common');
-var IndentStyles = common.IndentStyles;
 import s = require('../helpers/string');
 
 class IndentSizeRule implements eclint.LineRule {
@@ -38,7 +36,7 @@ class IndentSizeRule implements eclint.LineRule {
 
 		switch (settings.indent_style) {
 
-			case IndentStyles.tab:
+			case 'tab':
 				line.Text = line.Text.replace(/^ +/, (match: string) => {
 					var indentLevel = Math.floor(match.length / indentSize);
 					var extraSpaces = s.repeat(' ', match.length % indentSize);
@@ -46,7 +44,7 @@ class IndentSizeRule implements eclint.LineRule {
 				});
 				break;
 
-			case IndentStyles.space:
+			case 'space':
 				line.Text = line.Text.replace(/^\t+/, (match: string) => {
 					return s.repeat(s.repeat(' ', indentSize), match.length);
 				});

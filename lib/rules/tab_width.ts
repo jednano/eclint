@@ -5,7 +5,7 @@ class TabWidthRule implements eclint.LineRule {
 
 	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line):
 		void {
-		// TODO
+		return;
 	}
 
 	fix(settings: eclint.Settings, line: _line.Line): _line.Line {

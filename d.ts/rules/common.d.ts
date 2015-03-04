@@ -6,8 +6,4 @@ export declare enum Newlines {
     ls = 3,
     ps = 4,
 }
-export declare enum IndentStyles {
-    space = 0,
-    tab = 1,
-}
 export declare var Charsets: typeof _line.Charsets;

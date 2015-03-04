@@ -55,7 +55,7 @@ class Newline {
 		return this.Character && this.Character.length;
 	}
 
-	public toString(): string {
+	toString(): string {
 		return this.Character;
 	}
 

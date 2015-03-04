@@ -1,13 +1,14 @@
-var common = require('./common');
-var IndentStyles = common.IndentStyles;
+var s = require('../helpers/string');
+var DEFAULT_INDENT_SIZE = 4;
+var HARD_TAB = '\t';
 var IndentStyleRule = (function () {
     function IndentStyleRule() {
     }
     Object.defineProperty(IndentStyleRule.prototype, "map", {
         get: function () {
             return {
-                space: '\s',
-                tab: '\t'
+                space: ' ',
+                tab: HARD_TAB
             };
         },
         enumerable: true,
@@ -16,8 +17,8 @@ var IndentStyleRule = (function () {
     Object.defineProperty(IndentStyleRule.prototype, "reverseMap", {
         get: function () {
             return {
-                '\s': 0 /* space */,
-                '\t': 1 /* tab */
+                ' ': 'space',
+                '\t': 'tab'
             };
         },
         enumerable: true,
@@ -25,42 +26,41 @@ var IndentStyleRule = (function () {
     });
     IndentStyleRule.prototype.check = function (context, settings, line) {
         var indentStyle = this.infer(line);
-        var indentStyleSetting = this.parseIndentStyle(settings);
-        if (indentStyle && indentStyle !== indentStyleSetting) {
+        var indentStyleSetting = settings.indent_style;
+        if (indentStyle && indentStyleSetting && indentStyle !== indentStyleSetting) {
             context.report('Invalid indent style: ' + indentStyle);
         }
     };
-    IndentStyleRule.prototype.parseIndentStyle = function (settings) {
-        return IndentStyles[IndentStyles[settings.indent_style]];
-    };
     IndentStyleRule.prototype.infer = function (line) {
-        return this.reverseMap[line[0]];
+        return this.reverseMap[line.Text[0]];
     };
     IndentStyleRule.prototype.fix = function (settings, line) {
         var indentStyle = this.infer(line);
-        var indentStyleSetting = this.parseIndentStyle(settings);
-        if (!indentStyle || indentStyle === indentStyleSetting) {
+        if (!indentStyle || indentStyle === settings.indent_style) {
             return line;
         }
-        var replace;
-        var oneIndent;
-        if (indentStyleSetting === 1 /* tab */) {
-            replace = this.repeat('\s', settings.tab_width || settings.indent_size || 4);
-            oneIndent = '\t';
+        var oldIndent;
+        var newIndent;
+        var softTab = s.repeat(' ', this.resolveIndentSize(settings));
+        if (settings.indent_style === 'tab') {
+            oldIndent = softTab;
+            newIndent = HARD_TAB;
         }
         else {
-            replace = '\t';
-            oneIndent = this.repeat('\s', ((settings.indent_size.toString() === 'tab') ? settings.tab_width : settings.indent_size) || 4);
+            oldIndent = HARD_TAB;
+            newIndent = softTab;
         }
-        var replacer = new RegExp('^(?:' + replace + ')+');
-        var m = line.Text.match(replacer);
-        if (m) {
-            var charLength = m[0].length;
-        }
+        var leadingIndentation = new RegExp('^(?:' + oldIndent + ')+');
+        line.Text = line.Text.replace(leadingIndentation, function (match) {
+            return s.repeat(newIndent, match.length / oldIndent.length);
+        });
         return line;
     };
-    IndentStyleRule.prototype.repeat = function (s, n) {
-        return new Array(n + 1).join(s);
+    IndentStyleRule.prototype.resolveIndentSize = function (settings) {
+        if (settings.indent_size === 'tab') {
+            return settings.tab_width || DEFAULT_INDENT_SIZE;
+        }
+        return settings.indent_size || settings.tab_width || DEFAULT_INDENT_SIZE;
     };
     return IndentStyleRule;
 })();

@@ -1,8 +1,6 @@
 ﻿import common = require('../test-common');
 import _line = require('../line');
 import IndentSizeRule = require('./indent_size');
-import common2 = require('./common');
-var IndentStyles = common2.IndentStyles;
 
 var expect = common.expect;
 var reporter = common.reporter;
@@ -110,14 +108,14 @@ describe('indent_size rule', () => {
 
 		it('replaces leading spaces with tabs', () => {
 			var line = rule.fix({
-				indent_style: IndentStyles.tab,
+				indent_style: 'tab',
 				indent_size: 'tab',
 				tab_width: 4
 			}, new Line('          foo'));
 			expect(line.Text).to.equal('\t\t  foo');
 
 			line = rule.fix({
-				indent_style: IndentStyles.tab,
+				indent_style: 'tab',
 				indent_size: 4
 			}, new Line('          foo'));
 			expect(line.Text).to.equal('\t\t  foo');
@@ -125,7 +123,7 @@ describe('indent_size rule', () => {
 
 		it('replaces leading tabs with spaces', () => {
 			var line = rule.fix({
-				indent_style: IndentStyles.space,
+				indent_style: 'space',
 				indent_size: 4
 			}, new Line('\t\t  foo'));
 			expect(line.Text).to.equal('          foo');

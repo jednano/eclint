@@ -8,9 +8,4 @@ export enum Newlines {
 	ps
 };
 
-export enum IndentStyles {
-	space,
-	tab
-}
-
 export var Charsets = _line.Charsets;

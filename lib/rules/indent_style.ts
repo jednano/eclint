@@ -1,75 +1,69 @@
 ﻿import eclint = require('../eclint');
 import _line = require('../line');
-import common = require('./common');
-var IndentStyles = common.IndentStyles;
+import s = require('../helpers/string');
+
+var DEFAULT_INDENT_SIZE = 4;
+var HARD_TAB = '\t';
 
 class IndentStyleRule implements eclint.LineRule {
 
 	private get map(): eclint.HashTable<string> {
 		return {
-			space: '\s',
-			tab: '\t'
+			space: ' ',
+			tab: HARD_TAB
 		};
 	}
 
-	private get reverseMap(): eclint.HashTable<common.IndentStyles> {
+	private get reverseMap(): eclint.HashTable<string> {
 		return {
-			'\s': IndentStyles.space,
-			'\t': IndentStyles.tab
+			' ': 'space',
+			'\t': 'tab'
 		};
 	}
 
 	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line): void {
-
 		var indentStyle = this.infer(line);
-		var indentStyleSetting = this.parseIndentStyle(settings);
-
-		if (indentStyle && indentStyle !== indentStyleSetting) {
+		var indentStyleSetting = settings.indent_style;
+		if (indentStyle && indentStyleSetting && indentStyle !== indentStyleSetting) {
 			context.report('Invalid indent style: ' + indentStyle);
 		}
 	}
 
-	private parseIndentStyle(settings): common.IndentStyles {
-		return IndentStyles[IndentStyles[settings.indent_style]];
-	}
-
-	infer(line: _line.Line): common.IndentStyles {
-		return this.reverseMap[line[0]];
+	infer(line: _line.Line): string {
+		return this.reverseMap[line.Text[0]];
 	}
 
 	fix(settings: eclint.Settings, line: _line.Line): _line.Line {
 		var indentStyle = this.infer(line);
-		var indentStyleSetting = this.parseIndentStyle(settings);
 
-		if (!indentStyle || indentStyle === indentStyleSetting) {
+		if (!indentStyle || indentStyle === settings.indent_style) {
 			return line;
 		}
 
-		var replace: string;
-		var oneIndent: string;
-		if (indentStyleSetting === IndentStyles.tab) {
-			replace = this.repeat('\s', settings.tab_width || settings.indent_size || 4);
-			oneIndent = '\t';
-
+		var oldIndent: string;
+		var newIndent: string;
+		var softTab = s.repeat(' ', this.resolveIndentSize(settings));
+		if (settings.indent_style === 'tab') {
+			oldIndent = softTab;
+			newIndent = HARD_TAB;
 		} else {
-			replace = '\t';
-			oneIndent = this.repeat('\s',
-			(
-				(settings.indent_size.toString() === 'tab')
-					? settings.tab_width
-					: settings.indent_size
-			) || 4);
+			oldIndent = HARD_TAB;
+			newIndent = softTab;
 		}
-		var replacer = new RegExp('^(?:' + replace + ')+');
-		var m = line.Text.match(replacer);
-		if (m) {
-			var charLength = m[0].length;
-		}
+
+		var leadingIndentation = new RegExp('^(?:' + oldIndent + ')+');
+		line.Text = line.Text.replace(leadingIndentation, match => {
+			return s.repeat(newIndent, match.length / oldIndent.length);
+		});
+
 		return line;
 	}
 
-	private repeat(s: string, n: number) {
-		return new Array(n + 1).join(s);
+	private resolveIndentSize(settings: eclint.Settings) {
+		if (settings.indent_size === 'tab') {
+			return settings.tab_width || DEFAULT_INDENT_SIZE;
+		}
+		return settings.indent_size || settings.tab_width || DEFAULT_INDENT_SIZE;
 	}
 
 }

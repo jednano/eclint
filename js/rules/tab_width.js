@@ -2,7 +2,7 @@ var TabWidthRule = (function () {
     function TabWidthRule() {
     }
     TabWidthRule.prototype.check = function (context, settings, line) {
-        // TODO
+        return;
     };
     TabWidthRule.prototype.fix = function (settings, line) {
         return line;
