@@ -1,36 +1,48 @@
 var _line = require('../line');
+var Newline = require('../Newline');
 var InsertFinalNewlineRule = (function () {
     function InsertFinalNewlineRule() {
     }
     InsertFinalNewlineRule.prototype.check = function (context, settings, lines) {
-        if (this.infer(lines)) {
-            if (!settings.insert_final_newline) {
-                context.report('Expected final newline character');
-            }
+        if (settings.insert_final_newline && !this.infer(lines)) {
+            context.report('Expected final newline character');
+            return;
         }
-        else if (settings.insert_final_newline) {
+        if (settings.insert_final_newline === false && this.infer(lines)) {
             context.report('Unexpected final newline character');
         }
     };
     InsertFinalNewlineRule.prototype.fix = function (settings, lines) {
-        if (this.infer(lines)) {
-            if (!settings.insert_final_newline) {
+        var lastLine;
+        if (settings.insert_final_newline && !this.infer(lines)) {
+            lastLine = lines[lines.length - 1];
+            var endOfLineSetting = settings.end_of_line || 'lf';
+            if (lastLine) {
+                lastLine.Newline = new Newline(Newline.map[endOfLineSetting]);
+            }
+            else {
                 lines.push(new _line.Line('', {
-                    newline: settings.end_of_line
+                    newline: endOfLineSetting
                 }));
             }
+            return lines;
         }
-        else if (settings.insert_final_newline) {
-            lines.pop();
+        if (!settings.insert_final_newline) {
+            while (this.infer(lines)) {
+                lastLine = lines[lines.length - 1];
+                if (lastLine.Text) {
+                    lastLine.Newline = void (0);
+                    break;
+                }
+                lines.pop();
+            }
+            return lines;
         }
         return lines;
     };
     InsertFinalNewlineRule.prototype.infer = function (lines) {
         var lastLine = lines[lines.length - 1];
-        if (lastLine.Text === '' && lastLine.Newline.Length === 0) {
-            return true;
-        }
-        return false;
+        return lastLine ? !!lastLine.Newline : false;
     };
     return InsertFinalNewlineRule;
 })();
