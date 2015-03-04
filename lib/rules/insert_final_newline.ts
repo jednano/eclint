@@ -3,9 +3,7 @@ import _line = require('../line');
 
 class InsertFinalNewlineRule implements eclint.LinesRule {
 
-	check(context: eclint.Context, settings: eclint.Settings, lines: _line.Line[]):
-	    void {
-
+	check(context: eclint.Context, settings: eclint.Settings, lines: _line.Line[]): void {
 		if (this.infer(lines)) {
 			if (!settings.insert_final_newline) {
 				context.report('Expected final newline character');

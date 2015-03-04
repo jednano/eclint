@@ -1,6 +1,7 @@
 ﻿import common = require('../test-common');
 import _line = require('../line');
-import rule = require('./tab_width');
+import TabWidthRule = require('./tab_width');
+var rule = new TabWidthRule();
 
 var expect = common.expect;
 var reporter = common.reporter;
@@ -14,16 +15,30 @@ describe('tab_width rule', () => {
 		reporter.reset();
 	});
 
-	describe.skip('check command', () => {
-		// TODO
+	describe('check command', () => {
+		it('remains silent', () => {
+			rule.check(context, { tab_width: 4 }, new Line('\tfoo'));
+			expect(reporter).not.to.have.been.called;
+		});
 	});
 
-	describe.skip('fix command', () => {
-		// TODO
+	describe('fix command', () => {
+		it('returns the line back w/o modification', () => {
+			var line = rule.fix(
+				{
+					tab_width: 2
+				},
+				new Line('\t\tfoo')
+			);
+			expect(line.Raw).to.eq('\t\tfoo');
+		});
 	});
 
-	describe.skip('infer command', () => {
-		// TODO
+	describe('infer command', () => {
+		it('infers nothing',() => {
+			var tabWidth = rule.infer(new Line('\t\tfoo'));
+			expect(tabWidth).to.be.undefined;
+		});
 	});
 
 });

@@ -8,7 +8,7 @@ var TabWidthRule = (function () {
         return line;
     };
     TabWidthRule.prototype.infer = function (line) {
-        throw new Error('Tab width cannot be inferred');
+        return;
     };
     return TabWidthRule;
 })();

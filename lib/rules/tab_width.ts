@@ -3,8 +3,7 @@ import _line = require('../line');
 
 class TabWidthRule implements eclint.LineRule {
 
-	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line):
-		void {
+	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line): void {
 		return;
 	}
 
@@ -12,8 +11,8 @@ class TabWidthRule implements eclint.LineRule {
 		return line;
 	}
 
-	infer(line: _line.Line): number {
-		throw new Error('Tab width cannot be inferred');
+	infer(line: _line.Line): void {
+		return;
 	}
 
 }
