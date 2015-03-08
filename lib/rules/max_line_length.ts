@@ -9,15 +9,15 @@ class MaxLineLengthRule implements eclint.LineRule {
 		var lineLength = line.Text.length;
 		if (lineLength > settings.max_line_length) {
 			context.report([
-				'Line length ' + lineLength + ' exceeds max line ',
-				'length setting of ' + settings.max_line_length,
+				'Line length ' + lineLength + ' exceeds max_line_length',
+				'setting of ' + settings.max_line_length,
 				'on line number ' + line.Number
-			].join(''));
+			].join(' '));
 		}
 	}
 
 	fix(settings: eclint.Settings, line: _line.Line): _line.Line {
-		throw new Error('Unable to fix max line length');
+		throw new Error('Fixing max_line_length setting unsupported');
 	}
 
 	infer(line: _line.Line): number {

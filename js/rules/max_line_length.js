@@ -5,14 +5,14 @@ var MaxLineLengthRule = (function () {
         var lineLength = line.Text.length;
         if (lineLength > settings.max_line_length) {
             context.report([
-                'Line length ' + lineLength + ' exceeds max line ',
-                'length setting of ' + settings.max_line_length,
+                'Line length ' + lineLength + ' exceeds max_line_length',
+                'setting of ' + settings.max_line_length,
                 'on line number ' + line.Number
-            ].join(''));
+            ].join(' '));
         }
     };
     MaxLineLengthRule.prototype.fix = function (settings, line) {
-        throw new Error('Unable to fix max line length');
+        throw new Error('Fixing max_line_length setting unsupported');
     };
     MaxLineLengthRule.prototype.infer = function (line) {
         return line.Text.length;
