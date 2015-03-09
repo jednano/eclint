@@ -1,6 +1,6 @@
-﻿import eclint = require('../eclint');
+﻿var _ = require('lodash');
+import eclint = require('../eclint');
 import _line = require('../line');
-import s = require('../helpers/string');
 
 class IndentSizeRule implements eclint.LineRule {
 
@@ -37,14 +37,14 @@ class IndentSizeRule implements eclint.LineRule {
 			case 'tab':
 				line.Text = line.Text.replace(/^ +/, (match: string) => {
 					var indentLevel = Math.floor(match.length / indentSize);
-					var extraSpaces = s.repeat(' ', match.length % indentSize);
-					return s.repeat('\t', indentLevel) + extraSpaces;
+					var extraSpaces = _.repeat(' ', match.length % indentSize);
+					return _.repeat('\t', indentLevel) + extraSpaces;
 				});
 				break;
 
 			case 'space':
 				line.Text = line.Text.replace(/^\t+/, (match: string) => {
-					return s.repeat(s.repeat(' ', indentSize), match.length);
+					return _.repeat(_.repeat(' ', indentSize), match.length);
 				});
 				break;
 

@@ -1,4 +1,4 @@
-var s = require('../helpers/string');
+var _ = require('lodash');
 var IndentSizeRule = (function () {
     function IndentSizeRule() {
     }
@@ -29,13 +29,13 @@ var IndentSizeRule = (function () {
             case 'tab':
                 line.Text = line.Text.replace(/^ +/, function (match) {
                     var indentLevel = Math.floor(match.length / indentSize);
-                    var extraSpaces = s.repeat(' ', match.length % indentSize);
-                    return s.repeat('\t', indentLevel) + extraSpaces;
+                    var extraSpaces = _.repeat(' ', match.length % indentSize);
+                    return _.repeat('\t', indentLevel) + extraSpaces;
                 });
                 break;
             case 'space':
                 line.Text = line.Text.replace(/^\t+/, function (match) {
-                    return s.repeat(s.repeat(' ', indentSize), match.length);
+                    return _.repeat(_.repeat(' ', indentSize), match.length);
                 });
                 break;
             default:

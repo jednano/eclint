@@ -1,4 +1,4 @@
-var s = require('../helpers/string');
+var _ = require('lodash');
 var DEFAULT_INDENT_SIZE = 4;
 var HARD_TAB = '\t';
 var IndentStyleRule = (function () {
@@ -31,7 +31,7 @@ var IndentStyleRule = (function () {
         }
         var oldIndent;
         var newIndent;
-        var softTab = s.repeat(' ', this.resolveIndentSize(settings));
+        var softTab = _.repeat(' ', this.resolveIndentSize(settings));
         if (settings.indent_style === 'tab') {
             oldIndent = softTab;
             newIndent = HARD_TAB;
@@ -42,7 +42,7 @@ var IndentStyleRule = (function () {
         }
         var leadingIndentation = new RegExp('^(?:' + oldIndent + ')+');
         line.Text = line.Text.replace(leadingIndentation, function (match) {
-            return s.repeat(newIndent, match.length / oldIndent.length);
+            return _.repeat(newIndent, match.length / oldIndent.length);
         });
         return line;
     };
