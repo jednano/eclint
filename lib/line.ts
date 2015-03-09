@@ -43,14 +43,7 @@ export class Line {
 			return;
 		}
 		this._number = value;
-		if (value === 1) {
-			var bom = parseBom(this._text);
-			if (bom) {
-				this._bom = bom;
-				this._charset = reverseBomMap[bom];
-				this._text = this._text.substr(bom.length);
-			}
-		} else {
+		if (value !== 1) {
 			delete this._bom;
 			delete this._charset;
 		}
