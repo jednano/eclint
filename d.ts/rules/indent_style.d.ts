@@ -1,7 +1,6 @@
 import eclint = require('../eclint');
 import _line = require('../line');
 declare class IndentStyleRule implements eclint.LineRule {
-    private map;
     private reverseMap;
     check(context: eclint.Context, settings: eclint.Settings, line: _line.Line): void;
     infer(line: _line.Line): string;

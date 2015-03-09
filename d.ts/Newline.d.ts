@@ -1,6 +1,6 @@
 declare class Newline {
     Character: string;
-    constructor(Character: string);
+    constructor(Character?: string);
     Name: string;
     Length: number;
     toString(): string;

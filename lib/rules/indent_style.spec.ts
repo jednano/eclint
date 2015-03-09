@@ -91,6 +91,16 @@ describe('indent_style rule', () => {
 				expect(line.Raw).to.eq('\t   foo');
 			});
 
+			it('does nothing if inferred size is consistent with setting', () => {
+				var line = rule.fix(
+					{
+						indent_style: 'tab'
+					},
+					new Line('\tfoo')
+				);
+				expect(line.Raw).to.eq('\tfoo');
+			});
+
 		});
 
 		describe('indent_style = space',() => {
@@ -135,6 +145,41 @@ describe('indent_style rule', () => {
 					new Line('\t\t      foo')
 				);
 				expect(line.Raw).to.eq('              foo');
+			});
+
+			it('does nothing if inferred size is consistent with setting', () => {
+				var line = rule.fix(
+					{
+						indent_style: 'space'
+					},
+					new Line('  foo')
+				);
+				expect(line.Raw).to.eq('  foo');
+			});
+
+		});
+
+		describe('indent_size = tab', () => {
+
+			it('replaces tabs with tab_width', () => {
+				var line = rule.fix(
+					{
+						indent_size: 'tab',
+						tab_width: 3
+					},
+					new Line('\t\tfoo')
+				);
+				expect(line.Raw).to.eq('      foo');
+			});
+
+			it('replaces tabs with 4 spaces if no tab_width is specified', () => {
+				var line = rule.fix(
+					{
+						indent_size: 'tab'
+					},
+					new Line('\t\tfoo')
+				);
+				expect(line.Raw).to.eq('        foo');
 			});
 
 		});

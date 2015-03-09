@@ -65,6 +65,13 @@ describe('charset rule', () => {
 			expect(reporter).to.not.have.been.called;
 		});
 
+		it('reports an expected/missing charset', () => {
+			var line = new Line('foo', { number: 1 });
+			rule.check(context, { charset: 'utf_8' }, line);
+			expect(reporter).to.have.been.calledOnce;
+			expect(reporter).to.have.been.calledWithExactly('Expected charset: utf_8');
+		});
+
 	});
 
 	describe('fix command', () => {

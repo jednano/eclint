@@ -1,4 +1,5 @@
-﻿import common = require('../test-common');
+﻿var _ = require('lodash');
+import common = require('../test-common');
 import _line = require('../line');
 import IndentSizeRule = require('./indent_size');
 
@@ -62,44 +63,14 @@ describe('indent_size rule', () => {
 			expect(rule.infer(new Line('\t\t foo'))).to.equal('tab');
 		});
 
-		it('infers 1-space setting', () => {
-			expect(rule.infer(new Line(' \tfoo'))).to.equal(1);
+		_.range(0, 9).forEach(n => {
+			it('infers ' + n + '-space setting', () => {
+				expect(rule.infer(new Line(_.repeat(' ', n) + 'foo'))).to.eq(n);
+			});
 		});
 
-		it('infers 2-space setting', () => {
-			expect(rule.infer(new Line('  \tfoo'))).to.equal(2);
-		});
-
-		it('infers 3-space setting', () => {
-			expect(rule.infer(new Line('   \tfoo'))).to.equal(3);
-		});
-
-		it('infers 4-space setting', () => {
-			expect(rule.infer(new Line('    \tfoo'))).to.equal(4);
-		});
-
-		it('infers 5-space setting', () => {
-			expect(rule.infer(new Line('     \tfoo'))).to.equal(5);
-			expect(rule.infer(new Line('          \tfoo'))).to.equal(5);
-		});
-
-		it('infers 6-space setting', () => {
-			expect(rule.infer(new Line('      \tfoo'))).to.equal(6);
-			expect(rule.infer(new Line('            \tfoo'))).to.equal(6);
-		});
-
-		it('infers 7-space setting', () => {
-			expect(rule.infer(new Line('       \tfoo'))).to.equal(7);
-			expect(rule.infer(new Line('              \tfoo'))).to.equal(7);
-		});
-
-		it('infers 8-space setting', () => {
-			expect(rule.infer(new Line('        \tfoo'))).to.equal(8);
-			expect(rule.infer(new Line('                \tfoo'))).to.equal(8);
-		});
-
-		it('remains indeterminate when no indentation is detected', () => {
-			expect(rule.infer(new Line('foo'))).to.be.undefined;
+		it('infers only leading spaces when tabs follow', () => {
+			expect(rule.infer(new Line('  \tfoo'))).to.eq(2);
 		});
 
 	});
@@ -127,6 +98,11 @@ describe('indent_size rule', () => {
 				indent_size: 4
 			}, new Line('\t\t  foo'));
 			expect(line.Text).to.equal('          foo');
+		});
+
+		it('does nothing when no indent style is defined', () => {
+			var line = rule.fix({}, new Line('\t foo'));
+			expect(line.Text).to.eq('\t foo');
 		});
 
 	});

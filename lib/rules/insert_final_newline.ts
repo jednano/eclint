@@ -23,6 +23,7 @@ class InsertFinalNewlineRule implements eclint.LinesRule {
 				lastLine.Newline = new Newline(Newline.map[endOfLineSetting]);
 			} else {
 				lines.push(new _line.Line('', {
+					number: 1,
 					newline: endOfLineSetting
 				}));
 			}

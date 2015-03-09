@@ -26,8 +26,8 @@ var chars = Object.keys(map).map(function (key) {
 var Newline = (function () {
     function Newline(Character) {
         this.Character = Character;
-        if (!Newline.pattern.test(Character)) {
-            throw new Newline.InvalidNewlineError('Invalid or unsupported newline character.');
+        if (Character && !Newline.pattern.test(Character)) {
+            throw new Newline.InvalidNewlineError('Invalid or unsupported newline character');
         }
     }
     Object.defineProperty(Newline.prototype, "Name", {

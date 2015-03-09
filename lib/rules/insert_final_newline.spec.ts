@@ -89,7 +89,7 @@ describe('insert_final_newline rule', () => {
 			expect(lines[0].Newline).to.be.undefined;
 		});
 
-		it('does nothing when setting is undefined',() => {
+		it('does nothing when setting is undefined', () => {
 			[
 				[
 					new Line('foo')
@@ -104,6 +104,22 @@ describe('insert_final_newline rule', () => {
 				var fixedLines = rule.fix({}, inputLines);
 				expect(fixedLines).to.deep.equal(inputLines);
 			});
+		});
+
+		it('does nothing when line already exists',() => {
+			var lines = [
+				new Line('foo\n')
+			];
+			var fixedLines = rule.fix({ insert_final_newline: true }, lines);
+			expect(fixedLines).to.deep.equal(lines);
+		});
+
+		it('adds a line to an empty file', () => {
+			var fixedLines = rule.fix({
+				insert_final_newline: true,
+				end_of_line: 'lf'
+			}, []);
+			expect(fixedLines).to.deep.equal([ new Line('\n', { number: 1 }) ]);
 		});
 
 	});

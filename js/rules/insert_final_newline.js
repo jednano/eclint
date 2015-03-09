@@ -22,6 +22,7 @@ var InsertFinalNewlineRule = (function () {
             }
             else {
                 lines.push(new _line.Line('', {
+                    number: 1,
                     newline: endOfLineSetting
                 }));
             }

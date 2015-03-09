@@ -3,13 +3,19 @@ var Newline = require('./Newline');
 var Line = (function () {
     function Line(raw, options) {
         options = options || {};
-        this._number = options.number;
-        if (this._number === 1) {
-            this.BOM = parseBom(raw);
+        this.BOM = options.bom || parseBom(raw);
+        this._number = options.number || this.BOM && 1;
+        if (options.newline) {
+            this.Newline = new Newline();
+            this.Newline.Name = options.newline;
         }
-        this.Newline = parseNewline(raw);
+        else {
+            this.Newline = parseNewline(raw);
+        }
         this.Text = options.text || this.parseLineForText(raw);
-        this.BOM = options.bom || this.BOM;
+        if (this.Number !== 1) {
+            delete this._bom;
+        }
         this.Charsets = options.charset || reverseBomMap[this.BOM];
     }
     Object.defineProperty(Line.prototype, "Number", {
@@ -115,7 +121,7 @@ var Line = (function () {
     });
     Line.prototype.parseLineForText = function (s) {
         if (!s) {
-            return undefined;
+            return void (0);
         }
         var start = this._bom ? this._bom.length : 0;
         var length = s.length - start - (this._newline ? this._newline.Length : 0);

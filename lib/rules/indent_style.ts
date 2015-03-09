@@ -7,13 +7,6 @@ var HARD_TAB = '\t';
 
 class IndentStyleRule implements eclint.LineRule {
 
-	private get map(): eclint.HashTable<string> {
-		return {
-			space: ' ',
-			tab: HARD_TAB
-		};
-	}
-
 	private get reverseMap(): eclint.HashTable<string> {
 		return {
 			' ': 'space',

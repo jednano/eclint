@@ -25,7 +25,8 @@
   "dependencies": {
     "cli-color": "^0.3.2",
     "editorconfig": "^0.12.1",
-    "gitlike-cli": "^0.1.0"
+    "gitlike-cli": "^0.1.0",
+    "lodash": "^3.4.0"
   },
   "devDependencies": {
     "chai": "^2.1.0",

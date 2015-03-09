@@ -36,10 +36,10 @@ var chars = Object.keys(map).map((key: string) => {
 
 class Newline {
 
-	constructor(public Character: string) {
-		if (!Newline.pattern.test(Character)) {
+	constructor(public Character?: string) {
+		if (Character && !Newline.pattern.test(Character)) {
 			throw new Newline.InvalidNewlineError(
-				'Invalid or unsupported newline character.');
+				'Invalid or unsupported newline character');
 		}
 	}
 

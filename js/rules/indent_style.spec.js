@@ -64,6 +64,12 @@ describe('indent_style rule', function () {
                 }, new Line('       foo'));
                 expect(line.Raw).to.eq('\t   foo');
             });
+            it('does nothing if inferred size is consistent with setting', function () {
+                var line = rule.fix({
+                    indent_style: 'tab'
+                }, new Line('\tfoo'));
+                expect(line.Raw).to.eq('\tfoo');
+            });
         });
         describe('indent_style = space', function () {
             it('replaces leading tab chars with 2-space indents when tab_width = 2', function () {
@@ -91,6 +97,27 @@ describe('indent_style rule', function () {
                     indent_style: 'space'
                 }, new Line('\t\t      foo'));
                 expect(line.Raw).to.eq('              foo');
+            });
+            it('does nothing if inferred size is consistent with setting', function () {
+                var line = rule.fix({
+                    indent_style: 'space'
+                }, new Line('  foo'));
+                expect(line.Raw).to.eq('  foo');
+            });
+        });
+        describe('indent_size = tab', function () {
+            it('replaces tabs with tab_width', function () {
+                var line = rule.fix({
+                    indent_size: 'tab',
+                    tab_width: 3
+                }, new Line('\t\tfoo'));
+                expect(line.Raw).to.eq('      foo');
+            });
+            it('replaces tabs with 4 spaces if no tab_width is specified', function () {
+                var line = rule.fix({
+                    indent_size: 'tab'
+                }, new Line('\t\tfoo'));
+                expect(line.Raw).to.eq('        foo');
             });
         });
     });

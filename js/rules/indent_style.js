@@ -4,16 +4,6 @@ var HARD_TAB = '\t';
 var IndentStyleRule = (function () {
     function IndentStyleRule() {
     }
-    Object.defineProperty(IndentStyleRule.prototype, "map", {
-        get: function () {
-            return {
-                space: ' ',
-                tab: HARD_TAB
-            };
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(IndentStyleRule.prototype, "reverseMap", {
         get: function () {
             return {

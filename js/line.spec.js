@@ -5,18 +5,17 @@ var Line = _line.Line;
 // ReSharper disable WrongExpressionStatement
 describe('Line class', function () {
     describe('Byte Order Mark (BOM signature)', function () {
-        it('ignores BOM signature when not line number 1', function () {
+        it('detects the BOM, charsets and line number if not given a line number', function () {
             var line = new Line('\u00EF\u00BB\u00BFfoo\n');
+            expect(line.BOM).to.eq('\u00EF\u00BB\u00BF');
+            expect(line.Number).to.eq(1);
+            expect(line.Charsets).to.equal('utf_8_bom');
+            expect(line.Text).to.equal('foo');
+        });
+        it('strips the BOM when assigned line number 2', function () {
+            var line = new Line('\u00EF\u00BB\u00BFfoo', { number: 2 });
             expect(line.BOM).to.be.undefined;
             expect(line.Charsets).to.be.undefined;
-            expect(line.Text).to.equal('\u00EF\u00BB\u00BFfoo');
-        });
-        it('detects BOM signature when assigned line number 1', function () {
-            var line = new Line('\u00EF\u00BB\u00BFfoo');
-            expect(line.BOM).to.be.undefined;
-            line.Number = 1;
-            expect(line.BOM).to.equal('\u00EF\u00BB\u00BF');
-            expect(line.Charsets).to.equal('utf_8_bom');
             expect(line.Text).to.equal('foo');
         });
         it('detects utf-8-bom charset', function () {
@@ -49,6 +48,20 @@ describe('Line class', function () {
             expect(line.BOM).to.equal('\u0000\u0000\u00FE\u00FF');
             expect(line.Charsets).to.equal('utf_32be');
         });
+        it('removes the BOM if line number is > 1', function () {
+            var line = new Line('\u00EF\u00BB\u00BFfoo\n', { number: 1 });
+            expect(line.BOM).to.equal('\u00EF\u00BB\u00BF');
+            expect(line.Charsets).to.equal('utf_8_bom');
+            line.Number = 2;
+            expect(line.BOM).to.be.undefined;
+            expect(line.Charsets).to.be.undefined;
+        });
+    });
+    it('removes the line number when set to a falsy value', function () {
+        var line = new Line('foo', { number: 1 });
+        expect(line.Number).to.eq(1);
+        line.Number = void (0);
+        expect(line.Number).to.be.undefined;
     });
     it('separates line text from the BOM signature and newline character', function () {
         var line = new Line('\u00EF\u00BB\u00BFfoo\n', { number: 1 });
@@ -76,10 +89,20 @@ describe('Line class', function () {
         expect(line.Text).to.be.undefined;
         expect(line.Newline.Character).to.equal('\n');
     });
+    it('returns only the text portion of the line when converted to a string', function () {
+        var line = new Line('\u00EF\u00BB\u00BFfoo\n', { number: 1 });
+        expect(line.toString()).to.eq('foo');
+    });
     it('throws an InvalidBomError if the BOM is invalid or unsupported', function () {
         var fn = function () {
             new Line('', { bom: '\u00AA' });
         };
         expect(fn).to.throw(Line.InvalidBomError);
+    });
+    it('throws an error if more than one newline character found', function () {
+        var fn = function () {
+            new Line('\n\n');
+        };
+        expect(fn).to.throw(Line.MultipleNewlinesError);
     });
 });

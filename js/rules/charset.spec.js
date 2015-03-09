@@ -52,6 +52,12 @@ describe('charset rule', function () {
             rule.check(context, { charset: 'utf_32be' }, line);
             expect(reporter).to.not.have.been.called;
         });
+        it('reports an expected/missing charset', function () {
+            var line = new Line('foo', { number: 1 });
+            rule.check(context, { charset: 'utf_8' }, line);
+            expect(reporter).to.have.been.calledOnce;
+            expect(reporter).to.have.been.calledWithExactly('Expected charset: utf_8');
+        });
     });
     describe('fix command', function () {
         it('converts utf-8-bom to utf-32le when "utf-32le" is setting', function () {

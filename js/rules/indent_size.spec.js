@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var common = require('../test-common');
 var _line = require('../line');
 var IndentSizeRule = require('./indent_size');
@@ -51,36 +52,13 @@ describe('indent_size rule', function () {
             expect(rule.infer(new Line('\t\tfoo'))).to.equal('tab');
             expect(rule.infer(new Line('\t\t foo'))).to.equal('tab');
         });
-        it('infers 1-space setting', function () {
-            expect(rule.infer(new Line(' \tfoo'))).to.equal(1);
+        _.range(0, 9).forEach(function (n) {
+            it('infers ' + n + '-space setting', function () {
+                expect(rule.infer(new Line(_.repeat(' ', n) + 'foo'))).to.eq(n);
+            });
         });
-        it('infers 2-space setting', function () {
-            expect(rule.infer(new Line('  \tfoo'))).to.equal(2);
-        });
-        it('infers 3-space setting', function () {
-            expect(rule.infer(new Line('   \tfoo'))).to.equal(3);
-        });
-        it('infers 4-space setting', function () {
-            expect(rule.infer(new Line('    \tfoo'))).to.equal(4);
-        });
-        it('infers 5-space setting', function () {
-            expect(rule.infer(new Line('     \tfoo'))).to.equal(5);
-            expect(rule.infer(new Line('          \tfoo'))).to.equal(5);
-        });
-        it('infers 6-space setting', function () {
-            expect(rule.infer(new Line('      \tfoo'))).to.equal(6);
-            expect(rule.infer(new Line('            \tfoo'))).to.equal(6);
-        });
-        it('infers 7-space setting', function () {
-            expect(rule.infer(new Line('       \tfoo'))).to.equal(7);
-            expect(rule.infer(new Line('              \tfoo'))).to.equal(7);
-        });
-        it('infers 8-space setting', function () {
-            expect(rule.infer(new Line('        \tfoo'))).to.equal(8);
-            expect(rule.infer(new Line('                \tfoo'))).to.equal(8);
-        });
-        it('remains indeterminate when no indentation is detected', function () {
-            expect(rule.infer(new Line('foo'))).to.be.undefined;
+        it('infers only leading spaces when tabs follow', function () {
+            expect(rule.infer(new Line('  \tfoo'))).to.eq(2);
         });
     });
     describe('fix command', function () {
@@ -103,6 +81,10 @@ describe('indent_size rule', function () {
                 indent_size: 4
             }, new Line('\t\t  foo'));
             expect(line.Text).to.equal('          foo');
+        });
+        it('does nothing when no indent style is defined', function () {
+            var line = rule.fix({}, new Line('\t foo'));
+            expect(line.Text).to.eq('\t foo');
         });
     });
 });

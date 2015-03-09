@@ -87,6 +87,20 @@ describe('insert_final_newline rule', function () {
                 expect(fixedLines).to.deep.equal(inputLines);
             });
         });
+        it('does nothing when line already exists', function () {
+            var lines = [
+                new Line('foo\n')
+            ];
+            var fixedLines = rule.fix({ insert_final_newline: true }, lines);
+            expect(fixedLines).to.deep.equal(lines);
+        });
+        it('adds a line to an empty file', function () {
+            var fixedLines = rule.fix({
+                insert_final_newline: true,
+                end_of_line: 'lf'
+            }, []);
+            expect(fixedLines).to.deep.equal([new Line('\n', { number: 1 })]);
+        });
     });
     describe('infer command', function () {
         it('infers insert_final_newline = true', function () {

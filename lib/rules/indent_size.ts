@@ -17,17 +17,15 @@ class IndentSizeRule implements eclint.LineRule {
 		}
 
 		var m = line.Text.match(/^ +/);
-		if (!m) {
-			// ReSharper disable once InconsistentFunctionReturns
-			return;
-		}
-
-		var leadingSpacesLength = m[0].length;
-		for (var i = 8; i > 0; i--) {
-			if (leadingSpacesLength % i === 0) {
-				return i;
+		if (m) {
+			var leadingSpacesLength = m[0].length;
+			for (var i = 8; i > 0; i--) {
+				if (leadingSpacesLength % i === 0) {
+					return i;
+				}
 			}
 		}
+
 		return 0;
 	}
 
