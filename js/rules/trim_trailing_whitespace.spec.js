@@ -1,6 +1,7 @@
 var common = require('../test-common');
 var _line = require('../line');
-var rule = require('./trim_trailing_whitespace');
+var TrimTrailingWhitespaceRule = require('./trim_trailing_whitespace');
+var rule = new TrimTrailingWhitespaceRule();
 var expect = common.expect;
 var reporter = common.reporter;
 var context = common.context;

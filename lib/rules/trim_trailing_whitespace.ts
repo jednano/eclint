@@ -1,27 +1,33 @@
 ﻿import eclint = require('../eclint');
 import _line = require('../line');
 
-export function check(context: eclint.Context, settings: eclint.Settings,
-	line: _line.Line): void {
+var TRAILING_WHITESPACE = /[\t ]+$/;
 
-	if (isSettingTrue(settings) && trailingWhitespace.test(line.Text)) {
-		context.report('Trailing whitespace found.');
+class TrimTrailingWhitespaceRule implements eclint.LineRule {
+
+	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line):
+		void {
+
+		if (isSettingTrue(settings) && TRAILING_WHITESPACE.test(line.Text)) {
+			context.report('Trailing whitespace found.');
+		}
 	}
-}
 
-export function fix(settings: eclint.Settings, line: _line.Line): _line.Line {
-	if (isSettingTrue(settings)) {
-		line.Text = line.Text.replace(trailingWhitespace, '');
+	fix(settings: eclint.Settings, line: _line.Line): _line.Line {
+		if (isSettingTrue(settings)) {
+			line.Text = line.Text.replace(TRAILING_WHITESPACE, '');
+		}
+		return line;
 	}
-	return line;
+
+	infer(line: _line.Line): boolean {
+		return !TRAILING_WHITESPACE.test(line.Text);
+	}
+
 }
 
-export function infer(line: _line.Line): boolean {
-	return !trailingWhitespace.test(line.Text);
+function isSettingTrue(settings: eclint.Settings) {
+	return settings.trim_trailing_whitespace;
 }
 
-var trailingWhitespace = /\s+$/;
-
-function isSettingTrue(settings) {
-	return settings.trim_trailing_whitespace === true;
-}
+export = TrimTrailingWhitespaceRule;

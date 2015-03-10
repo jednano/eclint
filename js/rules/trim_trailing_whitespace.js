@@ -1,21 +1,24 @@
-function check(context, settings, line) {
-    if (isSettingTrue(settings) && trailingWhitespace.test(line.Text)) {
-        context.report('Trailing whitespace found.');
+var TRAILING_WHITESPACE = /[\t ]+$/;
+var TrimTrailingWhitespaceRule = (function () {
+    function TrimTrailingWhitespaceRule() {
     }
-}
-exports.check = check;
-function fix(settings, line) {
-    if (isSettingTrue(settings)) {
-        line.Text = line.Text.replace(trailingWhitespace, '');
-    }
-    return line;
-}
-exports.fix = fix;
-function infer(line) {
-    return !trailingWhitespace.test(line.Text);
-}
-exports.infer = infer;
-var trailingWhitespace = /\s+$/;
+    TrimTrailingWhitespaceRule.prototype.check = function (context, settings, line) {
+        if (isSettingTrue(settings) && TRAILING_WHITESPACE.test(line.Text)) {
+            context.report('Trailing whitespace found.');
+        }
+    };
+    TrimTrailingWhitespaceRule.prototype.fix = function (settings, line) {
+        if (isSettingTrue(settings)) {
+            line.Text = line.Text.replace(TRAILING_WHITESPACE, '');
+        }
+        return line;
+    };
+    TrimTrailingWhitespaceRule.prototype.infer = function (line) {
+        return !TRAILING_WHITESPACE.test(line.Text);
+    };
+    return TrimTrailingWhitespaceRule;
+})();
 function isSettingTrue(settings) {
-    return settings.trim_trailing_whitespace === true;
+    return settings.trim_trailing_whitespace;
 }
+module.exports = TrimTrailingWhitespaceRule;
