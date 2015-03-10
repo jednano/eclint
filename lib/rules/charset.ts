@@ -1,25 +1,32 @@
 ﻿import _line = require('../line');
 import eclint = require('../eclint');
 
-class CharsetRule implements eclint.LineRule {
+class CharsetRule implements eclint.LinesRule {
 
-	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line):
-	    void {
-
-		checkByteOrderMark(context, settings, line);
-		checkLatin1TextRange(context, settings, line);
+	check(context: eclint.Context, settings: eclint.Settings, lines: _line.Line[]): void {
+		var firstLine = lines[0];
+		if (!firstLine) {
+			return;
+		}
+		checkByteOrderMark(context, settings, firstLine);
+		checkLatin1TextRange(context, settings, firstLine);
 	}
 
-	fix(settings: eclint.Settings, line: _line.Line): _line.Line {
+	fix(settings: eclint.Settings, lines: _line.Line[]): _line.Line[] {
+		var firstLine = lines[0];
+		if (!firstLine || firstLine.Number !== 1) {
+			return lines;
+		}
 		var setting = settings.charset;
 		if (setting) {
-			line.Charsets = setting;
+			firstLine.Charsets = setting;
 		}
-		return line;
+		return lines;
 	}
 
-	infer(line: _line.Line): string {
-		return line.Charsets;
+	infer(lines: _line.Line[]): string {
+		var firstLine = lines[0];
+		return firstLine && firstLine.Charsets;
 	}
 }
 

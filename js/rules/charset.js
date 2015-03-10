@@ -1,19 +1,28 @@
 var CharsetRule = (function () {
     function CharsetRule() {
     }
-    CharsetRule.prototype.check = function (context, settings, line) {
-        checkByteOrderMark(context, settings, line);
-        checkLatin1TextRange(context, settings, line);
+    CharsetRule.prototype.check = function (context, settings, lines) {
+        var firstLine = lines[0];
+        if (!firstLine) {
+            return;
+        }
+        checkByteOrderMark(context, settings, firstLine);
+        checkLatin1TextRange(context, settings, firstLine);
     };
-    CharsetRule.prototype.fix = function (settings, line) {
+    CharsetRule.prototype.fix = function (settings, lines) {
+        var firstLine = lines[0];
+        if (!firstLine || firstLine.Number !== 1) {
+            return lines;
+        }
         var setting = settings.charset;
         if (setting) {
-            line.Charsets = setting;
+            firstLine.Charsets = setting;
         }
-        return line;
+        return lines;
     };
-    CharsetRule.prototype.infer = function (line) {
-        return line.Charsets;
+    CharsetRule.prototype.infer = function (lines) {
+        var firstLine = lines[0];
+        return firstLine && firstLine.Charsets;
     };
     return CharsetRule;
 })();
