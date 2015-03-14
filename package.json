@@ -36,7 +36,7 @@
     "gulp": "^3.8.11",
     "gulp-istanbul": "^0.6.0",
     "gulp-mocha": "^2.0.0",
-    "gulp-plumber": "^0.6.6",
+    "gulp-plumber": "^1.0.0",
     "gulp-tslint": "^1.4.3",
     "gulp-typescript": "^2.4.2",
     "mocha": "^2.1.0",
