@@ -1,12 +1,11 @@
 ﻿import common = require('../test-common');
-import _line = require('../line');
 import MaxLineLengthRule = require('./max_line_length');
 var rule = new MaxLineLengthRule();
+var createLine = common.createLine;
 
 var expect = common.expect;
 var reporter = common.reporter;
 var context = common.context;
-var Line = _line.Line;
 
 // ReSharper disable WrongExpressionStatement
 describe('max_line_length rule', () => {
@@ -18,7 +17,7 @@ describe('max_line_length rule', () => {
 	describe('check command', () => {
 
 		it('validates max_line_length setting',() => {
-			var fooLine = new Line('foo', { number: 1 });
+			var fooLine = createLine('foo', { number: 1 });
 			rule.check(context, { max_line_length: 3 }, fooLine);
 			expect(reporter).not.to.have.been.called;
 			rule.check(context, { max_line_length: 2 }, fooLine);
@@ -36,7 +35,7 @@ describe('max_line_length rule', () => {
 
 		it('throws an unsupported error', () => {
 			var fn = () => {
-				rule.fix({ max_line_length: 2 }, new Line());
+				rule.fix({ max_line_length: 2 }, createLine(''));
 			};
 			expect(fn).to.throw('Fixing max_line_length setting unsupported');
 		});
@@ -46,12 +45,12 @@ describe('max_line_length rule', () => {
 	describe('infer command', () => {
 
 		it('infers max line length', () => {
-			var maxLineLength = rule.infer(new Line('foo'));
+			var maxLineLength = rule.infer(createLine('foo'));
 			expect(maxLineLength).to.eq(3);
 		});
 
 		it('ignores newline characters', () => {
-			var maxLineLength = rule.infer(new Line('foo\n'));
+			var maxLineLength = rule.infer(createLine('foo', { ending: '\n'}));
 			expect(maxLineLength).to.eq(3);
 		});
 

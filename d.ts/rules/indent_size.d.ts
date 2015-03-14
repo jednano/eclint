@@ -1,9 +1,11 @@
+/// <reference path="../../typings/node/node.d.ts" />
+/// <reference path="../../typings/lodash/lodash.d.ts" />
+import linez = require('linez');
 import eclint = require('../eclint');
-import _line = require('../line');
 declare class IndentSizeRule implements eclint.LineRule {
-    check(context: eclint.Context, settings: eclint.Settings, line: _line.Line): void;
-    infer(line: _line.Line): any;
-    fix(settings: eclint.Settings, line: _line.Line): _line.Line;
+    check(context: eclint.Context, settings: eclint.Settings, line: linez.Line): void;
+    fix(settings: eclint.Settings, line: linez.Line): linez.Line;
+    infer(line: linez.Line): string | number;
     private applyRule(settings);
 }
 export = IndentSizeRule;

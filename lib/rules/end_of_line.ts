@@ -1,25 +1,25 @@
-﻿import eclint = require('../eclint');
-import _line = require('../line');
+﻿import linez = require('linez');
+import eclint = require('../eclint');
 
 class EndOfLineRule implements eclint.LineRule {
 
-	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line): void {
-		if (line.Newline && line.Newline.Name !== settings.end_of_line) {
-			context.report('Incorrect newline character found: ' +
-				line.Newline.Name);
+	check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
+		var lineEndingName = eclint.newlines[line.ending];
+		if (lineEndingName && lineEndingName !== settings.end_of_line) {
+			context.report('Incorrect newline character found: ' + lineEndingName);
 		}
 	}
 
-	fix(settings: eclint.Settings, line: _line.Line): _line.Line {
+	fix(settings: eclint.Settings, line: linez.Line) {
 		var settingName = settings.end_of_line;
-		if (line.Newline && settingName) {
-			line.Newline.Name = settingName;
+		if (line.ending && settingName) {
+			line.ending = eclint.newlines[settingName];
 		}
 		return line;
 	}
 
-	infer(line: _line.Line): string {
-		return line.Newline && line.Newline.Name;
+	infer(line: linez.Line): string {
+		return eclint.newlines[line.ending];
 	}
 }
 

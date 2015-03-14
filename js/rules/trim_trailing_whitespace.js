@@ -3,18 +3,18 @@ var TrimTrailingWhitespaceRule = (function () {
     function TrimTrailingWhitespaceRule() {
     }
     TrimTrailingWhitespaceRule.prototype.check = function (context, settings, line) {
-        if (isSettingTrue(settings) && TRAILING_WHITESPACE.test(line.Text)) {
+        if (isSettingTrue(settings) && TRAILING_WHITESPACE.test(line.text)) {
             context.report('Trailing whitespace found.');
         }
     };
     TrimTrailingWhitespaceRule.prototype.fix = function (settings, line) {
         if (isSettingTrue(settings)) {
-            line.Text = line.Text.replace(TRAILING_WHITESPACE, '');
+            line.text = line.text.replace(TRAILING_WHITESPACE, '');
         }
         return line;
     };
     TrimTrailingWhitespaceRule.prototype.infer = function (line) {
-        return !TRAILING_WHITESPACE.test(line.Text);
+        return !TRAILING_WHITESPACE.test(line.text);
     };
     return TrimTrailingWhitespaceRule;
 })();

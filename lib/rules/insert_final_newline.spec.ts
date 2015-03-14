@@ -1,12 +1,13 @@
 ﻿import common = require('../test-common');
-import _line = require('../line');
 import InsertFinalNewlineRule = require('./insert_final_newline');
+import linez = require('linez');
 var rule = new InsertFinalNewlineRule();
+var createLine = common.createLine;
+var Doc = linez.Document;
 
 var expect = common.expect;
 var reporter = common.reporter;
 var context = common.context;
-var Line = _line.Line;
 
 // ReSharper disable WrongExpressionStatement
 describe('insert_final_newline rule', () => {
@@ -18,42 +19,42 @@ describe('insert_final_newline rule', () => {
 	describe('check command',() => {
 
 		it('reports expected final newline character', () => {
-			rule.check(context, { insert_final_newline: true }, [
-				new Line('foo\n'),
-				new Line('bar\n')
-			]);
+			rule.check(context, { insert_final_newline: true }, new Doc([
+				createLine('foo', { ending: '\n' }),
+				createLine('bar', { ending: '\n' })
+			]));
 			expect(reporter).not.to.have.been.called;
-			rule.check(context, { insert_final_newline: true }, [
-				new Line('foo\n'),
-				new Line('bar')
-			]);
+			rule.check(context, { insert_final_newline: true }, new Doc([
+				createLine('foo', { ending: '\n' }),
+				createLine('bar')
+			]));
 			expect(reporter).to.have.been.calledOnce;
 			expect(reporter).to.have.been.calledWithExactly('Expected final newline character');
 		});
 
 		it('reports unexpected final newline character', () => {
-			rule.check(context, { insert_final_newline: false }, [
-				new Line('foo\n'),
-				new Line('bar')
-			]);
+			rule.check(context, { insert_final_newline: false }, new Doc([
+				createLine('foo', { ending: '\n' }),
+				createLine('bar')
+			]));
 			expect(reporter).not.to.have.been.called;
-			rule.check(context, { insert_final_newline: false }, [
-				new Line('foo\n'),
-				new Line('bar\n')
-			]);
+			rule.check(context, { insert_final_newline: false }, new Doc([
+				createLine('foo', { ending: '\n' }),
+				createLine('bar', { ending: '\n' })
+			]));
 			expect(reporter).to.have.been.calledOnce;
 			expect(reporter).to.have.been.calledWithExactly('Unexpected final newline character');
 		});
 
 		it('remains silent when setting is undefined', () => {
-			rule.check(context, {}, [
-				new Line('foo\n'),
-				new Line('bar')
-			]);
-			rule.check(context, {}, [
-				new Line('foo\n'),
-				new Line('bar\n')
-			]);
+			rule.check(context, {}, new Doc([
+				createLine('foo', { ending: '\n' }),
+				createLine('bar')
+			]));
+			rule.check(context, {}, new Doc([
+				createLine('foo', { ending: '\n' }),
+				createLine('bar', { ending: '\n' })
+			]));
 			expect(reporter).not.to.have.been.called;
 		});
 
@@ -62,64 +63,66 @@ describe('insert_final_newline rule', () => {
 	describe('fix command', () => {
 
 		it('inserts a final newline when setting is true', () => {
-			var lines = rule.fix(
+			var doc = rule.fix(
 				{
 					insert_final_newline: true
 				},
-				[
-					new Line('foo')
-				]
+				new Doc([
+					createLine('foo')
+				])
 			);
-			expect(lines[0].Newline.Name).to.eq('lf');
+			expect(doc.lines[0].ending).to.eq('\n');
 		});
 
 		it('removes all final newlines when setting is false', () => {
-			var lines = rule.fix(
+			var doc = rule.fix(
 				{
 					insert_final_newline: false
 				},
-				[
-					new Line('foo\n'),
-					new Line('\n'),
-					new Line('\n'),
-					new Line('\n')
-				]
+				new Doc([
+					createLine('foo', { ending: '\n' }),
+					createLine('', { ending: '\n' }),
+					createLine('', { ending: '\n' }),
+					createLine('', { ending: '\n' })
+				])
 			);
-			expect(lines.length).to.eq(1);
-			expect(lines[0].Newline).to.be.undefined;
+			expect(doc.lines.length).to.eq(1);
+			expect(doc.lines[0].ending).to.be.empty;
 		});
 
 		it('does nothing when setting is undefined', () => {
 			[
-				[
-					new Line('foo')
-				],
-				[
-					new Line('foo\n'),
-					new Line('\n'),
-					new Line('\n'),
-					new Line('\n')
-				]
-			].forEach(inputLines => {
-				var fixedLines = rule.fix({}, inputLines);
-				expect(fixedLines).to.deep.equal(inputLines);
+				new Doc([
+					createLine('foo')
+				]),
+				new Doc([
+					createLine('foo', { ending: '\n' }),
+					createLine('', { ending: '\n' }),
+					createLine('', { ending: '\n' }),
+					createLine('', { ending: '\n' })
+				])
+			].forEach(doc => {
+				var fixedDoc = rule.fix({}, doc);
+				expect(fixedDoc).to.deep.equal(doc);
 			});
 		});
 
 		it('does nothing when line already exists',() => {
 			var lines = [
-				new Line('foo\n')
+				createLine('foo', { ending: '\n' })
 			];
-			var fixedLines = rule.fix({ insert_final_newline: true }, lines);
-			expect(fixedLines).to.deep.equal(lines);
+			var fixedDoc = rule.fix({ insert_final_newline: true }, new Doc(lines));
+			expect(fixedDoc.lines).to.deep.equal(lines);
 		});
 
 		it('adds a line to an empty file', () => {
-			var fixedLines = rule.fix({
+			var fixedDoc = rule.fix({
 				insert_final_newline: true,
 				end_of_line: 'lf'
-			}, []);
-			expect(fixedLines).to.deep.equal([ new Line('\n', { number: 1 }) ]);
+			}, new Doc());
+			expect(fixedDoc.lines).to.deep.equal([
+				createLine('', { number: 1, ending: '\n' })
+			]);
 		});
 
 	});
@@ -127,24 +130,24 @@ describe('insert_final_newline rule', () => {
 	describe('infer command',() => {
 
 		it('infers insert_final_newline = true',() => {
-			var insertFinalNewline = rule.infer([
-				new Line('foo\n'),
-				new Line('bar\n')
-			]);
+			var insertFinalNewline = rule.infer(new Doc([
+				createLine('foo', { ending: '\n' }),
+				createLine('bar', { ending: '\n' })
+			]));
 			expect(insertFinalNewline).to.be.true;
-			insertFinalNewline = rule.infer([
-				new Line('\n')
-			]);
+			insertFinalNewline = rule.infer(new Doc([
+				createLine('', { ending: '\n' })
+			]));
 			expect(insertFinalNewline).to.be.true;
 		});
 
 		it('infers insert_final_newline = false',() => {
-			var insertFinalNewline = rule.infer([
-				new Line('foo\n'),
-				new Line('bar')
-			]);
+			var insertFinalNewline = rule.infer(new Doc([
+				createLine('foo', { ending: '\n' }),
+				createLine('bar')
+			]));
 			expect(insertFinalNewline).to.be.false;
-			insertFinalNewline = rule.infer([]);
+			insertFinalNewline = rule.infer(new Doc());
 			expect(insertFinalNewline).to.be.false;
 		});
 

@@ -1,3 +1,5 @@
+///<reference path="../../typings/node/node.d.ts" />
+///<reference path="../../typings/lodash/lodash.d.ts" />
 var _ = require('lodash');
 var DEFAULT_INDENT_SIZE = 4;
 var HARD_TAB = '\t';
@@ -21,9 +23,6 @@ var IndentStyleRule = (function () {
             context.report('Invalid indent style: ' + indentStyle);
         }
     };
-    IndentStyleRule.prototype.infer = function (line) {
-        return this.reverseMap[line.Text[0]];
-    };
     IndentStyleRule.prototype.fix = function (settings, line) {
         var indentStyle = this.infer(line);
         if (!indentStyle || indentStyle === settings.indent_style) {
@@ -41,10 +40,13 @@ var IndentStyleRule = (function () {
             newIndent = softTab;
         }
         var leadingIndentation = new RegExp('^(?:' + oldIndent + ')+');
-        line.Text = line.Text.replace(leadingIndentation, function (match) {
+        line.text = line.text.replace(leadingIndentation, function (match) {
             return _.repeat(newIndent, match.length / oldIndent.length);
         });
         return line;
+    };
+    IndentStyleRule.prototype.infer = function (line) {
+        return this.reverseMap[line.text[0]];
     };
     IndentStyleRule.prototype.resolveIndentSize = function (settings) {
         if (settings.indent_size === 'tab') {

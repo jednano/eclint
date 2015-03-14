@@ -1,18 +1,40 @@
+///<reference path="../../typings/node/node.d.ts" />
+///<reference path="../../typings/lodash/lodash.d.ts" />
 var _ = require('lodash');
 var IndentSizeRule = (function () {
     function IndentSizeRule() {
     }
     IndentSizeRule.prototype.check = function (context, settings, line) {
         var inferredSetting = this.infer(line);
-        if (inferredSetting && inferredSetting % settings.indent_size !== 0) {
+        if (typeof inferredSetting === 'number' && inferredSetting % settings.indent_size !== 0) {
             context.report('Invalid indent size detected: ' + inferredSetting);
         }
     };
+    IndentSizeRule.prototype.fix = function (settings, line) {
+        var indentSize = this.applyRule(settings);
+        switch (settings.indent_style) {
+            case 'tab':
+                line.text = line.text.replace(/^ +/, function (match) {
+                    var indentLevel = Math.floor(match.length / indentSize);
+                    var extraSpaces = _.repeat(' ', match.length % indentSize);
+                    return _.repeat('\t', indentLevel) + extraSpaces;
+                });
+                break;
+            case 'space':
+                line.text = line.text.replace(/^\t+/, function (match) {
+                    return _.repeat(_.repeat(' ', indentSize), match.length);
+                });
+                break;
+            default:
+                return line;
+        }
+        return line;
+    };
     IndentSizeRule.prototype.infer = function (line) {
-        if (line.Text[0] === '\t') {
+        if (line.text[0] === '\t') {
             return 'tab';
         }
-        var m = line.Text.match(/^ +/);
+        var m = line.text.match(/^ +/);
         if (m) {
             var leadingSpacesLength = m[0].length;
             for (var i = 8; i > 0; i--) {
@@ -22,26 +44,6 @@ var IndentSizeRule = (function () {
             }
         }
         return 0;
-    };
-    IndentSizeRule.prototype.fix = function (settings, line) {
-        var indentSize = this.applyRule(settings);
-        switch (settings.indent_style) {
-            case 'tab':
-                line.Text = line.Text.replace(/^ +/, function (match) {
-                    var indentLevel = Math.floor(match.length / indentSize);
-                    var extraSpaces = _.repeat(' ', match.length % indentSize);
-                    return _.repeat('\t', indentLevel) + extraSpaces;
-                });
-                break;
-            case 'space':
-                line.Text = line.Text.replace(/^\t+/, function (match) {
-                    return _.repeat(_.repeat(' ', indentSize), match.length);
-                });
-                break;
-            default:
-                return line;
-        }
-        return line;
     };
     IndentSizeRule.prototype.applyRule = function (settings) {
         if (settings.indent_size === 'tab') {

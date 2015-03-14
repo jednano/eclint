@@ -1,22 +1,50 @@
-﻿var _ = require('lodash');
+﻿///<reference path="../../typings/node/node.d.ts" />
+///<reference path="../../typings/lodash/lodash.d.ts" />
+import _ = require('lodash');
+import linez = require('linez');
 import eclint = require('../eclint');
-import _line = require('../line');
 
 class IndentSizeRule implements eclint.LineRule {
 
-	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line): void {
+	check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
 		var inferredSetting = this.infer(line);
-		if (inferredSetting && inferredSetting % settings.indent_size !== 0) {
+		if (typeof inferredSetting === 'number' && inferredSetting % settings.indent_size !== 0) {
 			context.report('Invalid indent size detected: ' + inferredSetting);
 		}
 	}
 
-	infer(line: _line.Line): any {
-		if (line.Text[0] === '\t') {
+	fix(settings: eclint.Settings, line: linez.Line) {
+		var indentSize = this.applyRule(settings);
+
+		switch (settings.indent_style) {
+
+			case 'tab':
+				line.text = line.text.replace(/^ +/, (match: string) => {
+					var indentLevel = Math.floor(match.length / indentSize);
+					var extraSpaces = _.repeat(' ', match.length % indentSize);
+					return _.repeat('\t', indentLevel) + extraSpaces;
+				});
+				break;
+
+			case 'space':
+				line.text = line.text.replace(/^\t+/, (match: string) => {
+					return _.repeat(_.repeat(' ', indentSize), match.length);
+				});
+				break;
+
+			default:
+				return line;
+		}
+
+		return line;
+	}
+
+	infer(line: linez.Line): string|number {
+		if (line.text[0] === '\t') {
 			return 'tab';
 		}
 
-		var m = line.Text.match(/^ +/);
+		var m = line.text.match(/^ +/);
 		if (m) {
 			var leadingSpacesLength = m[0].length;
 			for (var i = 8; i > 0; i--) {
@@ -27,32 +55,6 @@ class IndentSizeRule implements eclint.LineRule {
 		}
 
 		return 0;
-	}
-
-	fix(settings: eclint.Settings, line: _line.Line): _line.Line {
-		var indentSize = this.applyRule(settings);
-
-		switch (settings.indent_style) {
-
-			case 'tab':
-				line.Text = line.Text.replace(/^ +/, (match: string) => {
-					var indentLevel = Math.floor(match.length / indentSize);
-					var extraSpaces = _.repeat(' ', match.length % indentSize);
-					return _.repeat('\t', indentLevel) + extraSpaces;
-				});
-				break;
-
-			case 'space':
-				line.Text = line.Text.replace(/^\t+/, (match: string) => {
-					return _.repeat(_.repeat(' ', indentSize), match.length);
-				});
-				break;
-
-			default:
-				return line;
-		}
-
-		return line;
 	}
 
 	private applyRule(settings: eclint.Settings): number {

@@ -1,49 +1,50 @@
-var _line = require('../line');
-var Newline = require('../Newline');
+var eclint = require('../eclint');
 var InsertFinalNewlineRule = (function () {
     function InsertFinalNewlineRule() {
     }
-    InsertFinalNewlineRule.prototype.check = function (context, settings, lines) {
-        if (settings.insert_final_newline && !this.infer(lines)) {
+    InsertFinalNewlineRule.prototype.check = function (context, settings, doc) {
+        if (settings.insert_final_newline && !this.infer(doc)) {
             context.report('Expected final newline character');
             return;
         }
-        if (settings.insert_final_newline === false && this.infer(lines)) {
+        if (settings.insert_final_newline === false && this.infer(doc)) {
             context.report('Unexpected final newline character');
         }
     };
-    InsertFinalNewlineRule.prototype.fix = function (settings, lines) {
+    InsertFinalNewlineRule.prototype.fix = function (settings, doc) {
         var lastLine;
-        if (settings.insert_final_newline && !this.infer(lines)) {
-            lastLine = lines[lines.length - 1];
+        if (settings.insert_final_newline && !this.infer(doc)) {
+            lastLine = doc.lines[doc.lines.length - 1];
             var endOfLineSetting = settings.end_of_line || 'lf';
             if (lastLine) {
-                lastLine.Newline = new Newline(Newline.map[endOfLineSetting]);
+                lastLine.ending = eclint.newlines[endOfLineSetting];
             }
             else {
-                lines.push(new _line.Line('', {
+                doc.lines.push({
                     number: 1,
-                    newline: endOfLineSetting
-                }));
+                    text: '',
+                    ending: eclint.newlines[endOfLineSetting],
+                    offset: 0
+                });
             }
-            return lines;
+            return doc;
         }
         if (!settings.insert_final_newline) {
-            while (this.infer(lines)) {
-                lastLine = lines[lines.length - 1];
-                if (lastLine.Text) {
-                    lastLine.Newline = void (0);
+            while (this.infer(doc)) {
+                lastLine = doc.lines[doc.lines.length - 1];
+                if (lastLine.text) {
+                    lastLine.ending = void (0);
                     break;
                 }
-                lines.pop();
+                doc.lines.pop();
             }
-            return lines;
+            return doc;
         }
-        return lines;
+        return doc;
     };
-    InsertFinalNewlineRule.prototype.infer = function (lines) {
-        var lastLine = lines[lines.length - 1];
-        return lastLine ? !!lastLine.Newline : false;
+    InsertFinalNewlineRule.prototype.infer = function (doc) {
+        var lastLine = doc.lines[doc.lines.length - 1];
+        return lastLine ? !!lastLine.ending : false;
     };
     return InsertFinalNewlineRule;
 })();

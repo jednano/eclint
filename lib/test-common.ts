@@ -1,16 +1,32 @@
-﻿///<reference path='../bower_components/dt-node/node.d.ts'/>
-///<reference path='../bower_components/dt-mocha/mocha.d.ts'/>
-///<reference path='../bower_components/dt-sinon/sinon.d.ts'/>
-///<reference path='../bower_components/dt-sinon-chai/sinon-chai.d.ts'/>
-var chai: SinonChaiStatic = require('chai');
-import _sinon = require('sinon');
-chai.use(require('sinon-chai'));
+﻿///<reference path='../typings/tsd.d.ts'/>
+
+import chai = require('chai');
+import sinon = require('sinon');
+import sinonChai = require('sinon-chai');
+
+chai.use(sinonChai);
 export var expect = chai.expect;
 
+// ReSharper disable once DeclarationHides
 export var context = {
+	// ReSharper disable once UnusedParameter
 	report: (message: string) => {
 		// noop
 	}
 };
 
-export var reporter: SinonSpy = _sinon.spy(context, 'report');
+export var reporter = sinon.spy(context, 'report');
+
+export function createLine(text: string, options?: {
+	number?: number;
+	offset?: number;
+	ending?: string;
+}) {
+	options = options || {};
+	return {
+		number: options.number || 1,
+		offset: options.offset || 0,
+		text: text,
+		ending: options.ending || ''
+	};
+}

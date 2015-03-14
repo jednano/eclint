@@ -1,27 +1,25 @@
-﻿import eclint = require('../eclint');
-import _line = require('../line');
+﻿import linez = require('linez');
+import eclint = require('../eclint');
 
 var TRAILING_WHITESPACE = /[\t ]+$/;
 
 class TrimTrailingWhitespaceRule implements eclint.LineRule {
 
-	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line):
-		void {
-
-		if (isSettingTrue(settings) && TRAILING_WHITESPACE.test(line.Text)) {
+	check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
+		if (isSettingTrue(settings) && TRAILING_WHITESPACE.test(line.text)) {
 			context.report('Trailing whitespace found.');
 		}
 	}
 
-	fix(settings: eclint.Settings, line: _line.Line): _line.Line {
+	fix(settings: eclint.Settings, line: linez.Line) {
 		if (isSettingTrue(settings)) {
-			line.Text = line.Text.replace(TRAILING_WHITESPACE, '');
+			line.text = line.text.replace(TRAILING_WHITESPACE, '');
 		}
 		return line;
 	}
 
-	infer(line: _line.Line): boolean {
-		return !TRAILING_WHITESPACE.test(line.Text);
+	infer(line: linez.Line) {
+		return !TRAILING_WHITESPACE.test(line.text);
 	}
 
 }

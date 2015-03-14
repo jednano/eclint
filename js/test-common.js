@@ -1,14 +1,24 @@
-///<reference path='../bower_components/dt-node/node.d.ts'/>
-///<reference path='../bower_components/dt-mocha/mocha.d.ts'/>
-///<reference path='../bower_components/dt-sinon/sinon.d.ts'/>
-///<reference path='../bower_components/dt-sinon-chai/sinon-chai.d.ts'/>
+///<reference path='../typings/tsd.d.ts'/>
 var chai = require('chai');
-var _sinon = require('sinon');
-chai.use(require('sinon-chai'));
+var sinon = require('sinon');
+var sinonChai = require('sinon-chai');
+chai.use(sinonChai);
 exports.expect = chai.expect;
+// ReSharper disable once DeclarationHides
 exports.context = {
+    // ReSharper disable once UnusedParameter
     report: function (message) {
         // noop
     }
 };
-exports.reporter = _sinon.spy(exports.context, 'report');
+exports.reporter = sinon.spy(exports.context, 'report');
+function createLine(text, options) {
+    options = options || {};
+    return {
+        number: options.number || 1,
+        offset: options.offset || 0,
+        text: text,
+        ending: options.ending || ''
+    };
+}
+exports.createLine = createLine;

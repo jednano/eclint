@@ -1,20 +1,22 @@
-﻿var _ = require('lodash');
+﻿///<reference path="../../typings/node/node.d.ts" />
+///<reference path="../../typings/lodash/lodash.d.ts" />
+import _ = require('lodash');
+import linez = require('linez');
 import eclint = require('../eclint');
-import _line = require('../line');
 
 var DEFAULT_INDENT_SIZE = 4;
 var HARD_TAB = '\t';
 
 class IndentStyleRule implements eclint.LineRule {
 
-	private get reverseMap(): eclint.HashTable<string> {
+	private get reverseMap() {
 		return {
 			' ': 'space',
 			'\t': 'tab'
 		};
 	}
 
-	check(context: eclint.Context, settings: eclint.Settings, line: _line.Line): void {
+	check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
 		var indentStyle = this.infer(line);
 		var indentStyleSetting = settings.indent_style;
 		if (indentStyle && indentStyleSetting && indentStyle !== indentStyleSetting) {
@@ -22,11 +24,7 @@ class IndentStyleRule implements eclint.LineRule {
 		}
 	}
 
-	infer(line: _line.Line): string {
-		return this.reverseMap[line.Text[0]];
-	}
-
-	fix(settings: eclint.Settings, line: _line.Line): _line.Line {
+	fix(settings: eclint.Settings, line: linez.Line) {
 		var indentStyle = this.infer(line);
 
 		if (!indentStyle || indentStyle === settings.indent_style) {
@@ -45,11 +43,15 @@ class IndentStyleRule implements eclint.LineRule {
 		}
 
 		var leadingIndentation = new RegExp('^(?:' + oldIndent + ')+');
-		line.Text = line.Text.replace(leadingIndentation, match => {
+		line.text = line.text.replace(leadingIndentation, match => {
 			return _.repeat(newIndent, match.length / oldIndent.length);
 		});
 
 		return line;
+	}
+
+	infer(line: linez.Line) {
+		return this.reverseMap[line.text[0]];
 	}
 
 	private resolveIndentSize(settings: eclint.Settings) {

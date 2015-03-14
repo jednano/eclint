@@ -1,8 +1,8 @@
+import linez = require('linez');
 import eclint = require('../eclint');
-import _line = require('../line');
-declare class InsertFinalNewlineRule implements eclint.LinesRule {
-    check(context: eclint.Context, settings: eclint.Settings, lines: _line.Line[]): void;
-    fix(settings: eclint.Settings, lines: _line.Line[]): _line.Line[];
-    infer(lines: _line.Line[]): boolean;
+declare class InsertFinalNewlineRule implements eclint.DocumentRule {
+    check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document): void;
+    fix(settings: eclint.Settings, doc: linez.Document): linez.Document;
+    infer(doc: linez.Document): boolean;
 }
 export = InsertFinalNewlineRule;

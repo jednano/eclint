@@ -1,47 +1,37 @@
+///<reference path='../../typings/lodash/lodash.d.ts'/>
+var _ = require('lodash');
+var eclint = require('../eclint');
+var boms = eclint.boms;
 var CharsetRule = (function () {
     function CharsetRule() {
     }
-    CharsetRule.prototype.check = function (context, settings, lines) {
-        var firstLine = lines[0];
-        if (!firstLine) {
+    CharsetRule.prototype.check = function (context, settings, doc) {
+        var detectedCharset = doc.charset;
+        if (detectedCharset) {
+            if (detectedCharset !== settings.charset) {
+                context.report('Invalid charset: ' + detectedCharset);
+            }
             return;
         }
-        checkByteOrderMark(context, settings, firstLine);
-        checkLatin1TextRange(context, settings, firstLine);
-    };
-    CharsetRule.prototype.fix = function (settings, lines) {
-        var firstLine = lines[0];
-        if (!firstLine || firstLine.Number !== 1) {
-            return lines;
+        if (settings.charset === 'latin1') {
+            checkLatin1TextRange(context, settings, doc.lines[0]);
+            return;
         }
-        var setting = settings.charset;
-        if (setting) {
-            firstLine.Charsets = setting;
+        if (_.contains(Object.keys(boms), settings.charset)) {
+            context.report('Expected charset: ' + settings.charset);
         }
-        return lines;
     };
-    CharsetRule.prototype.infer = function (lines) {
-        var firstLine = lines[0];
-        return firstLine && firstLine.Charsets;
+    CharsetRule.prototype.fix = function (settings, doc) {
+        doc.charset = settings.charset;
+        return doc;
+    };
+    CharsetRule.prototype.infer = function (doc) {
+        return doc.charset;
     };
     return CharsetRule;
 })();
-function checkByteOrderMark(context, settings, line) {
-    var charset = settings.charset;
-    if (line.Charsets) {
-        if (charset && charset !== line.Charsets) {
-            context.report('Invalid charset: ' + line.Charsets.replace(/_/g, '-'));
-        }
-    }
-    else if (line.Number === 1 && charset) {
-        context.report('Expected charset: ' + charset);
-    }
-}
 function checkLatin1TextRange(context, settings, line) {
-    if (settings.charset !== 'latin1') {
-        return;
-    }
-    var text = line.Text;
+    var text = line.text;
     for (var i = 0, len = text.length; i < len; i++) {
         var character = text[i];
         if (character.charCodeAt(0) >= 0x80) {

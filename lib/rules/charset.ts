@@ -1,56 +1,45 @@
-﻿import _line = require('../line');
+﻿///<reference path='../../typings/lodash/lodash.d.ts'/>
+import _ = require('lodash');
+import linez = require('linez');
 import eclint = require('../eclint');
 
-class CharsetRule implements eclint.LinesRule {
+var boms = eclint.boms;
 
-	check(context: eclint.Context, settings: eclint.Settings, lines: _line.Line[]): void {
-		var firstLine = lines[0];
-		if (!firstLine) {
+class CharsetRule implements eclint.DocumentRule {
+
+	check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
+		var detectedCharset = doc.charset;
+		if (detectedCharset) {
+			if (detectedCharset !== settings.charset) {
+				context.report('Invalid charset: ' + detectedCharset);
+			}
 			return;
 		}
-		checkByteOrderMark(context, settings, firstLine);
-		checkLatin1TextRange(context, settings, firstLine);
+		if (settings.charset === 'latin1') {
+			checkLatin1TextRange(context, settings, doc.lines[0]);
+			return;
+		}
+		if (_.contains(Object.keys(boms), settings.charset)) {
+			context.report('Expected charset: ' + settings.charset);
+		}
 	}
 
-	fix(settings: eclint.Settings, lines: _line.Line[]): _line.Line[] {
-		var firstLine = lines[0];
-		if (!firstLine || firstLine.Number !== 1) {
-			return lines;
-		}
-		var setting = settings.charset;
-		if (setting) {
-			firstLine.Charsets = setting;
-		}
-		return lines;
+	fix(settings: eclint.Settings, doc: linez.Document) {
+		doc.charset = settings.charset;
+		return doc;
 	}
 
-	infer(lines: _line.Line[]): string {
-		var firstLine = lines[0];
-		return firstLine && firstLine.Charsets;
+	infer(doc: linez.Document): string {
+		return doc.charset;
 	}
 }
 
-function checkByteOrderMark(context: eclint.Context, settings: eclint.Settings,
-	line: _line.Line) {
-
-	var charset = settings.charset;
-	if (line.Charsets) {
-		if (charset && charset !== line.Charsets) {
-			context.report('Invalid charset: ' +
-			    line.Charsets.replace(/_/g, '-'));
-		}
-	} else if (line.Number === 1 && charset) {
-		context.report('Expected charset: ' + charset);
-	}
-}
-
-function checkLatin1TextRange(context: eclint.Context,
-	settings: eclint.Settings, line: _line.Line) {
-
-	if (settings.charset !== 'latin1') {
-		return;
-	}
-	var text = line.Text;
+function checkLatin1TextRange(
+	context: eclint.Context,
+	settings: eclint.Settings,
+	line: linez.Line
+) {
+	var text = line.text;
 	for (var i = 0, len = text.length; i < len; i++) {
 		var character = text[i];
 		if (character.charCodeAt(0) >= 0x80) {

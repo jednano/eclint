@@ -1,51 +1,52 @@
-﻿import eclint = require('../eclint');
-import _line = require('../line');
-import Newline = require('../Newline');
+﻿import linez = require('linez');
+import eclint = require('../eclint');
 
-class InsertFinalNewlineRule implements eclint.LinesRule {
+class InsertFinalNewlineRule implements eclint.DocumentRule {
 
-	check(context: eclint.Context, settings: eclint.Settings, lines: _line.Line[]): void {
-		if (settings.insert_final_newline && !this.infer(lines)) {
+	check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
+		if (settings.insert_final_newline && !this.infer(doc)) {
 			context.report('Expected final newline character');
 			return;
 		}
-		if (settings.insert_final_newline === false && this.infer(lines)) {
+		if (settings.insert_final_newline === false && this.infer(doc)) {
 			context.report('Unexpected final newline character');
 		}
 	}
 
-	fix(settings: eclint.Settings, lines: _line.Line[]): _line.Line[] {
-		var lastLine: _line.Line;
-		if (settings.insert_final_newline && !this.infer(lines)) {
-			lastLine = lines[lines.length - 1];
+	fix(settings: eclint.Settings, doc: linez.Document) {
+		var lastLine: linez.Line;
+		if (settings.insert_final_newline && !this.infer(doc)) {
+			lastLine = doc.lines[doc.lines.length - 1];
 			var endOfLineSetting = settings.end_of_line || 'lf';
 			if (lastLine) {
-				lastLine.Newline = new Newline(Newline.map[endOfLineSetting]);
+				lastLine.ending = eclint.newlines[endOfLineSetting];
 			} else {
-				lines.push(new _line.Line('', {
+				doc.lines.push({
 					number: 1,
-					newline: endOfLineSetting
-				}));
+					text: '',
+					ending: eclint.newlines[endOfLineSetting],
+					offset: 0
+				});
 			}
-			return lines;
+			return doc;
 		}
 		if (!settings.insert_final_newline) {
-			while (this.infer(lines)) {
-				lastLine = lines[lines.length - 1];
-				if (lastLine.Text) {
-					lastLine.Newline = void (0);
+			while (this.infer(doc)) {
+				lastLine = doc.lines[doc.lines.length - 1];
+				if (lastLine.text) {
+					lastLine.ending = void (0);
 					break;
 				}
-				lines.pop();
+				doc.lines.pop();
 			}
-			return lines;
+			return doc;
 		}
-		return lines;
+		return doc;
 	}
 
-	infer(lines: _line.Line[]): boolean {
-		var lastLine = lines[lines.length - 1];
-		return lastLine ? !!lastLine.Newline : false;
+	infer(doc: linez.Document) {
+		var lastLine = doc.lines[doc.lines.length - 1];
+		return lastLine ? !!lastLine.ending : false;
 	}
 
 }

@@ -6,7 +6,6 @@ var ts = require('gulp-typescript');
 
 module.exports = function() {
 	var result = gulp.src([
-			'bower_components/**/*.d.ts',
 			'lib/**/*.ts'
 		], {
 			base: './lib'
@@ -25,7 +24,7 @@ var project = ts.createProject({
 	target: 'es5',
 	module: 'commonjs',
 	declarationFiles: true,
-	noExternalResolve: true
+	noExternalResolve: false
 });
 
 function istanbulIgnoreTypeScriptExtend() {

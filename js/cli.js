@@ -1,4 +1,4 @@
-///<reference path='../bower_components/dt-node/node.d.ts'/>
+///<reference path='../typings/node/node.d.ts'/>
 var checkCommand = require('./commands/check');
 var fixCommand = require('./commands/fix');
 var inferCommand = require('./commands/infer');
