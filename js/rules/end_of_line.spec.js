@@ -1,6 +1,5 @@
 var common = require('../test-common');
-var EndOfLineRule = require('./end_of_line');
-var rule = new EndOfLineRule();
+var rule = require('./end_of_line');
 var expect = common.expect;
 var reporter = common.reporter;
 var context = common.context;

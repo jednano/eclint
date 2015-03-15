@@ -1,7 +1,6 @@
-var common = require('../test-common');
-var InsertFinalNewlineRule = require('./insert_final_newline');
 var linez = require('linez');
-var rule = new InsertFinalNewlineRule();
+var common = require('../test-common');
+var rule = require('./insert_final_newline');
 var createLine = common.createLine;
 var Doc = linez.Document;
 var expect = common.expect;

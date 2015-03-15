@@ -1,6 +1,5 @@
 var common = require('../test-common');
-var IndentStyleRule = require('./indent_style');
-var rule = new IndentStyleRule();
+var rule = require('./indent_style');
 var createLine = common.createLine;
 var expect = common.expect;
 var reporter = common.reporter;

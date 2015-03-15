@@ -7,14 +7,9 @@ import eclint = require('../eclint');
 var DEFAULT_INDENT_SIZE = 4;
 var HARD_TAB = '\t';
 
-class IndentStyleRule implements eclint.LineRule {
+var IndentStyleRule: eclint.LineRule = {
 
-	private get reverseMap() {
-		return {
-			' ': 'space',
-			'\t': 'tab'
-		};
-	}
+	type: 'LineRule',
 
 	check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
 		var indentStyle = this.infer(line);
@@ -22,7 +17,7 @@ class IndentStyleRule implements eclint.LineRule {
 		if (indentStyle && indentStyleSetting && indentStyle !== indentStyleSetting) {
 			context.report('Invalid indent style: ' + indentStyle);
 		}
-	}
+	},
 
 	fix(settings: eclint.Settings, line: linez.Line) {
 		var indentStyle = this.infer(line);
@@ -33,7 +28,7 @@ class IndentStyleRule implements eclint.LineRule {
 
 		var oldIndent: string;
 		var newIndent: string;
-		var softTab = _.repeat(' ', this.resolveIndentSize(settings));
+		var softTab = _.repeat(' ', resolveIndentSize(settings));
 		if (settings.indent_style === 'tab') {
 			oldIndent = softTab;
 			newIndent = HARD_TAB;
@@ -48,19 +43,24 @@ class IndentStyleRule implements eclint.LineRule {
 		});
 
 		return line;
-	}
+	},
 
 	infer(line: linez.Line) {
-		return this.reverseMap[line.text[0]];
+		return reverseMap[line.text[0]];
 	}
 
-	private resolveIndentSize(settings: eclint.Settings) {
-		if (settings.indent_size === 'tab') {
-			return settings.tab_width || DEFAULT_INDENT_SIZE;
-		}
-		return settings.indent_size || settings.tab_width || DEFAULT_INDENT_SIZE;
-	}
+};
 
+var reverseMap = {
+	' ': 'space',
+	'\t': 'tab'
+};
+
+function resolveIndentSize(settings: eclint.Settings) {
+	if (settings.indent_size === 'tab') {
+		return settings.tab_width || DEFAULT_INDENT_SIZE;
+	}
+	return settings.indent_size || settings.tab_width || DEFAULT_INDENT_SIZE;
 }
 
 export = IndentStyleRule;

@@ -1,6 +1,5 @@
 var common = require('../test-common');
-var MaxLineLengthRule = require('./max_line_length');
-var rule = new MaxLineLengthRule();
+var rule = require('./max_line_length');
 var createLine = common.createLine;
 var expect = common.expect;
 var reporter = common.reporter;

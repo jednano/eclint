@@ -1,6 +1,5 @@
 ﻿import common = require('../test-common');
-import MaxLineLengthRule = require('./max_line_length');
-var rule = new MaxLineLengthRule();
+import rule = require('./max_line_length');
 var createLine = common.createLine;
 
 var expect = common.expect;

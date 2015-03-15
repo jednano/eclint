@@ -1,7 +1,9 @@
 ﻿import linez = require('linez');
 import eclint = require('../eclint');
 
-class InsertFinalNewlineRule implements eclint.DocumentRule {
+var InsertFinalNewlineRule: eclint.DocumentRule = {
+
+	type: 'DocumentRule',
 
 	check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
 		if (settings.insert_final_newline && !this.infer(doc)) {
@@ -11,7 +13,7 @@ class InsertFinalNewlineRule implements eclint.DocumentRule {
 		if (settings.insert_final_newline === false && this.infer(doc)) {
 			context.report('Unexpected final newline character');
 		}
-	}
+	},
 
 	fix(settings: eclint.Settings, doc: linez.Document) {
 		var lastLine: linez.Line;
@@ -42,13 +44,16 @@ class InsertFinalNewlineRule implements eclint.DocumentRule {
 			return doc;
 		}
 		return doc;
-	}
+	},
 
 	infer(doc: linez.Document) {
 		var lastLine = doc.lines[doc.lines.length - 1];
-		return lastLine ? !!lastLine.ending : false;
+		if (lastLine && lastLine.ending) {
+			return true;
+		}
+		return false;
 	}
 
-}
+};
 
 export = InsertFinalNewlineRule;

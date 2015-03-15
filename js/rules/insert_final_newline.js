@@ -1,8 +1,7 @@
 var eclint = require('../eclint');
-var InsertFinalNewlineRule = (function () {
-    function InsertFinalNewlineRule() {
-    }
-    InsertFinalNewlineRule.prototype.check = function (context, settings, doc) {
+var InsertFinalNewlineRule = {
+    type: 'DocumentRule',
+    check: function (context, settings, doc) {
         if (settings.insert_final_newline && !this.infer(doc)) {
             context.report('Expected final newline character');
             return;
@@ -10,8 +9,8 @@ var InsertFinalNewlineRule = (function () {
         if (settings.insert_final_newline === false && this.infer(doc)) {
             context.report('Unexpected final newline character');
         }
-    };
-    InsertFinalNewlineRule.prototype.fix = function (settings, doc) {
+    },
+    fix: function (settings, doc) {
         var lastLine;
         if (settings.insert_final_newline && !this.infer(doc)) {
             lastLine = doc.lines[doc.lines.length - 1];
@@ -41,11 +40,13 @@ var InsertFinalNewlineRule = (function () {
             return doc;
         }
         return doc;
-    };
-    InsertFinalNewlineRule.prototype.infer = function (doc) {
+    },
+    infer: function (doc) {
         var lastLine = doc.lines[doc.lines.length - 1];
-        return lastLine ? !!lastLine.ending : false;
-    };
-    return InsertFinalNewlineRule;
-})();
+        if (lastLine && lastLine.ending) {
+            return true;
+        }
+        return false;
+    }
+};
 module.exports = InsertFinalNewlineRule;

@@ -1,7 +1,9 @@
 ﻿import linez = require('linez');
 import eclint = require('../eclint');
 
-class MaxLineLengthRule implements eclint.LineRule {
+var MaxLineLengthRule: eclint.LineRule = {
+
+	type: 'LineRule',
 
 	check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
 		var lineLength = line.text.length;
@@ -12,16 +14,16 @@ class MaxLineLengthRule implements eclint.LineRule {
 				'on line number ' + line.number
 			].join(' '));
 		}
-	}
+	},
 
-	fix(settings: eclint.Settings, line: linez.Line): linez.Line {
+	fix(): linez.Line {
 		throw new Error('Fixing max_line_length setting unsupported');
-	}
+	},
 
 	infer(line: linez.Line) {
 		return line.text.length;
 	}
 
-}
+};
 
 export = MaxLineLengthRule;

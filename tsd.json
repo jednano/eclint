@@ -22,6 +22,15 @@
     },
     "lodash/lodash.d.ts": {
       "commit": "c594427c40354eae9dc618c50dc1c3d83da477b5"
+    },
+    "vinyl-fs/vinyl-fs.d.ts": {
+      "commit": "40eea5dc8f672e511abed203b2bb087026beec60"
+    },
+    "through2/through2.d.ts": {
+      "commit": "40eea5dc8f672e511abed203b2bb087026beec60"
+    },
+    "vinyl/vinyl.d.ts": {
+      "commit": "40eea5dc8f672e511abed203b2bb087026beec60"
     }
   }
 }

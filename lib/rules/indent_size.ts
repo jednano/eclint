@@ -4,17 +4,19 @@ import _ = require('lodash');
 import linez = require('linez');
 import eclint = require('../eclint');
 
-class IndentSizeRule implements eclint.LineRule {
+var IndentSizeRule: eclint.LineRule = {
+
+	type: 'LineRule',
 
 	check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
 		var inferredSetting = this.infer(line);
 		if (typeof inferredSetting === 'number' && inferredSetting % settings.indent_size !== 0) {
 			context.report('Invalid indent size detected: ' + inferredSetting);
 		}
-	}
+	},
 
 	fix(settings: eclint.Settings, line: linez.Line) {
-		var indentSize = this.applyRule(settings);
+		var indentSize = applyRule(settings);
 
 		switch (settings.indent_style) {
 
@@ -37,7 +39,7 @@ class IndentSizeRule implements eclint.LineRule {
 		}
 
 		return line;
-	}
+	},
 
 	infer(line: linez.Line): string|number {
 		if (line.text[0] === '\t') {
@@ -57,13 +59,13 @@ class IndentSizeRule implements eclint.LineRule {
 		return 0;
 	}
 
-	private applyRule(settings: eclint.Settings): number {
-		if (settings.indent_size === 'tab') {
-			return settings.tab_width;
-		}
-		return settings.indent_size;
-	}
+};
 
+function applyRule(settings: eclint.Settings): number {
+	if (settings.indent_size === 'tab') {
+		return settings.tab_width;
+	}
+	return settings.indent_size;
 }
 
 export = IndentSizeRule;

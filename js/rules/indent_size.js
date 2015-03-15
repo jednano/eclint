@@ -1,17 +1,16 @@
 ///<reference path="../../typings/node/node.d.ts" />
 ///<reference path="../../typings/lodash/lodash.d.ts" />
 var _ = require('lodash');
-var IndentSizeRule = (function () {
-    function IndentSizeRule() {
-    }
-    IndentSizeRule.prototype.check = function (context, settings, line) {
+var IndentSizeRule = {
+    type: 'LineRule',
+    check: function (context, settings, line) {
         var inferredSetting = this.infer(line);
         if (typeof inferredSetting === 'number' && inferredSetting % settings.indent_size !== 0) {
             context.report('Invalid indent size detected: ' + inferredSetting);
         }
-    };
-    IndentSizeRule.prototype.fix = function (settings, line) {
-        var indentSize = this.applyRule(settings);
+    },
+    fix: function (settings, line) {
+        var indentSize = applyRule(settings);
         switch (settings.indent_style) {
             case 'tab':
                 line.text = line.text.replace(/^ +/, function (match) {
@@ -29,8 +28,8 @@ var IndentSizeRule = (function () {
                 return line;
         }
         return line;
-    };
-    IndentSizeRule.prototype.infer = function (line) {
+    },
+    infer: function (line) {
         if (line.text[0] === '\t') {
             return 'tab';
         }
@@ -44,13 +43,12 @@ var IndentSizeRule = (function () {
             }
         }
         return 0;
-    };
-    IndentSizeRule.prototype.applyRule = function (settings) {
-        if (settings.indent_size === 'tab') {
-            return settings.tab_width;
-        }
-        return settings.indent_size;
-    };
-    return IndentSizeRule;
-})();
+    }
+};
+function applyRule(settings) {
+    if (settings.indent_size === 'tab') {
+        return settings.tab_width;
+    }
+    return settings.indent_size;
+}
 module.exports = IndentSizeRule;

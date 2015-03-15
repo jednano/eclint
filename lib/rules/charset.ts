@@ -5,7 +5,9 @@ import eclint = require('../eclint');
 
 var boms = eclint.boms;
 
-class CharsetRule implements eclint.DocumentRule {
+var CharsetRule: eclint.DocumentRule = {
+
+	type: 'DocumentRule',
 
 	check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
 		var detectedCharset = doc.charset;
@@ -22,17 +24,18 @@ class CharsetRule implements eclint.DocumentRule {
 		if (_.contains(Object.keys(boms), settings.charset)) {
 			context.report('Expected charset: ' + settings.charset);
 		}
-	}
+	},
 
 	fix(settings: eclint.Settings, doc: linez.Document) {
 		doc.charset = settings.charset;
 		return doc;
-	}
+	},
 
 	infer(doc: linez.Document): string {
 		return doc.charset;
 	}
-}
+
+};
 
 function checkLatin1TextRange(
 	context: eclint.Context,

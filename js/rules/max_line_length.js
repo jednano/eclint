@@ -1,7 +1,6 @@
-var MaxLineLengthRule = (function () {
-    function MaxLineLengthRule() {
-    }
-    MaxLineLengthRule.prototype.check = function (context, settings, line) {
+var MaxLineLengthRule = {
+    type: 'LineRule',
+    check: function (context, settings, line) {
         var lineLength = line.text.length;
         if (lineLength > settings.max_line_length) {
             context.report([
@@ -10,13 +9,12 @@ var MaxLineLengthRule = (function () {
                 'on line number ' + line.number
             ].join(' '));
         }
-    };
-    MaxLineLengthRule.prototype.fix = function (settings, line) {
+    },
+    fix: function () {
         throw new Error('Fixing max_line_length setting unsupported');
-    };
-    MaxLineLengthRule.prototype.infer = function (line) {
+    },
+    infer: function (line) {
         return line.text.length;
-    };
-    return MaxLineLengthRule;
-})();
+    }
+};
 module.exports = MaxLineLengthRule;

@@ -2,10 +2,9 @@
 var _ = require('lodash');
 var eclint = require('../eclint');
 var boms = eclint.boms;
-var CharsetRule = (function () {
-    function CharsetRule() {
-    }
-    CharsetRule.prototype.check = function (context, settings, doc) {
+var CharsetRule = {
+    type: 'DocumentRule',
+    check: function (context, settings, doc) {
         var detectedCharset = doc.charset;
         if (detectedCharset) {
             if (detectedCharset !== settings.charset) {
@@ -20,16 +19,15 @@ var CharsetRule = (function () {
         if (_.contains(Object.keys(boms), settings.charset)) {
             context.report('Expected charset: ' + settings.charset);
         }
-    };
-    CharsetRule.prototype.fix = function (settings, doc) {
+    },
+    fix: function (settings, doc) {
         doc.charset = settings.charset;
         return doc;
-    };
-    CharsetRule.prototype.infer = function (doc) {
+    },
+    infer: function (doc) {
         return doc.charset;
-    };
-    return CharsetRule;
-})();
+    }
+};
 function checkLatin1TextRange(context, settings, line) {
     var text = line.text;
     for (var i = 0, len = text.length; i < len; i++) {

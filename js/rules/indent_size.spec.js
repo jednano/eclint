@@ -1,10 +1,9 @@
 var _ = require('lodash');
 var common = require('../test-common');
-var IndentSizeRule = require('./indent_size');
+var rule = require('./indent_size');
 var expect = common.expect;
 var reporter = common.reporter;
 var context = common.context;
-var rule = new IndentSizeRule();
 var createLine = common.createLine;
 // ReSharper disable WrongExpressionStatement
 describe('indent_size rule', function () {

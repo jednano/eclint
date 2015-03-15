@@ -1,6 +1,5 @@
 ﻿import common = require('../test-common');
-import EndOfLineRule = require('./end_of_line');
-var rule = new EndOfLineRule();
+import rule = require('./end_of_line');
 
 var expect = common.expect;
 var reporter = common.reporter;

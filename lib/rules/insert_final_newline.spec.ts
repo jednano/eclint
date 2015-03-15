@@ -1,7 +1,7 @@
-﻿import common = require('../test-common');
-import InsertFinalNewlineRule = require('./insert_final_newline');
-import linez = require('linez');
-var rule = new InsertFinalNewlineRule();
+﻿import linez = require('linez');
+import common = require('../test-common');
+import rule = require('./insert_final_newline');
+
 var createLine = common.createLine;
 var Doc = linez.Document;
 

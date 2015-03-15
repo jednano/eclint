@@ -1,7 +1,6 @@
 var common = require('../test-common');
-var CharsetRule = require('./charset');
+var rule = require('./charset');
 var linez = require('linez');
-var rule = new CharsetRule();
 var expect = common.expect;
 var reporter = common.reporter;
 var context = common.context;

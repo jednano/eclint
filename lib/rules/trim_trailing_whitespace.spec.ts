@@ -1,6 +1,5 @@
 ﻿import common = require('../test-common');
-import TrimTrailingWhitespaceRule = require('./trim_trailing_whitespace');
-var rule = new TrimTrailingWhitespaceRule();
+import rule = require('./trim_trailing_whitespace');
 var createLine = common.createLine;
 
 var expect = common.expect;

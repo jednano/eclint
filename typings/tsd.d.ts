@@ -4,3 +4,6 @@
 /// <reference path="sinon/sinon.d.ts" />
 /// <reference path="sinon-chai/sinon-chai.d.ts" />
 /// <reference path="lodash/lodash.d.ts" />
+/// <reference path="vinyl-fs/vinyl-fs.d.ts" />
+/// <reference path="through2/through2.d.ts" />
+/// <reference path="vinyl/vinyl.d.ts" />
