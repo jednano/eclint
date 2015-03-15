@@ -44,9 +44,9 @@
     "sinon-chai": "^2.7.0",
     "through2": "^0.6.3"
   },
-  "main": "bin/eclint.js",
+  "main": "js/eclint.js",
   "bin": {
-    "eclint": "eclint.js"
+    "eclint": "bin/eclint.js"
   },
   "directories": {
     "test": "test"

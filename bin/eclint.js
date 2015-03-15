@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-var cli = require('../lib/cli');
+var cli = require('../js/cli');
 cli.parse(process.argv);
