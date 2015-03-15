@@ -1,29 +1,44 @@
 ﻿import linez = require('linez');
 import eclint = require('../eclint');
 
-var EndOfLineRule: eclint.LineRule = {
+var newlines = {
+	lf: '\n',
+	'\n': 'lf',
 
-	type: 'LineRule',
+	crlf: '\r\n',
+	'\r\n': 'crlf',
 
-	check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
-		var lineEndingName = eclint.newlines[line.ending];
-		if (lineEndingName && lineEndingName !== settings.end_of_line) {
-			context.report('Incorrect newline character found: ' + lineEndingName);
-		}
-	},
+	cr: '\r',
+	'\r': 'cr'
+};
 
-	fix(settings: eclint.Settings, line: linez.Line) {
-		var settingName = settings.end_of_line;
-		if (line.ending && settingName) {
-			line.ending = eclint.newlines[settingName];
-		}
-		return line;
-	},
-
-	infer(line: linez.Line): string {
-		return eclint.newlines[line.ending];
+function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
+	if (!settings.end_of_line) {
+		return;
 	}
+	var inferredSetting = infer(line);
+	if (inferredSetting !== settings.end_of_line) {
+		context.report('Incorrect newline character found: ' + inferredSetting);
+	}
+}
 
+function fix(settings: eclint.Settings, line: linez.Line) {
+	var settingName = settings.end_of_line;
+	if (line.ending && settingName) {
+		line.ending = newlines[settingName];
+	}
+	return line;
+}
+
+function infer(line: linez.Line): string {
+	return newlines[line.ending];
+}
+
+var EndOfLineRule: eclint.LineRule = {
+	type: 'LineRule',
+	check: check,
+	fix: fix,
+	infer: infer
 };
 
 export = EndOfLineRule;

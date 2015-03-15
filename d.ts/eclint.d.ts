@@ -1,30 +1,14 @@
 /// <reference path="../typings/lodash/lodash.d.ts" />
+/// <reference path="../typings/gulp-util/gulp-util.d.ts" />
 /// <reference path="../node_modules/linez/linez.d.ts" />
-/// <reference path="../typings/through2/through2.d.ts" />
-/// <reference path="../typings/vinyl/vinyl.d.ts" />
 import linez = require('linez');
 declare module eclint {
-    var boms: {
-        'utf-8-bom': string;
-        'utf-16be': string;
-        'utf-32le': string;
-        'utf-16le': string;
-        'utf-32be': string;
-    };
     var charsets: {
         '\u00EF\u00BB\u00BF': string;
         '\u00FE\u00FF': string;
         '\u00FF\u00FE\u0000\u0000': string;
         '\u00FF\u00FE': string;
         '\u0000\u0000\u00FE\u00FF': string;
-    };
-    var newlines: {
-        lf: string;
-        '\n': string;
-        crlf: string;
-        '\r\n': string;
-        cr: string;
-        '\r': string;
     };
     function configure(options: ConfigurationOptions): void;
     interface ConfigurationOptions {
@@ -45,7 +29,7 @@ declare module eclint {
          * of soft tabs (when supported). When set to tab, the value of
          * tab_width (if specified) will be used.
          */
-        indent_size?: any;
+        indent_size?: number | string;
         /**
          * Number of columns used to represent a tab character. This defaults
          * to the value of indent_size and doesn't usually need to be specified.
@@ -90,8 +74,9 @@ declare module eclint {
     interface Command {
         (options?: CommandOptions): NodeJS.ReadWriteStream;
     }
+    var ruleNames: string[];
     function check(options?: CommandOptions): NodeJS.ReadWriteStream;
     function fix(options?: CommandOptions): NodeJS.ReadWriteStream;
-    function infer(): NodeJS.ReadWriteStream;
+    function infer(options?: CommandOptions): NodeJS.ReadWriteStream;
 }
 export = eclint;

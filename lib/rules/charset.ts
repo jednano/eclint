@@ -3,39 +3,39 @@ import _ = require('lodash');
 import linez = require('linez');
 import eclint = require('../eclint');
 
-var boms = eclint.boms;
-
-var CharsetRule: eclint.DocumentRule = {
-
-	type: 'DocumentRule',
-
-	check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
-		var detectedCharset = doc.charset;
-		if (detectedCharset) {
-			if (detectedCharset !== settings.charset) {
-				context.report('Invalid charset: ' + detectedCharset);
-			}
-			return;
-		}
-		if (settings.charset === 'latin1') {
-			checkLatin1TextRange(context, settings, doc.lines[0]);
-			return;
-		}
-		if (_.contains(Object.keys(boms), settings.charset)) {
-			context.report('Expected charset: ' + settings.charset);
-		}
-	},
-
-	fix(settings: eclint.Settings, doc: linez.Document) {
-		doc.charset = settings.charset;
-		return doc;
-	},
-
-	infer(doc: linez.Document): string {
-		return doc.charset;
-	}
-
+var boms = {
+	'utf-8-bom': '\u00EF\u00BB\u00BF',
+	'utf-16be': '\u00FE\u00FF',
+	'utf-32le': '\u00FF\u00FE\u0000\u0000',
+	'utf-16le': '\u00FF\u00FE',
+	'utf-32be': '\u0000\u0000\u00FE\u00FF'
 };
+
+function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
+	var inferredSetting = infer(doc);
+	if (inferredSetting) {
+		if (inferredSetting !== settings.charset) {
+			context.report('Invalid charset: ' + inferredSetting);
+		}
+		return;
+	}
+	if (settings.charset === 'latin1') {
+		checkLatin1TextRange(context, settings, doc.lines[0]);
+		return;
+	}
+	if (_.contains(Object.keys(boms), settings.charset)) {
+		context.report('Expected charset: ' + settings.charset);
+	}
+}
+
+function fix(settings: eclint.Settings, doc: linez.Document) {
+	doc.charset = settings.charset;
+	return doc;
+}
+
+function infer(doc: linez.Document): string {
+	return doc.charset;
+}
 
 function checkLatin1TextRange(
 	context: eclint.Context,
@@ -50,5 +50,12 @@ function checkLatin1TextRange(
 		}
 	}
 }
+
+var CharsetRule: eclint.DocumentRule = {
+	type: 'DocumentRule',
+	check: check,
+	fix: fix,
+	infer: infer
+};
 
 export = CharsetRule;

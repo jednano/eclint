@@ -1,8 +1,8 @@
 ///<reference path="../typings/lodash/lodash.d.ts" />
+///<reference path="../typings/gulp-util/gulp-util.d.ts" />
 ///<reference path="../node_modules/linez/linez.d.ts" />
-///<reference path="../typings/through2/through2.d.ts" />
-///<reference path="../typings/vinyl/vinyl.d.ts" />
 import _ = require('lodash');
+import gutil = require('gulp-util');
 import linez = require('linez');
 import through = require('through2');
 import File = require('vinyl');
@@ -11,31 +11,12 @@ var editorconfig = require('editorconfig');
 // ReSharper disable once InconsistentNaming
 module eclint {
 
-	export var boms = {
-		'utf-8-bom': '\u00EF\u00BB\u00BF',
-		'utf-16be': '\u00FE\u00FF',
-		'utf-32le': '\u00FF\u00FE\u0000\u0000',
-		'utf-16le': '\u00FF\u00FE',
-		'utf-32be': '\u0000\u0000\u00FE\u00FF'
-	};
-
 	export var charsets = {
 		'\u00EF\u00BB\u00BF': 'utf_8_bom',
 		'\u00FE\u00FF': 'utf_16be',
 		'\u00FF\u00FE\u0000\u0000': 'utf_32le',
 		'\u00FF\u00FE': 'utf_16le',
 		'\u0000\u0000\u00FE\u00FF': 'utf_32be'
-	};
-
-	export var newlines = {
-		lf: '\n',
-		'\n': 'lf',
-
-		crlf: '\r\n',
-		'\r\n': 'crlf',
-
-		cr: '\r',
-		'\r': 'cr'
 	};
 
 	export function configure(options: ConfigurationOptions) {
@@ -64,7 +45,7 @@ module eclint {
 		 * of soft tabs (when supported). When set to tab, the value of
 		 * tab_width (if specified) will be used.
 		 */
-		indent_size?: any;
+		indent_size?: number|string;
 		/**
 		 * Number of columns used to represent a tab character. This defaults
 		 * to the value of indent_size and doesn't usually need to be specified.
@@ -126,7 +107,37 @@ module eclint {
 		return new Error(ERROR_TEMPLATE({ message: message }));
 	}
 
+	var PLUGIN_NAME = 'ECLint';
+
+	function createPluginError(err: Error) {
+		return new gutil.PluginError(PLUGIN_NAME, err, { showStack: true });
+	}
+
+	export var ruleNames = [
+		'charset',
+		'indent_style',
+		'indent_size',
+		'tab_width',
+		'trim_trailing_whitespace',
+		'end_of_line',
+		'insert_final_newline',
+		'max_line_length'
+	];
+
+	var rules: any = {};
+	_.without(ruleNames, 'tab_width').forEach(name => {
+		rules[name] = require('./rules/' + name);
+	});
+
+	function getSettings(fileSettings: Settings, commandSettings: Settings) {
+		return _.omit(
+			_.assign(fileSettings, commandSettings),
+			['tab_width']
+		);
+	}
+
 	export function check(options?: CommandOptions) {
+
 		options = options || {};
 		var commandSettings = options.settings || {};
 		return through.obj((file: File, enc: string, done: Done) => {
@@ -136,33 +147,44 @@ module eclint {
 				return;
 			}
 
-			var fileSettings: Settings = editorconfig.parse(file.path);
-			var settings: Settings = _.assign(fileSettings, commandSettings);
-			var doc = linez(file.contents + '');
+			editorconfig.parse(file.path)
+				.then((fileSettings: Settings) => {
 
-			var context = {
-				report: (message: string) => {
-					console.log(file.path + ':', message);
-				}
-			};
+					var settings = getSettings(fileSettings, commandSettings);
+					var doc = linez(file.contents + '');
 
-			Object.keys(settings).forEach(setting => {
-				var rule: DocumentRule|LineRule = require('./rules/' + setting);
-				if (rule.type === 'DocumentRule') {
-					(<DocumentRule>rule).check(context, settings, doc);
-				} else {
-					var check = (<LineRule>rule).check;
-					doc.lines.forEach(line => {
-						check(context, settings, line);
+					var context = {
+						report: (message: string) => {
+							console.log(file.path + ':', message);
+						}
+					};
+
+					Object.keys(settings).forEach(setting => {
+						var rule: DocumentRule|LineRule = rules[setting];
+						try {
+							if (rule.type === 'DocumentRule') {
+								(<DocumentRule>rule).check(context, settings, doc);
+							} else {
+								var check = (<LineRule>rule).check;
+								doc.lines.forEach(line => {
+									check(context, settings, line);
+								});
+							}
+						} catch (err) {
+							done(createPluginError(err));
+						}
 					});
-				}
-			});
 
-			done(null, file);
+					done(null, file);
+
+				}, (err: Error) => {
+					done(createPluginError(err));
+				});
 		});
 	}
 
 	export function fix(options?: CommandOptions) {
+
 		options = options || {};
 		var commandSettings = options.settings || {};
 		return through.obj((file: File, enc: string, done: Done) => {
@@ -172,28 +194,37 @@ module eclint {
 				return;
 			}
 
-			var fileSettings: Settings = editorconfig.parse(file.path);
-			var settings: Settings = _.assign(fileSettings, commandSettings);
-			var doc = linez(file.contents + '');
+			editorconfig.parse(file.path)
+				.then((fileSettings: Settings) => {
 
-			Object.keys(settings).forEach(setting => {
-				var rule: DocumentRule|LineRule = require('./rules/' + setting);
-				if (rule.type === 'DocumentRule') {
-					(<DocumentRule>rule).fix(settings, doc);
-				} else {
-					var fix = (<LineRule>rule).fix;
-					doc.lines.forEach(line => {
-						fix(settings, line);
+					var settings = getSettings(fileSettings, commandSettings);
+					var doc = linez(file.contents + '');
+
+					Object.keys(settings).forEach(setting => {
+						var rule: DocumentRule|LineRule = rules[setting];
+						try {
+							if (rule.type === 'DocumentRule') {
+								(<DocumentRule>rule).fix(settings, doc);
+							} else {
+								var fix = (<LineRule>rule).fix;
+								doc.lines.forEach(line => {
+									fix(settings, line);
+								});
+							}
+						} catch (err) {
+							done(createPluginError(err));
+						}
 					});
-				}
-			});
 
-			file.contents = new Buffer(doc + '');
-			done(null, file);
+					done(null, file);
+
+				}, (err: Error) => {
+					done(createPluginError(err));
+				});
 		});
 	}
 
-	export function infer() {
+	export function infer(options?: CommandOptions) {
 		return through.obj((file: File, enc: string, done: Done) => {
 
 			if (file.isStream()) {

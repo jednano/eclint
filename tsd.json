@@ -31,6 +31,12 @@
     },
     "vinyl/vinyl.d.ts": {
       "commit": "40eea5dc8f672e511abed203b2bb087026beec60"
+    },
+    "gulp-util/gulp-util.d.ts": {
+      "commit": "40eea5dc8f672e511abed203b2bb087026beec60"
+    },
+    "chalk/chalk.d.ts": {
+      "commit": "40eea5dc8f672e511abed203b2bb087026beec60"
     }
   }
 }
