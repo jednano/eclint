@@ -52,6 +52,10 @@ var eclint;
         options = options || {};
         var commandSettings = options.settings || {};
         return through.obj(function (file, enc, done) {
+            if (file.isNull()) {
+                done(null, file);
+                return;
+            }
             if (file.isStream()) {
                 done(createModuleError('Streams are not supported'));
                 return;
@@ -92,6 +96,10 @@ var eclint;
         options = options || {};
         var commandSettings = options.settings || {};
         return through.obj(function (file, enc, done) {
+            if (file.isNull()) {
+                done(null, file);
+                return;
+            }
             if (file.isStream()) {
                 done(createModuleError('Streams are not supported'));
                 return;
@@ -116,6 +124,7 @@ var eclint;
                         done(createPluginError(err));
                     }
                 });
+                file.contents = new Buffer(doc + '');
                 done(null, file);
             }, function (err) {
                 done(createPluginError(err));

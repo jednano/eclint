@@ -142,6 +142,11 @@ module eclint {
 		var commandSettings = options.settings || {};
 		return through.obj((file: File, enc: string, done: Done) => {
 
+			if (file.isNull()) {
+				done(null, file);
+				return;
+			}
+
 			if (file.isStream()) {
 				done(createModuleError('Streams are not supported'));
 				return;
@@ -189,6 +194,11 @@ module eclint {
 		var commandSettings = options.settings || {};
 		return through.obj((file: File, enc: string, done: Done) => {
 
+			if (file.isNull()) {
+				done(null, file);
+				return;
+			}
+
 			if (file.isStream()) {
 				done(createModuleError('Streams are not supported'));
 				return;
@@ -216,6 +226,7 @@ module eclint {
 						}
 					});
 
+					file.contents = new Buffer(doc + '');
 					done(null, file);
 
 				}, (err: Error) => {
