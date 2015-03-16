@@ -62,7 +62,7 @@ var eclint;
             }
             editorconfig.parse(file.path).then(function (fileSettings) {
                 var settings = getSettings(fileSettings, commandSettings);
-                var doc = linez(file.contents + '');
+                var doc = linez(file.contents);
                 var context = {
                     report: function (message) {
                         console.log(file.path + ':', message);
@@ -106,7 +106,7 @@ var eclint;
             }
             editorconfig.parse(file.path).then(function (fileSettings) {
                 var settings = getSettings(fileSettings, commandSettings);
-                var doc = linez(file.contents + '');
+                var doc = linez(file.contents);
                 Object.keys(settings).forEach(function (setting) {
                     var rule = rules[setting];
                     try {
@@ -132,6 +132,7 @@ var eclint;
         });
     }
     eclint.fix = fix;
+    // ReSharper disable once UnusedParameter
     function infer(options) {
         return through.obj(function (file, enc, done) {
             if (file.isStream()) {

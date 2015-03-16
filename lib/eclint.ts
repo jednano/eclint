@@ -156,7 +156,7 @@ module eclint {
 				.then((fileSettings: Settings) => {
 
 					var settings = getSettings(fileSettings, commandSettings);
-					var doc = linez(file.contents + '');
+					var doc = linez(file.contents);
 
 					var context = {
 						report: (message: string) => {
@@ -208,7 +208,7 @@ module eclint {
 				.then((fileSettings: Settings) => {
 
 					var settings = getSettings(fileSettings, commandSettings);
-					var doc = linez(file.contents + '');
+					var doc = linez(file.contents);
 
 					Object.keys(settings).forEach(setting => {
 						var rule: DocumentRule|LineRule = rules[setting];
@@ -235,6 +235,7 @@ module eclint {
 		});
 	}
 
+	// ReSharper disable once UnusedParameter
 	export function infer(options?: CommandOptions) {
 		return through.obj((file: File, enc: string, done: Done) => {
 
