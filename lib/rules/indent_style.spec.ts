@@ -1,4 +1,4 @@
-﻿import common = require('../test-common');
+import common = require('../test-common');
 import rule = require('./indent_style');
 var createLine = common.createLine;
 

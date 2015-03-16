@@ -1,4 +1,4 @@
-﻿import _ = require('lodash');
+import _ = require('lodash');
 import common = require('../test-common');
 import rule = require('./indent_size');
 

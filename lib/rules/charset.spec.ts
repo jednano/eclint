@@ -1,4 +1,4 @@
-﻿var iconv = require('iconv-lite');
+var iconv = require('iconv-lite');
 
 import common = require('../test-common');
 import rule = require('./charset');

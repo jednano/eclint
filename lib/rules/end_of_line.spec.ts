@@ -1,4 +1,4 @@
-﻿import common = require('../test-common');
+import common = require('../test-common');
 import rule = require('./end_of_line');
 
 var expect = common.expect;

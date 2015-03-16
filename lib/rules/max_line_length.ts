@@ -1,4 +1,4 @@
-﻿import linez = require('linez');
+import linez = require('linez');
 import eclint = require('../eclint');
 
 function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {

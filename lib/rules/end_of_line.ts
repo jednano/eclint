@@ -1,4 +1,4 @@
-﻿import linez = require('linez');
+import linez = require('linez');
 import eclint = require('../eclint');
 
 var newlines = {

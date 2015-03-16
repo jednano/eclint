@@ -1,4 +1,4 @@
-﻿import common = require('../test-common');
+import common = require('../test-common');
 import rule = require('./trim_trailing_whitespace');
 var createLine = common.createLine;
 

@@ -1,4 +1,4 @@
-﻿import common = require('../test-common');
+import common = require('../test-common');
 import rule = require('./max_line_length');
 var createLine = common.createLine;
 
