@@ -29,7 +29,7 @@
     "gitlike-cli": "^0.1.0",
     "gulp-util": "^3.0.4",
     "iconv-lite": "^0.4.7",
-    "linez": "^3.1.1",
+    "linez": "^3.2.0",
     "lodash": "^3.4.0",
     "through2": "^0.6.3",
     "vinyl": "^0.4.6",

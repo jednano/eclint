@@ -124,7 +124,7 @@ var eclint;
                         done(createPluginError(err));
                     }
                 });
-                file.contents = new Buffer(doc + '');
+                file.contents = doc.toBuffer();
                 done(null, file);
             }, function (err) {
                 done(createPluginError(err));

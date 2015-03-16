@@ -226,7 +226,7 @@ module eclint {
 						}
 					});
 
-					file.contents = new Buffer(doc + '');
+					file.contents = doc.toBuffer();
 					done(null, file);
 
 				}, (err: Error) => {
