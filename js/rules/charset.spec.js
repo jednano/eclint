@@ -60,6 +60,10 @@ describe('charset rule', function () {
             expect(reporter).to.have.been.calledOnce;
             expect(reporter).to.have.been.calledWithExactly('Expected charset: utf-8-bom');
         });
+        it('remains silent when an unsupported charset is set', function () {
+            rule.check(context, { charset: 'foo' }, linez(''));
+            expect(reporter).not.to.have.been.called;
+        });
     });
     describe('fix command', function () {
         it('converts utf-8-bom to utf-16be when utf-16be is setting', function () {

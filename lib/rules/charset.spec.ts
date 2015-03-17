@@ -76,6 +76,11 @@ describe('charset rule', () => {
 			expect(reporter).to.have.been.calledWithExactly('Expected charset: utf-8-bom');
 		});
 
+		it('remains silent when an unsupported charset is set', () => {
+			rule.check(context, { charset: 'foo' }, linez(''));
+			expect(reporter).not.to.have.been.called;
+		});
+
 	});
 
 	describe('fix command', () => {
