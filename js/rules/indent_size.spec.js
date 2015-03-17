@@ -11,10 +11,27 @@ describe('indent_size rule', function () {
         reporter.reset();
     });
     describe('check command', function () {
-        it('reports invalid indent size', function () {
+        it('reports invalid indent size: 2 with setting of 4', function () {
             rule.check(context, { indent_size: 4 }, createLine('  foo'));
             expect(reporter).to.have.been.calledOnce;
             expect(reporter).to.have.been.calledWithExactly('Invalid indent size detected: 2');
+        });
+        it('reports invalid indent size: 2 with setting of tab', function () {
+            rule.check(context, { indent_size: 'tab' }, createLine('  foo'));
+            expect(reporter).to.have.been.calledOnce;
+            expect(reporter).to.have.been.calledWithExactly('Invalid indent size detected: 2');
+        });
+        it('remains silent when indent size is an unsupported string', function () {
+            rule.check(context, { indent_size: 'foo' }, createLine(''));
+            expect(reporter).not.to.have.been.called;
+        });
+        it('remains silent when inferred indent size is tab', function () {
+            rule.check(context, { indent_size: 4 }, createLine('\tfoo'));
+            expect(reporter).not.to.have.been.called;
+        });
+        it('remains silent when the indent style setting is tab', function () {
+            rule.check(context, { indent_size: 4, indent_style: 'tab' }, createLine('  foo'));
+            expect(reporter).not.to.have.been.called;
         });
         it('remains silent when indent size is indeterminate', function () {
             rule.check(context, { indent_size: 4 }, createLine('foo'));
@@ -82,6 +99,13 @@ describe('indent_size rule', function () {
         });
         it('does nothing when no indent style is defined', function () {
             var line = rule.fix({}, createLine('\t foo'));
+            expect(line.text).to.eq('\t foo');
+        });
+        it('does nothing when indent style setting is foo', function () {
+            var line = rule.fix({
+                indent_style: 'foo',
+                indent_size: 4
+            }, createLine('\t foo'));
             expect(line.text).to.eq('\t foo');
         });
     });

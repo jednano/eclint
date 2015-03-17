@@ -14,12 +14,33 @@ describe('indent_size rule', () => {
 		reporter.reset();
 	});
 
-	describe('check command', () => {
+	describe('check command',() => {
 
-		it('reports invalid indent size', () => {
+		it('reports invalid indent size: 2 with setting of 4', () => {
 			rule.check(context, { indent_size: 4 }, createLine('  foo'));
 			expect(reporter).to.have.been.calledOnce;
 			expect(reporter).to.have.been.calledWithExactly('Invalid indent size detected: 2');
+		});
+
+		it('reports invalid indent size: 2 with setting of tab', () => {
+			rule.check(context, { indent_size: 'tab' }, createLine('  foo'));
+			expect(reporter).to.have.been.calledOnce;
+			expect(reporter).to.have.been.calledWithExactly('Invalid indent size detected: 2');
+		});
+
+		it('remains silent when indent size is an unsupported string', () => {
+			rule.check(context, { indent_size: 'foo' }, createLine(''));
+			expect(reporter).not.to.have.been.called;
+		});
+
+		it('remains silent when inferred indent size is tab', () => {
+			rule.check(context, { indent_size: 4 }, createLine('\tfoo'));
+			expect(reporter).not.to.have.been.called;
+		});
+
+		it('remains silent when the indent style setting is tab', () => {
+			rule.check(context, { indent_size: 4, indent_style: 'tab' }, createLine('  foo'));
+			expect(reporter).not.to.have.been.called;
 		});
 
 		it('remains silent when indent size is indeterminate', () => {
@@ -100,6 +121,14 @@ describe('indent_size rule', () => {
 
 		it('does nothing when no indent style is defined', () => {
 			var line = rule.fix({}, createLine('\t foo'));
+			expect(line.text).to.eq('\t foo');
+		});
+
+		it('does nothing when indent style setting is foo', () => {
+			var line = rule.fix({
+				indent_style: 'foo',
+				indent_size: 4
+			}, createLine('\t foo'));
 			expect(line.text).to.eq('\t foo');
 		});
 

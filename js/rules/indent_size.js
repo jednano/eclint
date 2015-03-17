@@ -2,27 +2,26 @@
 ///<reference path="../../typings/lodash/lodash.d.ts" />
 var _ = require('lodash');
 function check(context, settings, line) {
-    var inferredSetting;
-    if (settings.indent_size === 'tab') {
-        inferredSetting = infer(line);
-        if (inferredSetting && inferredSetting !== 'tab') {
-            context.report('Invalid indent size detected: ' + inferredSetting);
-        }
+    var indentSize = resolveRule(settings);
+    if (typeof indentSize === 'string') {
         return;
     }
-    if (typeof settings.indent_size !== 'number') {
+    if (settings.indent_style === 'tab') {
         return;
     }
-    inferredSetting = infer(line);
+    var inferredSetting = infer(line);
     if (inferredSetting === 'tab') {
-        context.report('Invalid indent size detected: tab');
+        return;
     }
-    if (inferredSetting % settings.indent_size !== 0) {
+    if (inferredSetting % indentSize !== 0) {
         context.report('Invalid indent size detected: ' + inferredSetting);
     }
 }
 function fix(settings, line) {
-    var indentSize = applyRule(settings);
+    var indentSize = resolveRule(settings);
+    if (typeof indentSize !== 'number') {
+        return line;
+    }
     switch (settings.indent_style) {
         case 'tab':
             line.text = line.text.replace(/^ +/, function (match) {
@@ -56,7 +55,7 @@ function infer(line) {
     }
     return 0;
 }
-function applyRule(settings) {
+function resolveRule(settings) {
     if (settings.indent_size === 'tab') {
         return settings.tab_width;
     }

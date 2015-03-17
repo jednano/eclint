@@ -25,6 +25,14 @@ describe('end_of_line rule', function () {
             expect(reporter).to.have.been.calledOnce;
             expect(reporter).to.have.been.calledWithExactly('Incorrect newline character found: crlf');
         });
+        it('remains silent when the correct end_of_line setting is specified', function () {
+            rule.check(context, { end_of_line: 'lf' }, createLine('foo', { ending: '\n' }));
+            expect(reporter).not.to.have.been.called;
+        });
+        it('remains silent when no end_of_line setting is specified', function () {
+            rule.check(context, {}, createLine(''));
+            expect(reporter).not.to.have.been.called;
+        });
     });
     describe('fix command', function () {
         it('replaces newline character with "lf" when "lf" is the setting', function () {
