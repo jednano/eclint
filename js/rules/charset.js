@@ -7,32 +7,29 @@ var boms = {
     'utf-16le': '\u00FF\u00FE',
     'utf-32be': '\u0000\u0000\u00FE\u00FF'
 };
-var CharsetRule = {
-    type: 'DocumentRule',
-    check: function (context, settings, doc) {
-        var inferredSetting = this.infer(doc);
-        if (inferredSetting) {
-            if (inferredSetting !== settings.charset) {
-                context.report('Invalid charset: ' + inferredSetting);
-            }
-            return;
+function check(context, settings, doc) {
+    var inferredSetting = infer(doc);
+    if (inferredSetting) {
+        if (inferredSetting !== settings.charset) {
+            context.report('Invalid charset: ' + inferredSetting);
         }
-        if (settings.charset === 'latin1') {
-            checkLatin1TextRange(context, settings, doc.lines[0]);
-            return;
-        }
-        if (_.contains(Object.keys(boms), settings.charset)) {
-            context.report('Expected charset: ' + settings.charset);
-        }
-    },
-    fix: function (settings, doc) {
-        doc.charset = settings.charset;
-        return doc;
-    },
-    infer: function (doc) {
-        return doc.charset;
+        return;
     }
-};
+    if (settings.charset === 'latin1') {
+        checkLatin1TextRange(context, settings, doc.lines[0]);
+        return;
+    }
+    if (_.contains(Object.keys(boms), settings.charset)) {
+        context.report('Expected charset: ' + settings.charset);
+    }
+}
+function fix(settings, doc) {
+    doc.charset = settings.charset;
+    return doc;
+}
+function infer(doc) {
+    return doc.charset;
+}
 function checkLatin1TextRange(context, settings, line) {
     var text = line.text;
     for (var i = 0, len = text.length; i < len; i++) {
@@ -42,4 +39,10 @@ function checkLatin1TextRange(context, settings, line) {
         }
     }
 }
+var CharsetRule = {
+    type: 'DocumentRule',
+    check: check,
+    fix: fix,
+    infer: infer
+};
 module.exports = CharsetRule;
