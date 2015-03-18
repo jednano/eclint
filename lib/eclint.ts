@@ -4,9 +4,12 @@
 import _ = require('lodash');
 import gutil = require('gulp-util');
 import linez = require('linez');
+import os = require('os');
 import through = require('through2');
 import File = require('vinyl');
 var editorconfig = require('editorconfig');
+
+var PluginError = gutil.PluginError;
 
 // ReSharper disable once InconsistentNaming
 module eclint {
@@ -110,7 +113,7 @@ module eclint {
 	var PLUGIN_NAME = 'ECLint';
 
 	function createPluginError(err: Error) {
-		return new gutil.PluginError(PLUGIN_NAME, err, { showStack: true });
+		return new PluginError(PLUGIN_NAME, err, { showStack: true });
 	}
 
 	export var ruleNames = [
@@ -235,17 +238,164 @@ module eclint {
 		});
 	}
 
-	// ReSharper disable once UnusedParameter
-	export function infer(options?: CommandOptions) {
-		return through.obj((file: File, enc: string, done: Done) => {
+	export interface InferOptions {
+		/**
+		 * Shows the tallied score for each setting.
+		 */
+		score?: boolean;
+		/**
+		 * Exports file as ini file type.
+		 */
+		ini?: boolean;
+		/**
+		 * Adds root = true to the top of your ini file, if any.
+		 */
+		root?: boolean;
+	}
 
-			if (file.isStream()) {
-				done(createModuleError('Streams are not supported'));
+	export interface ScoredSetting {
+		[key: string]: {
+			[key: string]: number;
+		}
+	}
+
+	export interface ScoredSettings {
+		charset?: ScoredSetting;
+		indent_style?: ScoredSetting;
+		indent_size?: ScoredSetting;
+		trim_trailing_whitespace?: ScoredSetting;
+		end_of_line?: ScoredSetting;
+		insert_final_newline?: ScoredSetting;
+		max_line_length?: number;
+	}
+
+	export function infer(options?: InferOptions) {
+		options = options || {};
+
+		if (options.score && options.ini) {
+			throw new PluginError(PLUGIN_NAME, 'Cannot generate tallied scores as ini file format');
+		}
+
+		var settings: ScoredSettings = {};
+
+		function bufferContents(file: File, enc: string, done: Function) {
+			if (file.isNull()) {
+				done(null, file);
 				return;
 			}
 
-			done(createModuleError('Not implemented'));
-		});
+			if (file.isStream()) {
+				done(new PluginError(PLUGIN_NAME, 'Streaming not supported'));
+				return;
+			}
+
+			function incrementSetting(setting: { [key: string]: number }, value: any) {
+				setting[value] = setting[value] || 0;
+				setting[value]++;
+			}
+
+			var doc = linez(file.contents);
+			Object.keys(rules).forEach(key => {
+				if (key === 'max_line_length') {
+					settings.max_line_length = 0;
+				} else {
+					settings[key] = {};
+				}
+				var setting = settings[key];
+				var rule: DocumentRule|LineRule = rules[key];
+				try {
+					if (rule.type === 'DocumentRule') {
+						incrementSetting(setting, (<DocumentRule>rule).infer(doc));
+					} else {
+						var infer = (<LineRule>rule).infer;
+						if (key === 'max_line_length') {
+							doc.lines.forEach(line => {
+								var inferredSetting = infer(line);
+								if (inferredSetting > settings.max_line_length) {
+									settings.max_line_length = inferredSetting;
+								}
+							});
+						} else {
+							doc.lines.forEach(line => {
+								incrementSetting(setting, infer(line));
+							});
+						}
+					}
+				} catch (err) {
+					done(createPluginError(err));
+				}
+			});
+
+			done();
+		}
+
+		function resolveScores() {
+			function parseValue(value: any) {
+				try {
+					return JSON.parse(value);
+				} catch (err) {
+					return value;
+				}
+			}
+			var result: Settings = {};
+			Object.keys(rules).forEach(rule => {
+				if (rule === 'max_line_length') {
+					result.max_line_length = Math.ceil(settings.max_line_length / 10) * 10;
+					return;
+				}
+				var maxScore = 0;
+				var setting = settings[rule];
+				Object.keys(setting).forEach(value => {
+					var score = setting[value];
+					var parsedValue = parseValue(value);
+					if (score >= maxScore && !_.isUndefined(parsedValue)) {
+						maxScore = score;
+						result[rule] = parsedValue;
+					}
+				});
+			});
+			return result;
+		}
+
+		function endStream(done: Function) {
+			function emitContents(contents: string) {
+				this.push(new File({ contents: new Buffer(contents) }));
+				done();
+			}
+
+			if (options.score) {
+				emitContents.call(this, JSON.stringify(settings));
+				return;
+			}
+
+			var resolved = resolveScores();
+
+			if (options.ini) {
+				var lines = [
+					'# EditorConfig is awesome: http://EditorConfig.org',
+					''
+				];
+				if (options.root) {
+					[].push.apply(lines, [
+						'# top-most EditorConfig file',
+						'root = true',
+						''
+					]);
+				}
+				[].push.apply(lines, [
+					'[*]',
+					Object.keys(resolved).map(key => {
+						return key + ' = ' + resolved[key];
+					}).join(os.EOL)
+				]);
+				emitContents.call(this, lines.join(os.EOL) + os.EOL);
+				return;
+			}
+
+			emitContents.call(this, JSON.stringify(resolved));
+		}
+
+		return through.obj(bufferContents, <any>endStream);
 	}
 
 }

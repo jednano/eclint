@@ -2,6 +2,7 @@
 ///<reference path='../typings/lodash/lodash.d.ts'/>
 ///<reference path='../typings/vinyl-fs/vinyl-fs.d.ts'/>
 var _ = require('lodash');
+var tap = require('gulp-tap');
 var vfs = require('vinyl-fs');
 var eclint = require('./eclint');
 var clc = require('cli-color');
@@ -32,34 +33,27 @@ var check = cli.command('check <files>...');
 check.description('Validate that file(s) adhere to .editorconfig settings');
 addSettings(check);
 check.action(function (args, options) {
-    var stream = vfs.src(args.files);
-    stream.pipe(eclint.check({ settings: _.pick(options, eclint.ruleNames) }));
-    return stream;
+    return vfs.src(args.files).pipe(eclint.check({ settings: _.pick(options, eclint.ruleNames) }));
 });
 var fix = cli.command('fix <files>...');
 fix.description('Fix formatting errors that disobey .editorconfig settings');
 addSettings(fix);
 fix.option('-d, --dest <folder>', 'Destination folder to pipe source files');
 fix.action(function (args, options) {
-    var stream = vfs.src(args.files);
-    stream.pipe(eclint.fix({ settings: _.pick(options, eclint.ruleNames) }));
+    var stream = vfs.src(args.files).pipe(eclint.fix({ settings: _.pick(options, eclint.ruleNames) }));
     if (options.dest) {
-        stream.pipe(vfs.dest(options.dest));
+        return stream.pipe(vfs.dest(options.dest));
     }
     return stream;
 });
 var infer = cli.command('infer <files>...');
 infer.description('Infer .editorconfig settings from one or more files');
-infer.option('-o, --output', 'File to output inferred settings');
+infer.option('-s, --score', 'Shows the tallied score for each setting');
+infer.option('-i, --ini', 'Exports file as ini file type');
+infer.option('-r, --root', 'Adds root = true to your ini file, if any');
 infer.action(function (args, options) {
-    var stream = vfs.src(args.files);
-    stream.pipe(eclint.infer({ settings: _.pick(options, eclint.ruleNames) }));
-    if (options.output) {
-        stream.pipe(vfs.dest(options.output));
-    }
-    else {
-        console.log('foo');
-    }
-    return stream;
+    return vfs.src(args.files).pipe(eclint.infer(options)).pipe(tap(function (file) {
+        console.log(file.contents + '');
+    }));
 });
 module.exports = cli;

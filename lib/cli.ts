@@ -2,6 +2,8 @@
 ///<reference path='../typings/lodash/lodash.d.ts'/>
 ///<reference path='../typings/vinyl-fs/vinyl-fs.d.ts'/>
 import _ = require('lodash');
+var tap = require('gulp-tap');
+import File = require('vinyl');
 import vfs = require('vinyl-fs');
 
 import eclint = require('./eclint');
@@ -41,9 +43,8 @@ var check = cli.command('check <files>...');
 check.description('Validate that file(s) adhere to .editorconfig settings');
 addSettings(check);
 check.action((args: any, options: CheckOptions) => {
-	var stream = vfs.src(args.files);
-	stream.pipe(eclint.check({ settings: _.pick(options, eclint.ruleNames) }));
-	return stream;
+	return vfs.src(args.files)
+		.pipe(eclint.check({ settings: _.pick(options, eclint.ruleNames) }));
 });
 
 interface FixOptions extends eclint.Settings {
@@ -58,33 +59,25 @@ fix.description('Fix formatting errors that disobey .editorconfig settings');
 addSettings(fix);
 fix.option('-d, --dest <folder>', 'Destination folder to pipe source files');
 fix.action((args: any, options: FixOptions) => {
-	var stream = vfs.src(args.files);
-	stream.pipe(eclint.fix({ settings: _.pick(options, eclint.ruleNames) }));
+	var stream = vfs.src(args.files)
+		.pipe(eclint.fix({ settings: _.pick(options, eclint.ruleNames) }));
 	if (options.dest) {
-		stream.pipe(vfs.dest(options.dest));
+		return stream.pipe(vfs.dest(options.dest));
 	}
 	return stream;
 });
 
-interface InferOptions {
-	/**
-	 * Output file for inferred settings.json.
-	 */
-	output?: string;
-}
-
 var infer = cli.command('infer <files>...');
 infer.description('Infer .editorconfig settings from one or more files');
-infer.option('-o, --output', 'File to output inferred settings');
-infer.action((args: any, options: InferOptions) => {
-	var stream = vfs.src(args.files);
-	stream.pipe(eclint.infer({ settings: _.pick(options, eclint.ruleNames) }));
-	if (options.output) {
-		stream.pipe(vfs.dest(options.output));
-	} else {
-		console.log('foo');
-	}
-	return stream;
+infer.option('-s, --score', 'Shows the tallied score for each setting');
+infer.option('-i, --ini',   'Exports file as ini file type');
+infer.option('-r, --root',  'Adds root = true to your ini file, if any');
+infer.action((args: any, options: eclint.InferOptions) => {
+	return vfs.src(args.files)
+		.pipe(eclint.infer(options))
+		.pipe(tap((file: File) => {
+			console.log(file.contents + '');
+		}));
 });
 
 export = cli;

@@ -77,6 +77,34 @@ declare module eclint {
     var ruleNames: string[];
     function check(options?: CommandOptions): NodeJS.ReadWriteStream;
     function fix(options?: CommandOptions): NodeJS.ReadWriteStream;
-    function infer(options?: CommandOptions): NodeJS.ReadWriteStream;
+    interface InferOptions {
+        /**
+         * Shows the tallied score for each setting.
+         */
+        score?: boolean;
+        /**
+         * Exports file as ini file type.
+         */
+        ini?: boolean;
+        /**
+         * Adds root = true to the top of your ini file, if any.
+         */
+        root?: boolean;
+    }
+    interface ScoredSetting {
+        [key: string]: {
+            [key: string]: number;
+        };
+    }
+    interface ScoredSettings {
+        charset?: ScoredSetting;
+        indent_style?: ScoredSetting;
+        indent_size?: ScoredSetting;
+        trim_trailing_whitespace?: ScoredSetting;
+        end_of_line?: ScoredSetting;
+        insert_final_newline?: ScoredSetting;
+        max_line_length?: number;
+    }
+    function infer(options?: InferOptions): NodeJS.ReadWriteStream;
 }
 export = eclint;
