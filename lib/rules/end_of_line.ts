@@ -12,33 +12,30 @@ var newlines = {
 	'\r': 'cr'
 };
 
-function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
-	if (!settings.end_of_line) {
-		return;
-	}
-	var inferredSetting = infer(line);
-	if (inferredSetting !== settings.end_of_line) {
-		context.report('Incorrect newline character found: ' + inferredSetting);
-	}
-}
-
-function fix(settings: eclint.Settings, line: linez.Line) {
-	var settingName = settings.end_of_line;
-	if (line.ending && settingName) {
-		line.ending = newlines[settingName];
-	}
-	return line;
-}
-
-function infer(line: linez.Line): string {
-	return newlines[line.ending];
-}
-
 var EndOfLineRule: eclint.LineRule = {
 	type: 'LineRule',
-	check: check,
-	fix: fix,
-	infer: infer
+
+	check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
+		if (!settings.end_of_line) {
+			return;
+		}
+		var inferredSetting = this.infer(line);
+		if (inferredSetting !== settings.end_of_line) {
+			context.report('Incorrect newline character found: ' + inferredSetting);
+		}
+	},
+
+	fix(settings: eclint.Settings, line: linez.Line) {
+		var settingName = settings.end_of_line;
+		if (line.ending && settingName) {
+			line.ending = newlines[settingName];
+		}
+		return line;
+	},
+
+	infer(line: linez.Line): string {
+		return newlines[line.ending];
+	}
 };
 
 export = EndOfLineRule;

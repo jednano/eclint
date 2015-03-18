@@ -5,8 +5,6 @@ var linez = require('linez');
 var expect = common.expect;
 var reporter = common.reporter;
 var context = common.context;
-var createLine = common.createLine;
-var Doc = linez.Document;
 iconv.extendNodeEncodings();
 // ReSharper disable WrongExpressionStatement
 describe('charset rule', function () {
