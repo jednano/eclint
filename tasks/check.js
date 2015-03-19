@@ -6,6 +6,8 @@ module.exports = function() {
 	var hasErrors = false;
 	var stream = gulp.src([
 			'*',
+			'!eclint.sln*',
+			'!eclint.v12.suo',
 			'bin/*.js',
 			'tasks/*.js',
 			'lib/**/*.ts'

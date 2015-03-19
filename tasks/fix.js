@@ -4,6 +4,8 @@ var eclint = require('../');
 module.exports = function() {
 	return gulp.src([
 			'*',
+			'!eclint.sln*',
+			'!eclint.v12.suo',
 			'bin/*.js',
 			'tasks/*.js',
 			'lib/**/*.ts'
