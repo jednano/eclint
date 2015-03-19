@@ -17,6 +17,9 @@ function check(context: eclint.Context, settings: eclint.Settings, line: linez.L
 		return;
 	}
 	var inferredSetting = infer(line);
+	if (!inferredSetting) {
+		return;
+	}
 	if (inferredSetting !== settings.end_of_line) {
 		context.report('Incorrect newline character found: ' + inferredSetting);
 	}

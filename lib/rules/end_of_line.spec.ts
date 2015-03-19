@@ -39,7 +39,13 @@ describe('end_of_line rule', () => {
 		});
 
 		it('remains silent when no end_of_line setting is specified', () => {
-			rule.check(context, {}, createLine(''));
+			rule.check(context, {}, createLine('', { ending: '\n' }));
+			rule.check(context, {}, createLine('', { ending: '\r\n' }));
+			expect(reporter).not.to.have.been.called;
+		});
+
+		it('remains silent when no newline is detected', () => {
+			rule.check(context, { end_of_line: 'lf' }, createLine(''));
 			expect(reporter).not.to.have.been.called;
 		});
 
