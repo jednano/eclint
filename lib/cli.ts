@@ -1,6 +1,7 @@
 ///<reference path='../typings/node/node.d.ts'/>
 ///<reference path='../typings/lodash/lodash.d.ts'/>
 ///<reference path='../typings/vinyl-fs/vinyl-fs.d.ts'/>
+import path = require('path');
 import _ = require('lodash');
 var tap = require('gulp-tap');
 import File = require('vinyl');
@@ -56,7 +57,8 @@ check.action((args: any, options: CheckOptions) => {
 			settings: _.pick(options, eclint.ruleNames),
 			reporter: <any>((file: File, message: string) => {
 				hasErrors = true;
-				console.error(file.path + ':', message);
+				var relativePath = path.relative('.', file.path);
+				console.error(relativePath + ':', message);
 			})
 		}));
 	stream.on('finish', () => {

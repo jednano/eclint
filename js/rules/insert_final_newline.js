@@ -3,12 +3,23 @@ var newlines = {
     crlf: '\r\n',
     cr: '\r'
 };
+function parse(insertFinalNewline) {
+    switch (insertFinalNewline) {
+        case true:
+        case false:
+            return insertFinalNewline;
+        default:
+            return void (0);
+    }
+}
 function check(context, settings, doc) {
-    if (settings.insert_final_newline && !infer(doc)) {
+    var setting = parse(settings.insert_final_newline);
+    var inferredSetting = infer(doc);
+    if (setting === true && !inferredSetting) {
         context.report('Expected final newline character');
         return;
     }
-    if (settings.insert_final_newline === false && infer(doc)) {
+    if (setting === false && inferredSetting) {
         context.report('Unexpected final newline character');
     }
 }
@@ -52,6 +63,7 @@ function infer(doc) {
 }
 var InsertFinalNewlineRule = {
     type: 'DocumentRule',
+    parse: parse,
     check: check,
     fix: fix,
     infer: infer

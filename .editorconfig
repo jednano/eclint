@@ -19,6 +19,9 @@ indent_size = 2
 indent_style = space
 indent_size = 4
 
-[Readme.md]
-indent_style = skip
-indent_size = skip
+[README.md]
+indent_style = ignore
+indent_size = ignore
+
+[*.{DotSettings,suo}]
+insert_final_newline = ignore

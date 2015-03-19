@@ -11,20 +11,20 @@ describe('indent_style rule', function () {
     });
     describe('check command', function () {
         it('validates tab setting', function () {
-            rule.check(context, { indent_style: 'tab' }, createLine('foo', { ending: '\n' }));
-            rule.check(context, { indent_style: 'tab' }, createLine('\tfoo', { ending: '\n' }));
+            rule.check(context, { indent_style: 'tab' }, createLine('foo'));
+            rule.check(context, { indent_style: 'tab' }, createLine('\tfoo'));
             expect(reporter).not.to.have.been.called;
-            rule.check(context, { indent_style: 'tab' }, createLine(' foo', { ending: '\n' }));
+            rule.check(context, { indent_style: 'tab' }, createLine(' foo'));
             expect(reporter).to.have.been.calledOnce;
-            expect(reporter).to.have.been.calledWithExactly('Invalid indent style: space');
+            expect(reporter).to.have.been.calledWithExactly('line 1: invalid indent style: space, expected: tab');
         });
         it('validates space setting', function () {
-            rule.check(context, { indent_style: 'space' }, createLine('foo', { ending: '\n' }));
-            rule.check(context, { indent_style: 'space' }, createLine(' foo', { ending: '\n' }));
+            rule.check(context, { indent_style: 'space' }, createLine('foo'));
+            rule.check(context, { indent_style: 'space' }, createLine(' foo'));
             expect(reporter).not.to.have.been.called;
-            rule.check(context, { indent_style: 'space' }, createLine('\tfoo', { ending: '\n' }));
+            rule.check(context, { indent_style: 'space' }, createLine('\tfoo'));
             expect(reporter).to.have.been.calledOnce;
-            expect(reporter).to.have.been.calledWithExactly('Invalid indent style: tab');
+            expect(reporter).to.have.been.calledWithExactly('line 1: invalid indent style: tab, expected: space');
         });
         it('remains silent when indent_style is undefined', function () {
             rule.check(context, {}, createLine('foo', { ending: '\n' }));

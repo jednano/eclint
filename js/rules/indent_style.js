@@ -1,5 +1,3 @@
-///<reference path="../../typings/node/node.d.ts" />
-///<reference path="../../typings/lodash/lodash.d.ts" />
 var _ = require('lodash');
 var DEFAULT_INDENT_SIZE = 4;
 var HARD_TAB = '\t';
@@ -16,7 +14,11 @@ function check(context, settings, line) {
     var inferredSetting = infer(line);
     var setting = parse(settings);
     if (inferredSetting && setting && inferredSetting !== setting) {
-        context.report('Invalid indent style: ' + inferredSetting);
+        context.report([
+            'line ' + line.number + ':',
+            'invalid indent style: ' + inferredSetting + ',',
+            'expected: ' + setting
+        ].join(' '));
     }
 }
 function fix(settings, line) {

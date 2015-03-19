@@ -1,13 +1,13 @@
 ///<reference path="../typings/lodash/lodash.d.ts" />
 ///<reference path="../typings/gulp-util/gulp-util.d.ts" />
 ///<reference path="../node_modules/linez/linez.d.ts" />
+var os = require('os');
 var _ = require('lodash');
 var gutil = require('gulp-util');
-var linez = require('linez');
-var os = require('os');
 var through = require('through2');
-var File = require('vinyl');
 var editorconfig = require('editorconfig');
+var linez = require('linez');
+var File = require('vinyl');
 var PluginError = gutil.PluginError;
 // ReSharper disable once InconsistentNaming
 var eclint;

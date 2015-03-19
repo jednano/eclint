@@ -1,13 +1,15 @@
 ///<reference path="../typings/lodash/lodash.d.ts" />
 ///<reference path="../typings/gulp-util/gulp-util.d.ts" />
 ///<reference path="../node_modules/linez/linez.d.ts" />
+import os = require('os');
+
 import _ = require('lodash');
 import gutil = require('gulp-util');
-import linez = require('linez');
-import os = require('os');
 import through = require('through2');
-import File = require('vinyl');
 var editorconfig = require('editorconfig');
+
+import linez = require('linez');
+import File = require('vinyl');
 
 var PluginError = gutil.PluginError;
 

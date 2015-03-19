@@ -1,5 +1,6 @@
 ///<reference path="../../typings/node/node.d.ts" />
 ///<reference path="../../typings/lodash/lodash.d.ts" />
+import path = require('path');
 import _ = require('lodash');
 import linez = require('linez');
 import eclint = require('../eclint');
@@ -13,7 +14,7 @@ function parse(settings: eclint.Settings) {
 		case 'space':
 			return settings.indent_style;
 		default:
-			return void (0);
+			return void(0);
 	}
 }
 
@@ -21,7 +22,11 @@ function check(context: eclint.Context, settings: eclint.Settings, line: linez.L
 	var inferredSetting = infer(line);
 	var setting = parse(settings);
 	if (inferredSetting && setting && inferredSetting !== setting) {
-		context.report('Invalid indent style: ' + inferredSetting);
+		context.report([
+			'line ' + line.number + ':',
+			'invalid indent style: ' + inferredSetting + ',',
+			'expected: ' + setting
+		].join(' '));
 	}
 }
 
