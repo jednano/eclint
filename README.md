@@ -224,7 +224,7 @@ You can also use the `-i, --ini` flag to generate the report as an INI file form
 
 ```
 $ eclint infer --ini * "lib/**/*.js" > .editorconfig
-``
+```
 
 If this is your root `.editorconfig` file, you'll definitely want to pair the `-i, --ini` flag with the `-r, --root` flag to add `root = true` to your `.editorconfig` file. We'll combine the 2 short flags into one:
 
