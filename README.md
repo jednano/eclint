@@ -108,7 +108,7 @@ before_script:
 
 This is the same method this project is doing in its own [.travis.yml file](https://github.com/jedmao/eclint/blob/master/.travis.yml#L14-L16) for reference.
 
-Now should be a great time to segue into the [fix sub-command]((#fix).
+Now should be a great time to segue into the [fix sub-command](#fix).
 
 
 ## Fix
