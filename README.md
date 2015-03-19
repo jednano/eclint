@@ -251,7 +251,7 @@ max_line_length = 90
 
 ## Rules
 
-Except for `tab_width`, all EditorConfig rules are supported. This is because there `tab_width` is only meant the change the display width in your text editor. It has no bearing on the file contents themselves.
+Except for `tab_width`, all EditorConfig rules are supported. This is because `tab_width` is only meant the change the display width in your text editor. It has no bearing on the file contents themselves.
 
 Additionally, the [max_line_length](#max-line-length) has been added to the set. This is not an official EditorConfig setting, so it's possible it may be removed in the future. For now, it's has a basic use in this tool.
 
@@ -259,15 +259,15 @@ Additionally, the [max_line_length](#max-line-length) has been added to the set.
 ### charset
 
 At this time, only the following encodings are supported:
-- latin1 (partial support)
-- utf-8
-- utf-8-bom (not actually an encoding, but it does have a BOM signature)
-- utf-16le
-- utf-16be
+- `latin1` (partial support)
+- `utf-8`
+- `utf-8-bom` (not actually an encoding, but it does have a BOM signature)
+- `utf-16le`
+- `utf-16be`
 
 Unsupported encodings:
-- utf-32le
-- utf-32be
+- `utf-32le`
+- `utf-32be`
 - everything else
 
 I'm working on getting a much broader set of supported encodings, but it's rather difficult to support, so it may take a while.
@@ -278,37 +278,37 @@ _Note: Since this tool is itself a [Gulp plugin](#gulp-plugin), all BOM signatur
 ### indent_style
 
 Supported settings:
-- space
-- tab
+- `space`
+- `tab`
 
 
 ### indent_size
 
 Supported settings:
 - An integer
-- tab (uses value from tab_width)
+- `tab` (uses value from tab_width)
 
 
 ### trim_trailing_whitespace
 
 Supported settings:
-- true
-- false
+- `true`
+- `false`
 
 
 ### end_of_line
 
 Supported settings:
-- lf
-- cr
-- crlf
+- `lf`
+- `cr`
+- `crlf`
 
 
 ### insert_final_newline
 
 Supported settings:
-- true
-- false (removes any and all final newlines)
+- `true`
+- `false` (removes any and all final newlines)
 
 
 ### max_line_length (unofficial)
