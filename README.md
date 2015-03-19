@@ -372,7 +372,7 @@ gulp.task('fix', function() {
 			'lib/**/*.js'
 		])
 		.pipe(eclint.fix())
-		.pipe(gulp.dest('.'))
+		.pipe(gulp.dest('.'));
 });
 
 gulp.task('infer', function() {

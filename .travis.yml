@@ -11,10 +11,6 @@ notifications:
     on_success: change
     on_failure: always
 
-before_script:
-  - npm link
-  - eclint check * bin/*.js tasks/*.js "lib/**/*.ts"
-
 after_success:
   - npm install -g codeclimate-test-reporter
   - codeclimate < coverage/lcov.info
