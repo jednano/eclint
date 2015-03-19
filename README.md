@@ -91,7 +91,7 @@ Running this sub-command without any `[options]` will use each file's EditorConf
 
 Each CLI option has both short and long flag variations. As such, you can use `--indent_size 2` or `-i 2`, whichever you prefer. Short flags may be combined into a single argument. For example, `-swe 2 lf` is the same as `-s 2 -w -e lf`.
 
-The `<files>...` args allows you to pass-in one or more file paths or [globs](https://github.com/isaacs/node-glob). You may, however, need to surround your glob expressions in quotes for it to work properly.
+The `<files>...` args allows you to pass-in one or more file paths or [globs](https://github.com/isaacs/node-glob). You may, however, need to surround your glob expressions in quotes for it to work properly. Unfortunately, in bash, you can't add a negative glob with "!foo.js". Instead, you can put square brackets around the `!` and eclint will take care of it. For example, "[!]foo.js".
 
 The result of running `eclint check *` in this project's root, if there were issues, would look something like the following:
 

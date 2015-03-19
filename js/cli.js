@@ -29,12 +29,17 @@ function addSettings(cmd) {
     cmd.option('-n, --insert_final_newline', 'Ensures files ends with a newline');
     cmd.option('-m, --max_line_length <n>', 'Set to a whole number');
 }
+function handleNegativeGlobs(files) {
+    return files.map(function (glob) {
+        return glob.replace(/^\[!\]/, '!');
+    });
+}
 var check = cli.command('check <files>...');
 check.description('Validate that file(s) adhere to .editorconfig settings');
 addSettings(check);
 check.action(function (args, options) {
     var hasErrors = false;
-    var stream = vfs.src(args.files).pipe(eclint.check({
+    var stream = vfs.src(handleNegativeGlobs(args.files)).pipe(eclint.check({
         settings: _.pick(options, eclint.ruleNames),
         reporter: (function (file, message) {
             hasErrors = true;
@@ -53,7 +58,7 @@ fix.description('Fix formatting errors that disobey .editorconfig settings');
 addSettings(fix);
 fix.option('-d, --dest <folder>', 'Destination folder to pipe source files');
 fix.action(function (args, options) {
-    var stream = vfs.src(args.files).pipe(eclint.fix({ settings: _.pick(options, eclint.ruleNames) }));
+    var stream = vfs.src(handleNegativeGlobs(args.files)).pipe(eclint.fix({ settings: _.pick(options, eclint.ruleNames) }));
     if (options.dest) {
         return stream.pipe(vfs.dest(options.dest));
     }
@@ -65,7 +70,7 @@ infer.option('-s, --score', 'Shows the tallied score for each setting');
 infer.option('-i, --ini', 'Exports file as ini file type');
 infer.option('-r, --root', 'Adds root = true to your ini file, if any');
 infer.action(function (args, options) {
-    return vfs.src(args.files).pipe(eclint.infer(options)).pipe(tap(function (file) {
+    return vfs.src(handleNegativeGlobs(args.files)).pipe(eclint.infer(options)).pipe(tap(function (file) {
         console.log(file.contents + '');
     }));
 });
