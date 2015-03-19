@@ -143,7 +143,7 @@ One difference you'll notice is an additional `-d, --dest <folder>` option. This
 
 ## Infer
 
-The `eclint infer` sub-command allows you to infer what the EditorConfig settings **should** be for all files you specify. Running just `eclint infer` will provide you the following help information:
+The `eclint infer` sub-command allows you to infer what the EditorConfig settings **_should_** be for all files you specify. Running just `eclint infer` will provide you the following help information:
 
 ```
 $ eclint infer
