@@ -52,6 +52,7 @@ var eclint;
         return _.omit(_.assign(fileSettings, commandSettings), ['tab_width']);
     }
     function check(options) {
+        var _this = this;
         options = options || {};
         var commandSettings = options.settings || {};
         return through.obj(function (file, enc, done) {
@@ -67,9 +68,7 @@ var eclint;
                 var settings = getSettings(fileSettings, commandSettings);
                 var doc = linez(file.contents);
                 var context = {
-                    report: function (message) {
-                        console.log(file.path + ':', message);
-                    }
+                    report: (options.reporter) ? options.reporter.bind(_this, file) : _.noop
                 };
                 Object.keys(settings).forEach(function (setting) {
                     var rule = rules[setting];
@@ -143,7 +142,7 @@ var eclint;
         var settings = {};
         function bufferContents(file, enc, done) {
             if (file.isNull()) {
-                done(null, file);
+                done();
                 return;
             }
             if (file.isStream()) {

@@ -75,7 +75,10 @@ declare module eclint {
         (options?: CommandOptions): NodeJS.ReadWriteStream;
     }
     var ruleNames: string[];
-    function check(options?: CommandOptions): NodeJS.ReadWriteStream;
+    interface CheckCommandOptions extends CommandOptions {
+        reporter?: (message: string) => void;
+    }
+    function check(options?: CheckCommandOptions): NodeJS.ReadWriteStream;
     function fix(options?: CommandOptions): NodeJS.ReadWriteStream;
     interface InferOptions {
         /**

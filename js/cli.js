@@ -21,8 +21,8 @@ cli.version(pkg.version);
 cli.description(pkg.description);
 function addSettings(cmd) {
     cmd.option('-c, --charset <charset>', 'Set to latin1, utf-8, utf-8-bom (see docs)');
-    cmd.option('-s, --indent_style <style>', 'Set to tab or space');
-    cmd.option('-z, --indent_size <n>', 'Set to a whole number or tab');
+    cmd.option('-i, --indent_style <style>', 'Set to tab or space');
+    cmd.option('-s, --indent_size <n>', 'Set to a whole number or tab');
     cmd.option('-t, --tab_width <n>', 'Columns used to represent a tab character');
     cmd.option('-w, --trim_trailing_whitespace', 'Trims any trailing whitespace');
     cmd.option('-e, --end_of_line <newline>', 'Set to lf, cr, crlf');
@@ -33,7 +33,20 @@ var check = cli.command('check <files>...');
 check.description('Validate that file(s) adhere to .editorconfig settings');
 addSettings(check);
 check.action(function (args, options) {
-    return vfs.src(args.files).pipe(eclint.check({ settings: _.pick(options, eclint.ruleNames) }));
+    var hasErrors = false;
+    var stream = vfs.src(args.files).pipe(eclint.check({
+        settings: _.pick(options, eclint.ruleNames),
+        reporter: (function (file, message) {
+            hasErrors = true;
+            console.error(file.path + ':', message);
+        })
+    }));
+    stream.on('finish', function () {
+        if (hasErrors) {
+            process.exit(1);
+        }
+    });
+    return stream;
 });
 var fix = cli.command('fix <files>...');
 fix.description('Fix formatting errors that disobey .editorconfig settings');

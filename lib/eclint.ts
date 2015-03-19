@@ -139,7 +139,11 @@ module eclint {
 		);
 	}
 
-	export function check(options?: CommandOptions) {
+	export interface CheckCommandOptions extends CommandOptions {
+		reporter?: (message: string) => void;
+	}
+
+	export function check(options?: CheckCommandOptions) {
 
 		options = options || {};
 		var commandSettings = options.settings || {};
@@ -162,9 +166,7 @@ module eclint {
 					var doc = linez(file.contents);
 
 					var context = {
-						report: (message: string) => {
-							console.log(file.path + ':', message);
-						}
+						report: (options.reporter) ? options.reporter.bind(this, file) : _.noop
 					};
 
 					Object.keys(settings).forEach(setting => {
@@ -280,7 +282,7 @@ module eclint {
 
 		function bufferContents(file: File, enc: string, done: Function) {
 			if (file.isNull()) {
-				done(null, file);
+				done();
 				return;
 			}
 

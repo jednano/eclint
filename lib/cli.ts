@@ -27,8 +27,8 @@ cli.description(pkg.description);
 
 function addSettings(cmd): void {
 	cmd.option('-c, --charset <charset>',        'Set to latin1, utf-8, utf-8-bom (see docs)');
-	cmd.option('-s, --indent_style <style>',     'Set to tab or space');
-	cmd.option('-z, --indent_size <n>',          'Set to a whole number or tab');
+	cmd.option('-i, --indent_style <style>',     'Set to tab or space');
+	cmd.option('-s, --indent_size <n>',          'Set to a whole number or tab');
 	cmd.option('-t, --tab_width <n>',            'Columns used to represent a tab character');
 	cmd.option('-w, --trim_trailing_whitespace', 'Trims any trailing whitespace');
 	cmd.option('-e, --end_of_line <newline>',    'Set to lf, cr, crlf');
@@ -37,14 +37,28 @@ function addSettings(cmd): void {
 }
 
 interface CheckOptions extends eclint.Settings {
+	reporter?: (file: File, message: string) => void;
 }
 
 var check = cli.command('check <files>...');
 check.description('Validate that file(s) adhere to .editorconfig settings');
 addSettings(check);
 check.action((args: any, options: CheckOptions) => {
-	return vfs.src(args.files)
-		.pipe(eclint.check({ settings: _.pick(options, eclint.ruleNames) }));
+	var hasErrors = false;
+	var stream = vfs.src(args.files)
+		.pipe(eclint.check({
+			settings: _.pick(options, eclint.ruleNames),
+			reporter: <any>((file: File, message: string) => {
+				hasErrors = true;
+				console.error(file.path + ':', message);
+			})
+		}));
+	stream.on('finish', () => {
+		if (hasErrors) {
+			process.exit(1);
+		}
+	});
+	return stream;
 });
 
 interface FixOptions extends eclint.Settings {
