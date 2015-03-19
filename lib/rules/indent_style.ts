@@ -7,15 +7,20 @@ import eclint = require('../eclint');
 var DEFAULT_INDENT_SIZE = 4;
 var HARD_TAB = '\t';
 
+function parse(settings: eclint.Settings) {
+	switch (settings.indent_style) {
+		case 'tab':
+		case 'space':
+			return settings.indent_style;
+		default:
+			return void (0);
+	}
+}
+
 function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
-	if (typeof settings.indent_style === 'undefined') {
-		return;
-	}
 	var inferredSetting = infer(line);
-	if (typeof inferredSetting === 'undefined') {
-		return;
-	}
-	if (inferredSetting !== settings.indent_style) {
+	var setting = parse(settings);
+	if (inferredSetting && setting && inferredSetting !== setting) {
 		context.report('Invalid indent style: ' + inferredSetting);
 	}
 }
@@ -64,6 +69,7 @@ function resolveIndentSize(settings: eclint.Settings): number {
 
 var IndentStyleRule: eclint.LineRule = {
 	type: 'LineRule',
+	parse: parse,
 	check: check,
 	fix: fix,
 	infer: infer

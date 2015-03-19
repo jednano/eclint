@@ -3,15 +3,19 @@
 var _ = require('lodash');
 var DEFAULT_INDENT_SIZE = 4;
 var HARD_TAB = '\t';
+function parse(settings) {
+    switch (settings.indent_style) {
+        case 'tab':
+        case 'space':
+            return settings.indent_style;
+        default:
+            return void (0);
+    }
+}
 function check(context, settings, line) {
-    if (typeof settings.indent_style === 'undefined') {
-        return;
-    }
     var inferredSetting = infer(line);
-    if (typeof inferredSetting === 'undefined') {
-        return;
-    }
-    if (inferredSetting !== settings.indent_style) {
+    var setting = parse(settings);
+    if (inferredSetting && setting && inferredSetting !== setting) {
         context.report('Invalid indent style: ' + inferredSetting);
     }
 }
@@ -52,6 +56,7 @@ function resolveIndentSize(settings) {
 }
 var IndentStyleRule = {
     type: 'LineRule',
+    parse: parse,
     check: check,
     fix: fix,
     infer: infer
