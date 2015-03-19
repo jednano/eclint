@@ -31,7 +31,7 @@ $ npm install [-g] eclint
   - [trim_trailing_whitespace](#trim_trailing_whitespace)
   - [end_of_line](#end_of_line)
   - [insert_final_newline](#insert_final_newline)
-  - [max_line_length (unofficial)](#max_line_length_unofficial)
+  - [max_line_length (unofficial)](#max_line_length-unofficial)
 - [TypeScript/JavaScript API](#api)
 - [Gulp plugin](#gulp-plugin)
 
@@ -319,7 +319,7 @@ Supported settings:
 _Note: Unsupported for the fix command._
 
 
-## TypeScript/JavaScript API
+## API
 
 This project's API is written in [TypeScript](http://www.typescriptlang.org/), a typed superset of JavaScript that compiles to plain JavaScript. Because it's written in TypeScript, the [definition files](https://github.com/jedmao/eclint/tree/master/d.ts) come for free and are always in sync with the generated JavaScript.
 
