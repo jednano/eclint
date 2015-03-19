@@ -38,7 +38,7 @@ $ npm install [-g] eclint
 
 ## CLI
 
-The command-line interface (CLI) for this project uses [gitlike-cli](#https://www.npmjs.com/search?q=gitlike-cli) to parse the `eclint` command, along with its [check](#check), [fix](#fix) and [infer](#infer) sub-commands. Internally, the command is sent to the [API](#api) to do its magic.
+The command-line interface (CLI) for this project uses [gitlike-cli](https://www.npmjs.com/search?q=gitlike-cli) to parse the `eclint` command, along with its [check](#check), [fix](#fix) and [infer](#infer) sub-commands. Internally, the command is sent to the [API](#api) to do its magic.
 
 Running just `eclint` will provide the following help information:
 
