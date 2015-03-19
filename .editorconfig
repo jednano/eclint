@@ -18,3 +18,10 @@ indent_size = 2
 [js/**/*.js]
 indent_style = space
 indent_size = 4
+
+[README.md]
+indent_style = none
+indent_size = none
+
+[*.DotSettings]
+insert_final_newline = none

@@ -25,14 +25,14 @@ $ npm install [-g] eclint
 
 - [Command-Line Interface (CLI)](#cli)
 - [Check](#check), [fix](#fix) or [infer](#infer) the following EditorConfig rules across one or more files:
-  - [charset](#charset)
-  - [indent_style](#indent_style)
-  - [indent_size](#indent_size)
-  - [tab_width](#tab_width)
-  - [trim_trailing_whitespace](#trim_trailing_whitespace)
-  - [end_of_line](#end_of_line)
-  - [insert_final_newline](#insert_final_newline)
-  - [max_line_length (unofficial)](#max_line_length-unofficial)
+	- [charset](#charset)
+	- [indent_style](#indent_style)
+	- [indent_size](#indent_size)
+	- [tab_width](#tab_width)
+	- [trim_trailing_whitespace](#trim_trailing_whitespace)
+	- [end_of_line](#end_of_line)
+	- [insert_final_newline](#insert_final_newline)
+	- [max_line_length (unofficial)](#max_line_length-unofficial)
 - [TypeScript/JavaScript API](#api)
 - [Gulp plugin](#gulp-plugin)
 
