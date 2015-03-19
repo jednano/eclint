@@ -28,6 +28,7 @@ $ npm install [-g] eclint
   - [charset](#charset)
   - [indent_style](#indent_style)
   - [indent_size](#indent_size)
+  - [tab_width](#tab_width)
   - [trim_trailing_whitespace](#trim_trailing_whitespace)
   - [end_of_line](#end_of_line)
   - [insert_final_newline](#insert_final_newline)
@@ -251,9 +252,7 @@ max_line_length = 90
 
 ## Rules
 
-Except for `tab_width`, all EditorConfig rules are supported. This is because `tab_width` is only meant the change the display width in your text editor. It has no bearing on the file contents themselves.
-
-Additionally, the [max_line_length](#max-line-length) has been added to the set. This is not an official EditorConfig setting, so it's possible it may be removed in the future. For now, it's has a basic use in this tool.
+All EditorConfig rules are supported. Additionally, the [max_line_length](#max-line-length) has been added to the set. This is not an official EditorConfig setting, so it's possible it may be removed in the future. For now, it's has a basic use in this tool.
 
 
 ### charset
@@ -286,7 +285,13 @@ Supported settings:
 
 Supported settings:
 - An integer
-- `tab` (uses value from tab_width)
+- `tab` (uses value from [tab_width](#tab_width))
+
+
+### tab_width
+
+Supported settings:
+- An integer
 
 
 ### trim_trailing_whitespace
