@@ -48,8 +48,7 @@
     "gulp-typescript": "^2.4.2",
     "mocha": "^2.1.0",
     "sinon": "^1.12.2",
-    "sinon-chai": "^2.7.0",
-    "through2": "^0.6.3"
+    "sinon-chai": "^2.7.0"
   },
   "main": "js/eclint.js",
   "bin": {
