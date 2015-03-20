@@ -116,7 +116,7 @@ Now should be a great time to segue into the [fix sub-command](#fix).
 
 <table>
 	<tr>
-		<td>
+		<td width="72">
 			<img src="https://github.com/jedmao/eclint/blob/master/images/warning.png?raw=true" alt="Warning, Stop!" width="72" height="65">
 		</td>
 		<td>
