@@ -116,11 +116,11 @@ Now should be a great time to segue into the [fix sub-command](#fix).
 
 <table>
 	<tr>
-		<td width="82" style="padding:0 10px 0;">
+		<td width="99">
 			<img src="https://github.com/jedmao/eclint/blob/master/images/warning.png?raw=true" alt="Warning, Stop!" width="72" height="65">
 		</td>
 		<td>
-			<strong style="display:table-cell">Warning! Fixing your files will change their contents. Ensure that your files are under version control and that you have committed your changes before attempting to fix any issues with them.</strong>
+			<strong style="display:table-cell">Warning! Fixing your files will change their contents. Ensure that your files are under version control and that you have committed your changes before attempting to fix any issues with them. You can also run the check command to know what files will change before you fix them.</strong>
 		</td>
 	</tr>
 </table>
