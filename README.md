@@ -4,7 +4,7 @@
 [![npm version](https://badge.fury.io/js/eclint.svg)](http://badge.fury.io/js/eclint)
 [![Code Climate](https://codeclimate.com/github/jedmao/eclint/badges/gpa.svg)](https://codeclimate.com/github/jedmao/eclint)
 [![Test Coverage](https://codeclimate.com/github/jedmao/eclint/badges/coverage.svg)](https://codeclimate.com/github/jedmao/eclint)
-[![NPM license](http://img.shields.io/npm/l/editorconfig-tools.svg?style=flat-square)](https://www.npmjs.org/package/editorconfig-tools)
+[![NPM license](http://img.shields.io/npm/l/eclint.svg?style=flat-square)](https://www.npmjs.org/package/eclint)
 
 
 ## Introduction
