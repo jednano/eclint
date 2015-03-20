@@ -116,7 +116,9 @@ Now should be a great time to segue into the [fix sub-command](#fix).
 
 <div>
 	<img src="https://github.com/jedmao/eclint/blob/master/images/warning.png?raw=true" alt="Warning, Stop!" width="72" height="65" style="float:left">
-	<p>**Warning! Fixing your files will change their contents. Ensure that your files are under version control and that you have committed your changes before attempting to fix any issues with them.**</p>p>
+	<div style="font-weight:bold;display:inline-block">
+		Warning! Fixing your files will change their contents. Ensure that your files are under version control and that you have committed your changes before attempting to fix any issues with them.
+	</div>
 </div>
 
 The `eclint fix` sub-command allows you to fix files that don't adhere to their respective EditorConfig settings. Running just `eclint fix` will provide you the following help information:
