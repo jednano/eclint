@@ -477,22 +477,34 @@ var gulp = require('gulp');
 var eclint = require('eclint');
 
 gulp.task('check', function() {
-	return gulp.src([
+	var hasErrors = false;
+	var stream = gulp.src([
 			'*',
 			'lib/**/*.js'
 		])
 		.pipe(eclint.check({
 			reporter: function(file, message) {
-				console.error(file.path + ':', message);
+				hasErrors = true;
+				var relativePath = path.relative('.', file.path);
+				console.error(relativePath + ':', message);
 			}
 		}));
+	stream.on('finish', function() {
+		if (hasErrors) {
+			process.exit(1);
+		}
+	});
+	return stream;
 });
 
 gulp.task('fix', function() {
 	return gulp.src([
 			'*',
 			'lib/**/*.js'
-		])
+		],
+		{
+			base: './'
+		})
 		.pipe(eclint.fix())
 		.pipe(gulp.dest('.'));
 });
@@ -509,6 +521,8 @@ gulp.task('infer', function() {
 		.pipe(gulp.dest('.editorconfig'));
 });
 ```
+
+Have a look at this project's [check](https://github.com/jedmao/eclint/blob/master/tasks/check.js) and [fix](https://github.com/jedmao/eclint/blob/master/tasks/fix.js) tasks for a working example. Notice that the check tasks exits with an exit code of `1`. This is to fail whatever continuous integration you may have in place.
 
 
 ## Related Projects
