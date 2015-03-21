@@ -80,6 +80,7 @@ module eclint {
 
 	export interface Rule {
 		type: string;
+		resolve(settings: Settings): any;
 	}
 
 	export interface LineRule extends Rule {

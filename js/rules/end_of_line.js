@@ -6,22 +6,33 @@ var newlines = {
     cr: '\r',
     '\r': 'cr'
 };
+function resolve(settings) {
+    switch (settings.end_of_line) {
+        case 'lf':
+        case 'crlf':
+        case 'cr':
+            return settings.end_of_line;
+        default:
+            return void (0);
+    }
+}
 function check(context, settings, line) {
-    if (!settings.end_of_line) {
+    var configSetting = resolve(settings);
+    if (!configSetting) {
         return;
     }
     var inferredSetting = infer(line);
     if (!inferredSetting) {
         return;
     }
-    if (inferredSetting !== settings.end_of_line) {
+    if (inferredSetting !== configSetting) {
         context.report('Incorrect newline character found: ' + inferredSetting);
     }
 }
 function fix(settings, line) {
-    var settingName = settings.end_of_line;
-    if (line.ending && settingName) {
-        line.ending = newlines[settingName];
+    var configSetting = resolve(settings);
+    if (line.ending && configSetting) {
+        line.ending = newlines[configSetting];
     }
     return line;
 }
@@ -30,6 +41,7 @@ function infer(line) {
 }
 var EndOfLineRule = {
     type: 'LineRule',
+    resolve: resolve,
     check: check,
     fix: fix,
     infer: infer

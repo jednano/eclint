@@ -1,4 +1,7 @@
+///<reference path="../../typings/lodash/lodash.d.ts" />
+var _ = require('lodash');
 import linez = require('linez');
+
 import eclint = require('../eclint');
 
 var newlines = {
@@ -7,31 +10,29 @@ var newlines = {
 	cr: '\r'
 };
 
-function parse(insertFinalNewline: any) {
-	switch (insertFinalNewline) {
-		case true:
-		case false:
-			return insertFinalNewline;
-		default:
-			return void(0);
+function resolve(settings: eclint.Settings) {
+	if (_.isBoolean(settings.insert_final_newline)) {
+		return settings.insert_final_newline;
 	}
+	return void(0);
 }
 
 function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
-	var setting = parse(settings.insert_final_newline);
+	var configSetting = resolve(settings);
 	var inferredSetting = infer(doc);
-	if (setting === true && !inferredSetting) {
+	if (configSetting && !inferredSetting) {
 		context.report('Expected final newline character');
 		return;
 	}
-	if (setting === false && inferredSetting) {
+	if (configSetting === false && inferredSetting) {
 		context.report('Unexpected final newline character');
 	}
 }
 
 function fix(settings: eclint.Settings, doc: linez.Document) {
 	var lastLine: linez.Line;
-	if (settings.insert_final_newline && !infer(doc)) {
+	var configSetting = resolve(settings);
+	if (configSetting && !infer(doc)) {
 		lastLine = doc.lines[doc.lines.length - 1];
 		var endOfLineSetting = settings.end_of_line || 'lf';
 		if (lastLine) {
@@ -46,7 +47,7 @@ function fix(settings: eclint.Settings, doc: linez.Document) {
 		}
 		return doc;
 	}
-	if (!settings.insert_final_newline) {
+	if (!configSetting) {
 		while (infer(doc)) {
 			lastLine = doc.lines[doc.lines.length - 1];
 			if (lastLine.text) {
@@ -70,7 +71,7 @@ function infer(doc: linez.Document) {
 
 var InsertFinalNewlineRule: eclint.DocumentRule = {
 	type: 'DocumentRule',
-	parse: parse,
+	resolve: resolve,
 	check: check,
 	fix: fix,
 	infer: infer

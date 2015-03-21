@@ -30,13 +30,12 @@ describe('max_line_length rule', () => {
 
 	});
 
-	describe('fix command',() => {
+	describe('fix command', () => {
 
-		it('throws an unsupported error', () => {
-			var fn = () => {
-				rule.fix({ max_line_length: 2 }, createLine(''));
-			};
-			expect(fn).to.throw('Fixing max_line_length setting unsupported');
+		it('returns the line as-is',() => {
+			var line = createLine('foobar');
+			var fixedLine = rule.fix({ max_line_length: 2 }, createLine('foobar'));
+			expect(fixedLine).to.deep.equal(line);
 		});
 
 	});

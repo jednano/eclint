@@ -57,6 +57,7 @@ declare module eclint {
     }
     interface Rule {
         type: string;
+        resolve(settings: Settings): any;
     }
     interface LineRule extends Rule {
         check(context: Context, settings: Settings, line: linez.Line): void;

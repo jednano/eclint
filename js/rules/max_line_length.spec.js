@@ -24,11 +24,10 @@ describe('max_line_length rule', function () {
         });
     });
     describe('fix command', function () {
-        it('throws an unsupported error', function () {
-            var fn = function () {
-                rule.fix({ max_line_length: 2 }, createLine(''));
-            };
-            expect(fn).to.throw('Fixing max_line_length setting unsupported');
+        it('returns the line as-is', function () {
+            var line = createLine('foobar');
+            var fixedLine = rule.fix({ max_line_length: 2 }, createLine('foobar'));
+            expect(fixedLine).to.deep.equal(line);
         });
     });
     describe('infer command', function () {

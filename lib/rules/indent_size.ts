@@ -4,56 +4,44 @@ import _ = require('lodash');
 import linez = require('linez');
 import eclint = require('../eclint');
 
-function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
-	var indentSize = resolveRule(settings);
-	if (typeof indentSize === 'string') {
-		return;
+function resolve(settings: eclint.Settings): number {
+	var result = (settings.indent_size === 'tab')
+		? settings.tab_width
+		: settings.indent_size;
+	if (!_.isNumber(result)) {
+		result = settings.tab_width;
 	}
+	return _.isNumber(result) ? <number>result : void (0);
+}
+
+function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
 	if (settings.indent_style === 'tab') {
 		return;
 	}
-	var inferredSetting = infer(line);
-	if (inferredSetting === 'tab') {
+	var configSetting = resolve(settings);
+	if (_.isUndefined(configSetting)) {
 		return;
 	}
-	if (<number>inferredSetting % <number>indentSize !== 0) {
-		context.report('Invalid indent size detected: ' + inferredSetting);
+	var inferredSetting = infer(line);
+	if (_.isUndefined(inferredSetting)) {
+		return;
+	}
+	if (inferredSetting % configSetting !== 0) {
+		context.report([
+			'line ' + line.number + ':',
+			'invalid indent size: ' + inferredSetting + ',',
+			'expected: ' + configSetting
+		].join(' '));
 	}
 }
 
 function fix(settings: eclint.Settings, line: linez.Line) {
-	var indentSize = resolveRule(settings);
-
-	if (typeof indentSize !== 'number') {
-		return line;
-	}
-
-	switch (settings.indent_style) {
-
-		case 'tab':
-			line.text = line.text.replace(/^ +/, (match: string) => {
-				var indentLevel = Math.floor(match.length / <number>indentSize);
-				var extraSpaces = _.repeat(' ', match.length % <number>indentSize);
-				return _.repeat('\t', indentLevel) + extraSpaces;
-			});
-			break;
-
-		case 'space':
-			line.text = line.text.replace(/^\t+/, (match: string) => {
-				return _.repeat(_.repeat(' ', <number>indentSize), match.length);
-			});
-			break;
-
-		default:
-			return line;
-	}
-
-	return line;
+	return line; // noop
 }
 
-function infer(line: linez.Line): number|string {
+function infer(line: linez.Line): number {
 	if (line.text[0] === '\t') {
-		return 'tab';
+		return void(0);
 	}
 
 	var m = line.text.match(/^ +/);
@@ -69,15 +57,9 @@ function infer(line: linez.Line): number|string {
 	return 0;
 }
 
-function resolveRule(settings: eclint.Settings): number|string {
-	if (settings.indent_size === 'tab') {
-		return settings.tab_width;
-	}
-	return settings.indent_size;
-}
-
 var IndentSizeRule: eclint.LineRule = {
 	type: 'LineRule',
+	resolve: resolve,
 	check: check,
 	fix: fix,
 	infer: infer

@@ -11,6 +11,10 @@ var boms = {
 	'utf-32be': '\u0000\u0000\u00FE\u00FF'
 };
 
+function resolve(settings: eclint.Settings) {
+	return settings.charset;
+}
+
 function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
 	var inferredSetting = infer(doc);
 	if (inferredSetting) {
@@ -19,17 +23,18 @@ function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Do
 		}
 		return;
 	}
-	if (settings.charset === 'latin1') {
+	var configSetting = resolve(settings);
+	if (configSetting === 'latin1') {
 		checkLatin1TextRange(context, settings, doc.lines[0]);
 		return;
 	}
-	if (_.contains(Object.keys(boms), settings.charset)) {
+	if (_.contains(Object.keys(boms), configSetting)) {
 		context.report('Expected charset: ' + settings.charset);
 	}
 }
 
 function fix(settings: eclint.Settings, doc: linez.Document) {
-	doc.charset = settings.charset;
+	doc.charset = resolve(settings);
 	return doc;
 }
 
@@ -53,6 +58,7 @@ function checkLatin1TextRange(
 
 var CharsetRule: eclint.DocumentRule = {
 	type: 'DocumentRule',
+	resolve: resolve,
 	check: check,
 	fix: fix,
 	infer: infer

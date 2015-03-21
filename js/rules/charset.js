@@ -7,6 +7,9 @@ var boms = {
     'utf-16le': '\u00FF\u00FE',
     'utf-32be': '\u0000\u0000\u00FE\u00FF'
 };
+function resolve(settings) {
+    return settings.charset;
+}
 function check(context, settings, doc) {
     var inferredSetting = infer(doc);
     if (inferredSetting) {
@@ -15,16 +18,17 @@ function check(context, settings, doc) {
         }
         return;
     }
-    if (settings.charset === 'latin1') {
+    var configSetting = resolve(settings);
+    if (configSetting === 'latin1') {
         checkLatin1TextRange(context, settings, doc.lines[0]);
         return;
     }
-    if (_.contains(Object.keys(boms), settings.charset)) {
+    if (_.contains(Object.keys(boms), configSetting)) {
         context.report('Expected charset: ' + settings.charset);
     }
 }
 function fix(settings, doc) {
-    doc.charset = settings.charset;
+    doc.charset = resolve(settings);
     return doc;
 }
 function infer(doc) {
@@ -41,6 +45,7 @@ function checkLatin1TextRange(context, settings, line) {
 }
 var CharsetRule = {
     type: 'DocumentRule',
+    resolve: resolve,
     check: check,
     fix: fix,
     infer: infer

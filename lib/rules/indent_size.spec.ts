@@ -16,16 +16,16 @@ describe('indent_size rule', () => {
 
 	describe('check command',() => {
 
-		it('reports invalid indent size: 2 with setting of 4', () => {
+		it('reports invalid indent size: 2, expected: 4', () => {
 			rule.check(context, { indent_size: 4 }, createLine('  foo'));
 			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('Invalid indent size detected: 2');
+			expect(reporter).to.have.been.calledWithExactly('line 1: invalid indent size: 2, expected: 4');
 		});
 
-		it('reports invalid indent size: 2 with setting of tab', () => {
-			rule.check(context, { indent_size: 'tab' }, createLine('  foo'));
+		it('reports invalid indent size: 3, expected: 2', () => {
+			rule.check(context, { indent_size: 2 }, createLine('   foo'));
 			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('Invalid indent size detected: 2');
+			expect(reporter).to.have.been.calledWithExactly('line 1: invalid indent size: 3, expected: 2');
 		});
 
 		it('remains silent when indent size is an unsupported string', () => {
@@ -74,13 +74,20 @@ describe('indent_size rule', () => {
 
 	});
 
-	describe('infer command', () => {
+	describe('fix command', () => {
 
-		it('infers tab setting', () => {
-			expect(rule.infer(createLine('\tfoo'))).to.equal('tab');
-			expect(rule.infer(createLine('\t\tfoo'))).to.equal('tab');
-			expect(rule.infer(createLine('\t\t foo'))).to.equal('tab');
+		it('returns the line as-is', () => {
+			var line = createLine('  \t foo');
+			var fixedLine = rule.fix({
+				indent_style: 'space',
+				indent_size: 4
+			}, line);
+			expect(fixedLine).to.deep.equal(line);
 		});
+
+	});
+
+	describe('infer command', () => {
 
 		_.range(0, 9).forEach(n => {
 			it('infers ' + n + '-space setting', () => {
@@ -88,48 +95,8 @@ describe('indent_size rule', () => {
 			});
 		});
 
-		it('infers only leading spaces when tabs follow', () => {
-			expect(rule.infer(createLine('  \tfoo'))).to.eq(2);
-		});
-
-	});
-
-	describe('fix command', () => {
-
-		it('replaces leading spaces with tabs', () => {
-			var line = rule.fix({
-				indent_style: 'tab',
-				indent_size: 'tab',
-				tab_width: 4
-			}, createLine('          foo'));
-			expect(line.text).to.equal('\t\t  foo');
-
-			line = rule.fix({
-				indent_style: 'tab',
-				indent_size: 4
-			}, createLine('          foo'));
-			expect(line.text).to.equal('\t\t  foo');
-		});
-
-		it('replaces leading tabs with spaces', () => {
-			var line = rule.fix({
-				indent_style: 'space',
-				indent_size: 4
-			}, createLine('\t\t  foo'));
-			expect(line.text).to.equal('          foo');
-		});
-
-		it('does nothing when no indent style is defined', () => {
-			var line = rule.fix({}, createLine('\t foo'));
-			expect(line.text).to.eq('\t foo');
-		});
-
-		it('does nothing when indent style setting is foo', () => {
-			var line = rule.fix({
-				indent_style: 'foo',
-				indent_size: 4
-			}, createLine('\t foo'));
-			expect(line.text).to.eq('\t foo');
+		it('infers leading spaces w/o any tabs that follow', () => {
+			expect(rule.infer(createLine('  \t\tfoo'))).to.eq(2);
 		});
 
 	});

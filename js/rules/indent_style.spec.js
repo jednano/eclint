@@ -10,32 +10,52 @@ describe('indent_style rule', function () {
         reporter.reset();
     });
     describe('check command', function () {
-        it('validates tab setting', function () {
+        it('remains silent when indentation is valid', function () {
             rule.check(context, { indent_style: 'tab' }, createLine('foo'));
-            rule.check(context, { indent_style: 'tab' }, createLine('\tfoo'));
-            expect(reporter).not.to.have.been.called;
-            rule.check(context, { indent_style: 'tab' }, createLine(' foo'));
-            expect(reporter).to.have.been.calledOnce;
-            expect(reporter).to.have.been.calledWithExactly('line 1: invalid indent style: space, expected: tab');
-        });
-        it('validates space setting', function () {
+            rule.check(context, { indent_style: 'tab' }, createLine('\t\tfoo'));
             rule.check(context, { indent_style: 'space' }, createLine('foo'));
-            rule.check(context, { indent_style: 'space' }, createLine(' foo'));
+            rule.check(context, { indent_style: 'space' }, createLine('    foo'));
             expect(reporter).not.to.have.been.called;
-            rule.check(context, { indent_style: 'space' }, createLine('\tfoo'));
-            expect(reporter).to.have.been.calledOnce;
-            expect(reporter).to.have.been.calledWithExactly('line 1: invalid indent style: tab, expected: space');
         });
         it('remains silent when indent_style is undefined', function () {
-            rule.check(context, {}, createLine('foo', { ending: '\n' }));
-            rule.check(context, {}, createLine(' foo', { ending: '\n' }));
-            rule.check(context, {}, createLine('\tfoo', { ending: '\n' }));
+            rule.check(context, {}, createLine('foo'));
+            rule.check(context, {}, createLine(' foo'));
+            rule.check(context, {}, createLine('\tfoo'));
+            expect(reporter).not.to.have.been.called;
+        });
+        it('reports one invalid soft tab', function () {
+            rule.check(context, { indent_style: 'tab', indent_size: 2 }, createLine('  foo'));
+            expect(reporter).to.have.been.calledOnce;
+            expect(reporter).to.have.been.calledWithExactly('line 1: invalid indentation: found 1 soft tab');
+        });
+        it('reports multiple invalid soft tabs', function () {
+            rule.check(context, { indent_style: 'tab', indent_size: 2 }, createLine('  \t  foo'));
+            expect(reporter).to.have.been.calledOnce;
+            expect(reporter).to.have.been.calledWithExactly('line 1: invalid indentation: found 2 soft tabs');
+        });
+        it('reports one invalid hard tab', function () {
+            rule.check(context, { indent_style: 'space', indent_size: 2 }, createLine('\tfoo'));
+            expect(reporter).to.have.been.calledOnce;
+            expect(reporter).to.have.been.calledWithExactly('line 1: invalid indentation: found 1 hard tab');
+        });
+        it('reports multiple invalid hard tabs', function () {
+            rule.check(context, { indent_style: 'space', indent_size: 2 }, createLine('\t  \tfoo'));
+            expect(reporter).to.have.been.calledOnce;
+            expect(reporter).to.have.been.calledWithExactly('line 1: invalid indentation: found 2 hard tabs');
+        });
+        it('reports mixed tabs with spaces, regardless of settings', function () {
+            rule.check(context, {}, createLine('  \tfoo'));
+            expect(reporter).to.have.been.calledOnce;
+            expect(reporter).to.have.been.calledWithExactly('line 1: invalid indentation: found mixed tabs with spaces');
+        });
+        it('remains silent when mixed tabs/spaces are found after indentation', function () {
+            rule.check(context, {}, createLine('  foo \t \t bar'));
             expect(reporter).not.to.have.been.called;
         });
     });
     describe('fix command', function () {
         describe('indent_style = tab', function () {
-            it('replaces leading 3-space indents with tab chars when indent_size = 3', function () {
+            it('replaces leading 3-space soft tabs with hard tabs when indent_size = 3', function () {
                 var line = rule.fix({
                     indent_size: 3,
                     tab_width: 2,
@@ -43,26 +63,33 @@ describe('indent_style rule', function () {
                 }, createLine('      foo'));
                 expect(line.text).to.eq('\t\tfoo');
             });
-            it('replaces leading 2-space indents with tab chars when tab_width = 2', function () {
+            it('replaces leading 2-space soft tabs with hard tabs when tab_width = 2', function () {
                 var line = rule.fix({
                     tab_width: 2,
                     indent_style: 'tab'
                 }, createLine('    foo'));
                 expect(line.text).to.eq('\t\tfoo');
             });
-            it('replaces leading 4-space indents with tab chars by default', function () {
+            it('fixes mixed hard tabs with soft tabs, preserving alignment', function () {
                 var line = rule.fix({
+                    tab_width: 2,
                     indent_style: 'tab'
-                }, createLine('        foo'));
-                expect(line.text).to.eq('\t\tfoo');
+                }, createLine('  \t   foo \t \t'));
+                expect(line.text).to.eq('\t\t\t foo \t \t');
+                line = rule.fix({
+                    indent_style: 'space',
+                    indent_size: 2
+                }, createLine('  \t\t foo \t \t'));
+                expect(line.text).to.eq('       foo \t \t');
             });
             it('preserves alignment, if any', function () {
                 var line = rule.fix({
-                    indent_style: 'tab'
+                    indent_style: 'tab',
+                    indent_size: 4
                 }, createLine('       foo'));
                 expect(line.text).to.eq('\t   foo');
             });
-            it('does nothing if inferred size is consistent with setting', function () {
+            it('remains unchanged if inferred style is consistent with config setting', function () {
                 var line = rule.fix({
                     indent_style: 'tab'
                 }, createLine('\tfoo'));
@@ -84,52 +111,40 @@ describe('indent_style rule', function () {
                 }, createLine('\t\tfoo'));
                 expect(line.text).to.eq('      foo');
             });
-            it('replaces leading tab chars with 4-space indents by default', function () {
-                var line = rule.fix({
-                    indent_style: 'space'
-                }, createLine('\t\tfoo'));
-                expect(line.text).to.eq('        foo');
-            });
             it('preserves alignment, if any', function () {
                 var line = rule.fix({
-                    indent_style: 'space'
+                    indent_style: 'space',
+                    indent_size: 4
                 }, createLine('\t\t      foo'));
                 expect(line.text).to.eq('              foo');
             });
-            it('does nothing if inferred size is consistent with setting', function () {
+            it('remains unchanged if inferred style is consistent with config setting', function () {
                 var line = rule.fix({
                     indent_style: 'space'
                 }, createLine('  foo'));
                 expect(line.text).to.eq('  foo');
             });
-        });
-        describe('indent_size = tab', function () {
-            it('replaces tabs with tab_width', function () {
+            it('replaces hard tabs with tab_width-width soft tabs when indent_size = tab', function () {
                 var line = rule.fix({
+                    indent_style: 'space',
                     indent_size: 'tab',
                     tab_width: 3
                 }, createLine('\t\tfoo'));
                 expect(line.text).to.eq('      foo');
             });
-            it('replaces tabs with 4 spaces if no tab_width is specified', function () {
-                var line = rule.fix({
-                    indent_size: 'tab'
-                }, createLine('\t\tfoo'));
-                expect(line.text).to.eq('        foo');
-            });
         });
     });
     describe('infer command', function () {
         it('infers space indent style', function () {
-            var indentStyle = rule.infer(createLine('  foo', { ending: '\n' }));
+            var indentStyle = rule.infer(createLine('  foo'));
             expect(indentStyle).to.eq('space');
         });
         it('infers tab indent style', function () {
-            var indentStyle = rule.infer(createLine('\tfoo', { ending: '\n' }));
+            var indentStyle = rule.infer(createLine('\tfoo'));
             expect(indentStyle).to.eq('tab');
         });
         it('returns undefined when no indentation is found', function () {
-            var indentStyle = rule.infer(createLine('foo', { ending: '\n' }));
+            var indentStyle = rule.infer(createLine('foo'));
             expect(indentStyle).to.be.undefined;
         });
     });

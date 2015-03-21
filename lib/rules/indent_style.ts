@@ -1,80 +1,122 @@
 ///<reference path="../../typings/node/node.d.ts" />
 ///<reference path="../../typings/lodash/lodash.d.ts" />
-import path = require('path');
 import _ = require('lodash');
 import linez = require('linez');
+
 import eclint = require('../eclint');
+import IndentSizeRule = require('./indent_size');
 
-var DEFAULT_INDENT_SIZE = 4;
-var HARD_TAB = '\t';
-
-function parse(settings: eclint.Settings) {
+function resolve(settings: eclint.Settings) {
 	switch (settings.indent_style) {
 		case 'tab':
 		case 'space':
 			return settings.indent_style;
 		default:
-			return void(0);
+			return void (0);
 	}
 }
 
 function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
-	var inferredSetting = infer(line);
-	var setting = parse(settings);
-	if (inferredSetting && setting && inferredSetting !== setting) {
-		context.report([
-			'line ' + line.number + ':',
-			'invalid indent style: ' + inferredSetting + ',',
-			'expected: ' + setting
-		].join(' '));
+	switch (resolve(settings)) {
+		case 'tab':
+			var softTabCount = identifyIndentation(line.text, settings).softTabCount;
+			if (softTabCount > 0) {
+				context.report([
+					'line ' + line.number + ':',
+					'invalid indentation: found ' + softTabCount + ' soft tab'
+				].join(' ') + ((softTabCount > 1) ? 's' : ''));
+				return;
+			}
+			break;
+		case 'space':
+			var hardTabCount = identifyIndentation(line.text, settings).hardTabCount;
+			if (hardTabCount > 0) {
+				context.report([
+					'line ' + line.number + ':',
+					'invalid indentation: found ' + hardTabCount + ' hard tab'
+				].join(' ') + ((hardTabCount > 1) ? 's' : ''));
+				return;
+			}
+			break;
 	}
+	var leadingWhitespace = line.text.match(/^(?:\t| )+/);
+	if (!leadingWhitespace) {
+		return;
+	}
+	var mixedTabsWithSpaces = leadingWhitespace[0].match(/ \t/);
+	if (!mixedTabsWithSpaces) {
+		return;
+	}
+	context.report([
+		'line ' + line.number + ':',
+		'invalid indentation: found mixed tabs with spaces'
+	].join(' '));
+}
+
+function identifyIndentation(text: string, settings: eclint.Settings) {
+	var softTab = _.repeat(' ', IndentSizeRule.resolve(settings));
+
+	function countHardTabs(s: string): number {
+		var hardTabs = s.match(/\t/g);
+		return hardTabs ? hardTabs.length : 0;
+	}
+
+	function countSoftTabs(s: string): number {
+		if (!softTab.length) {
+			return 0;
+		}
+		var softTabs = s.match(new RegExp(softTab, 'g'));
+		return softTabs ? softTabs.length : 0;
+	}
+
+	var m = text.match(new RegExp('^(?:\t|' + softTab + ')+'));
+	var leadingIndentation = m ? m[0] : '';
+	return {
+		text: leadingIndentation,
+		hardTabCount: countHardTabs(leadingIndentation),
+		softTabCount: countSoftTabs(leadingIndentation)
+	};
 }
 
 function fix(settings: eclint.Settings, line: linez.Line) {
-	var indentStyle = infer(line);
-
-	if (!indentStyle || indentStyle === settings.indent_style) {
+	var indentStyle = resolve(settings);
+	if (_.isUndefined(indentStyle)) {
 		return line;
 	}
-
-	var oldIndent: string;
-	var newIndent: string;
-	var softTab = _.repeat(' ', resolveIndentSize(settings));
-	if (settings.indent_style === 'tab') {
-		oldIndent = softTab;
-		newIndent = HARD_TAB;
-	} else {
-		oldIndent = HARD_TAB;
-		newIndent = softTab;
+	var indentation = identifyIndentation(line.text, settings);
+	var softTab = _.repeat(' ', IndentSizeRule.resolve(settings));
+	var oneFixedIndent: string;
+	switch (indentStyle) {
+		case 'tab':
+			if (indentation.softTabCount === 0) {
+				return line;
+			}
+			oneFixedIndent = '\t';
+			break;
+		case 'space':
+			if (indentation.hardTabCount === 0) {
+				return line;
+			}
+			oneFixedIndent = softTab;
+			break;
+		default:
+			return line;
 	}
-
-	var leadingIndentation = new RegExp('^(?:' + oldIndent + ')+');
-	line.text = line.text.replace(leadingIndentation, match => {
-		return _.repeat(newIndent, match.length / oldIndent.length);
-	});
-
+	var fixedIndentation = _.repeat(oneFixedIndent, indentation.hardTabCount + indentation.softTabCount);
+	line.text = fixedIndentation + line.text.substr(indentation.text.length);
 	return line;
 }
 
 function infer(line: linez.Line) {
-	return reverseMap[line.text[0]];
-}
-
-var reverseMap = {
-	' ': 'space',
-	'\t': 'tab'
-};
-
-function resolveIndentSize(settings: eclint.Settings): number {
-	if (settings.indent_size === 'tab') {
-		return settings.tab_width || DEFAULT_INDENT_SIZE;
-	}
-	return <number>settings.indent_size || settings.tab_width || DEFAULT_INDENT_SIZE;
+	return {
+		' ': 'space',
+		'\t': 'tab'
+	}[line.text[0]];
 }
 
 var IndentStyleRule: eclint.LineRule = {
 	type: 'LineRule',
-	parse: parse,
+	resolve: resolve,
 	check: check,
 	fix: fix,
 	infer: infer

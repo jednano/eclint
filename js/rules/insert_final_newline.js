@@ -1,31 +1,31 @@
+///<reference path="../../typings/lodash/lodash.d.ts" />
+var _ = require('lodash');
 var newlines = {
     lf: '\n',
     crlf: '\r\n',
     cr: '\r'
 };
-function parse(insertFinalNewline) {
-    switch (insertFinalNewline) {
-        case true:
-        case false:
-            return insertFinalNewline;
-        default:
-            return void (0);
+function resolve(settings) {
+    if (_.isBoolean(settings.insert_final_newline)) {
+        return settings.insert_final_newline;
     }
+    return void (0);
 }
 function check(context, settings, doc) {
-    var setting = parse(settings.insert_final_newline);
+    var configSetting = resolve(settings);
     var inferredSetting = infer(doc);
-    if (setting === true && !inferredSetting) {
+    if (configSetting && !inferredSetting) {
         context.report('Expected final newline character');
         return;
     }
-    if (setting === false && inferredSetting) {
+    if (configSetting === false && inferredSetting) {
         context.report('Unexpected final newline character');
     }
 }
 function fix(settings, doc) {
     var lastLine;
-    if (settings.insert_final_newline && !infer(doc)) {
+    var configSetting = resolve(settings);
+    if (configSetting && !infer(doc)) {
         lastLine = doc.lines[doc.lines.length - 1];
         var endOfLineSetting = settings.end_of_line || 'lf';
         if (lastLine) {
@@ -41,7 +41,7 @@ function fix(settings, doc) {
         }
         return doc;
     }
-    if (!settings.insert_final_newline) {
+    if (!configSetting) {
         while (infer(doc)) {
             lastLine = doc.lines[doc.lines.length - 1];
             if (lastLine.text) {
@@ -63,7 +63,7 @@ function infer(doc) {
 }
 var InsertFinalNewlineRule = {
     type: 'DocumentRule',
-    parse: parse,
+    resolve: resolve,
     check: check,
     fix: fix,
     infer: infer
