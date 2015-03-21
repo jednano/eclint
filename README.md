@@ -79,12 +79,12 @@ $ eclint check
     -h, --help                      output help information
     -c, --charset <charset>         Set to latin1, utf-8, utf-8-bom (see docs)
     -i, --indent_style <style>      Set to tab or space
-    -s, --indent_size <n>           Set to a whole number or tab
-    -t, --tab_width <n>             Columns used to represent a tab character
+    -s, --indent_size n           Set to a whole number or tab
+    -t, --tab_width n             Columns used to represent a tab character
     -w, --trim_trailing_whitespace  Trims any trailing whitespace
     -e, --end_of_line <newline>     Set to lf, cr, crlf
     -n, --insert_final_newline      Ensures files ends with a newline
-    -m, --max_line_length <n>       Set to a whole number
+    -m, --max_line_length n       Set to a whole number
 ```
 
 Running this sub-command without any `[options]` will use each file's EditorConfig settings as the validation settings. In fact, you don't even need to pass-in any CLI `[options]` for this sub-command to work, but doing so will allow you to override the `.editorconfig` file settings in cases where you want more fine-grain control over the outcome.
@@ -139,12 +139,12 @@ $ eclint fix
     -h, --help                      output help information
     -c, --charset <charset>         Set to latin1, utf-8, utf-8-bom (see docs)
     -i, --indent_style <style>      Set to tab or space
-    -s, --indent_size <n>           Set to a whole number or tab
-    -t, --tab_width <n>             Columns used to represent a tab character
+    -s, --indent_size n           Set to a whole number or tab
+    -t, --tab_width n             Columns used to represent a tab character
     -w, --trim_trailing_whitespace  Trims any trailing whitespace
     -e, --end_of_line <newline>     Set to lf, cr, crlf
     -n, --insert_final_newline      Ensures files ends with a newline
-    -m, --max_line_length <n>       Set to a whole number
+    -m, --max_line_length n       Set to a whole number
     -d, --dest <folder>             Destination folder to pipe source files
 ```
 
@@ -269,15 +269,15 @@ All EditorConfig rules are supported. Additionally, the [max_line_length](#max-l
 ### charset
 
 At this time, only the following encodings are supported:
-- `latin1` (partial support)
-- `utf-8`
-- `utf-8-bom` (not actually an encoding, but it does have a BOM signature)
-- `utf-16le`
-- `utf-16be`
+- latin1 (partial support)
+- utf-8
+- utf-8-bom (not actually an encoding, but it does have a BOM signature)
+- utf-16le
+- utf-16be
 
 Unsupported encodings:
-- `utf-32le`
-- `utf-32be`
+- utf-32le
+- utf-32be
 - everything else
 
 I'm working on getting a much broader set of supported encodings, but it's rather difficult to support, so it may take a while.
@@ -295,11 +295,11 @@ Supported settings:
 
 A maximum of one error will be reported per line. The following errors will be reported, listed in order of priority:
 
-1. line <n>: invalid indentation: found a leading space/tab, expected: tab/space
+1. line n: invalid indentation: found a leading space/tab, expected: tab/space
   - Reported when the very first character in the line is the opposing indent style.
-2. line <n>: invalid indentation: found <n> soft/hard tab(s)
+2. line n: invalid indentation: found n soft/hard tab(s)
   - This happens when the first character in the line is correct, but the wrong indentation is found somewhere else in the leading indentation.
-3. line <n>: invalid indentation: found mixed tabs with spaces
+3. line n: invalid indentation: found mixed tabs with spaces
   - Reported when a space is followed by a tab anywhere in the leading whitespace.
 
 #### fix
@@ -325,7 +325,7 @@ Supported settings:
 
 Reports the following errors:
 
-1. line <n>: invalid indent size: <n>, expected: <n>
+1. line n: invalid indent size: n, expected: n
   - Reported when the inferred setting for the line is divided by the configuration setting with no remainder. See the infer method for more information.
 
 #### fix
