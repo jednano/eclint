@@ -14,6 +14,13 @@ function resolve(settings) {
 function check(context, settings, line) {
     switch (resolve(settings)) {
         case 'tab':
+            if (line.text[0] === ' ') {
+                context.report([
+                    'line ' + line.number + ':',
+                    'invalid indentation: found a leading space, expected: tab'
+                ].join(' '));
+                return;
+            }
             var softTabCount = identifyIndentation(line.text, settings).softTabCount;
             if (softTabCount > 0) {
                 context.report([
@@ -24,6 +31,13 @@ function check(context, settings, line) {
             }
             break;
         case 'space':
+            if (line.text[0] === '\t') {
+                context.report([
+                    'line ' + line.number + ':',
+                    'invalid indentation: found a leading tab, expected: space'
+                ].join(' '));
+                return;
+            }
             var hardTabCount = identifyIndentation(line.text, settings).hardTabCount;
             if (hardTabCount > 0) {
                 context.report([

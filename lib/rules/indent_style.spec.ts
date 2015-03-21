@@ -30,26 +30,38 @@ describe('indent_style rule', () => {
 			expect(reporter).not.to.have.been.called;
 		});
 
+		it('reports a leading space when indent_style = tab', () => {
+			rule.check(context, { indent_style: 'tab' }, createLine(' foo'));
+			expect(reporter).to.have.been.calledOnce;
+			expect(reporter).to.have.been.calledWithExactly('line 1: invalid indentation: found a leading space, expected: tab');
+		});
+
+		it('reports a leading tab when indent_style = space', () => {
+			rule.check(context, { indent_style: 'space' }, createLine('\tfoo'));
+			expect(reporter).to.have.been.calledOnce;
+			expect(reporter).to.have.been.calledWithExactly('line 1: invalid indentation: found a leading tab, expected: space');
+		});
+
 		it('reports one invalid soft tab', () => {
-			rule.check(context, { indent_style: 'tab', indent_size: 2 }, createLine('  foo'));
+			rule.check(context, { indent_style: 'tab', indent_size: 2 }, createLine('\t  \tfoo'));
 			expect(reporter).to.have.been.calledOnce;
 			expect(reporter).to.have.been.calledWithExactly('line 1: invalid indentation: found 1 soft tab');
 		});
 
 		it('reports multiple invalid soft tabs', () => {
-			rule.check(context, { indent_style: 'tab', indent_size: 2 }, createLine('  \t  foo'));
+			rule.check(context, { indent_style: 'tab', indent_size: 2 }, createLine('\t  \t  \tfoo'));
 			expect(reporter).to.have.been.calledOnce;
 			expect(reporter).to.have.been.calledWithExactly('line 1: invalid indentation: found 2 soft tabs');
 		});
 
 		it('reports one invalid hard tab', () => {
-			rule.check(context, { indent_style: 'space', indent_size: 2 }, createLine('\tfoo'));
+			rule.check(context, { indent_style: 'space', indent_size: 2 }, createLine('  \tfoo'));
 			expect(reporter).to.have.been.calledOnce;
 			expect(reporter).to.have.been.calledWithExactly('line 1: invalid indentation: found 1 hard tab');
 		});
 
 		it('reports multiple invalid hard tabs', () => {
-			rule.check(context, { indent_style: 'space', indent_size: 2 }, createLine('\t  \tfoo'));
+			rule.check(context, { indent_style: 'space', indent_size: 2 }, createLine('  \t  \tfoo'));
 			expect(reporter).to.have.been.calledOnce;
 			expect(reporter).to.have.been.calledWithExactly('line 1: invalid indentation: found 2 hard tabs');
 		});

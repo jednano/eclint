@@ -19,6 +19,13 @@ function resolve(settings: eclint.Settings) {
 function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
 	switch (resolve(settings)) {
 		case 'tab':
+			if (line.text[0] === ' ') {
+				context.report([
+					'line ' + line.number + ':',
+					'invalid indentation: found a leading space, expected: tab'
+				].join(' '));
+				return;
+			}
 			var softTabCount = identifyIndentation(line.text, settings).softTabCount;
 			if (softTabCount > 0) {
 				context.report([
@@ -29,6 +36,13 @@ function check(context: eclint.Context, settings: eclint.Settings, line: linez.L
 			}
 			break;
 		case 'space':
+			if (line.text[0] === '\t') {
+				context.report([
+					'line ' + line.number + ':',
+					'invalid indentation: found a leading tab, expected: space'
+				].join(' '));
+				return;
+			}
 			var hardTabCount = identifyIndentation(line.text, settings).hardTabCount;
 			if (hardTabCount > 0) {
 				context.report([
