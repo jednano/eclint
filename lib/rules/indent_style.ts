@@ -19,7 +19,7 @@ function resolve(settings: eclint.Settings) {
 function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
 	switch (resolve(settings)) {
 		case 'tab':
-			if (line.text[0] === ' ') {
+			if (_.startsWith(line.text, ' ')) {
 				context.report([
 					'line ' + line.number + ':',
 					'invalid indentation: found a leading space, expected: tab'
@@ -36,7 +36,7 @@ function check(context: eclint.Context, settings: eclint.Settings, line: linez.L
 			}
 			break;
 		case 'space':
-			if (line.text[0] === '\t') {
+			if (_.startsWith(line.text, '\t')) {
 				context.report([
 					'line ' + line.number + ':',
 					'invalid indentation: found a leading tab, expected: space'

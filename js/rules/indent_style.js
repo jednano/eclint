@@ -14,7 +14,7 @@ function resolve(settings) {
 function check(context, settings, line) {
     switch (resolve(settings)) {
         case 'tab':
-            if (line.text[0] === ' ') {
+            if (_.startsWith(line.text, ' ')) {
                 context.report([
                     'line ' + line.number + ':',
                     'invalid indentation: found a leading space, expected: tab'
@@ -31,7 +31,7 @@ function check(context, settings, line) {
             }
             break;
         case 'space':
-            if (line.text[0] === '\t') {
+            if (_.startsWith(line.text, '\t')) {
                 context.report([
                     'line ' + line.number + ':',
                     'invalid indentation: found a leading tab, expected: space'
