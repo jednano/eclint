@@ -1,6 +1,6 @@
 {
   "name": "eclint",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Validate or fix code that doesn't adhere to EditorConfig settings or infer settings from existing code.",
   "keywords": [
     "editorconfig",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/editorconfig/editorconfig-tools-js.git"
+    "url": "git://github.com/jedmao/eclint.git"
   },
   "bugs": {
     "url": "https://github.com/editorconfig/editorconfig-tools-js/issues"
