@@ -288,7 +288,7 @@ Reports the following errors:
 
 - `invalid charset: <detected>, expected: <charset>`
 - `expected charset: <charset>`
-- `line <n>, column: <n>: character out of latin1 range: <invalid-character>`
+- `line <n>, column: <n>: character out of latin1 range: <character>`
 
 ##### fix
 
@@ -392,7 +392,7 @@ Supported settings:
 
 Reports the following errors:
 
-- `line <n>: invalid newline: <lf/cr/crlf>, expected: <end_of_line>`
+- `line <n>: invalid newline: <detected>, expected: <end_of_line>`
 
 ##### fix
 
