@@ -33,7 +33,11 @@ function check(context: eclint.Context, settings: eclint.Settings, line: linez.L
 		return;
 	}
 	if (inferredSetting !== configSetting) {
-		context.report('Incorrect newline character found: ' + inferredSetting);
+		context.report([
+			'line ' + line.number + ':',
+			'invalid newline: ' + inferredSetting + ',',
+			'expected: ' + configSetting
+		].join(' '));
 	}
 }
 

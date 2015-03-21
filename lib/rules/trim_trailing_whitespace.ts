@@ -16,7 +16,10 @@ function resolve(settings: eclint.Settings) {
 function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
 	var configSetting = resolve(settings);
 	if (configSetting && !infer(line)) {
-		context.report('Trailing whitespace found.');
+		context.report([
+			'line ' + line.number + ':',
+			'trailing whitespace found'
+		].join(' '));
 	}
 }
 
@@ -29,7 +32,10 @@ function fix(settings: eclint.Settings, line: linez.Line) {
 }
 
 function infer(line: linez.Line) {
-	return !TRAILING_WHITESPACE.test(line.text);
+	if (!TRAILING_WHITESPACE.test(line.text)) {
+		return true;
+	}
+	return void(0);
 }
 
 var TrimTrailingWhitespaceRule: eclint.LineRule = {

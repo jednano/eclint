@@ -21,11 +21,7 @@ describe('max_line_length rule', () => {
 			expect(reporter).not.to.have.been.called;
 			rule.check(context, { max_line_length: 2 }, fooLine);
 			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly([
-				'Line length ' + 3 + ' exceeds max_line_length',
-				'setting of ' + 2,
-				'on line number ' + 1
-			].join(' '));
+			expect(reporter).to.have.been.calledWithExactly('line 1: line length: 3, exceeds: 2');
 		});
 
 	});

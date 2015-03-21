@@ -15,11 +15,11 @@ function check(context, settings, doc) {
     var configSetting = resolve(settings);
     var inferredSetting = infer(doc);
     if (configSetting && !inferredSetting) {
-        context.report('Expected final newline character');
+        context.report('expected final newline');
         return;
     }
     if (configSetting === false && inferredSetting) {
-        context.report('Unexpected final newline character');
+        context.report('unexpected final newline');
     }
 }
 function fix(settings, doc) {

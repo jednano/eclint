@@ -23,7 +23,7 @@ describe('insert_final_newline rule', function () {
                 createLine('bar')
             ]));
             expect(reporter).to.have.been.calledOnce;
-            expect(reporter).to.have.been.calledWithExactly('Expected final newline character');
+            expect(reporter).to.have.been.calledWithExactly('expected final newline');
         });
         it('reports unexpected final newline character', function () {
             rule.check(context, { insert_final_newline: false }, new Doc([
@@ -36,7 +36,7 @@ describe('insert_final_newline rule', function () {
                 createLine('bar', { ending: '\n' })
             ]));
             expect(reporter).to.have.been.calledOnce;
-            expect(reporter).to.have.been.calledWithExactly('Unexpected final newline character');
+            expect(reporter).to.have.been.calledWithExactly('unexpected final newline');
         });
         it('remains silent when setting is undefined', function () {
             rule.check(context, {}, new Doc([

@@ -13,17 +13,17 @@ describe('end_of_line rule', function () {
         it('validates "lf" setting', function () {
             rule.check(context, { end_of_line: 'lf' }, createLine('foo', { ending: '\r' }));
             expect(reporter).to.have.been.calledOnce;
-            expect(reporter).to.have.been.calledWithExactly('Incorrect newline character found: cr');
+            expect(reporter).to.have.been.calledWithExactly('line 1: invalid newline: cr, expected: lf');
         });
         it('validates "crlf" setting', function () {
             rule.check(context, { end_of_line: 'crlf' }, createLine('foo', { ending: '\n' }));
             expect(reporter).to.have.been.calledOnce;
-            expect(reporter).to.have.been.calledWithExactly('Incorrect newline character found: lf');
+            expect(reporter).to.have.been.calledWithExactly('line 1: invalid newline: lf, expected: crlf');
         });
         it('validates "cr" setting', function () {
             rule.check(context, { end_of_line: 'cr' }, createLine('foo', { ending: '\r\n' }));
             expect(reporter).to.have.been.calledOnce;
-            expect(reporter).to.have.been.calledWithExactly('Incorrect newline character found: crlf');
+            expect(reporter).to.have.been.calledWithExactly('line 1: invalid newline: crlf, expected: cr');
         });
         it('remains silent when the correct end_of_line setting is specified', function () {
             rule.check(context, { end_of_line: 'lf' }, createLine('foo', { ending: '\n' }));

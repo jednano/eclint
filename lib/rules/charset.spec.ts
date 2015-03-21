@@ -24,7 +24,7 @@ describe('charset rule', () => {
 		it('reports out of range characters for latin1 setting',() => {
 			rule.check(context, { charset: 'latin1' }, linez('foo\u0080bar'));
 			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('Character out of latin1 range: \u0080');
+			expect(reporter).to.have.been.calledWithExactly('line 1, column: 4: character out of latin1 range: \u0080');
 		});
 
 		it('remains silent on in-range characters for latin1 setting', () => {
@@ -36,7 +36,7 @@ describe('charset rule', () => {
 			var doc = linez(new Buffer([0xef, 0xbb, 0xbf]));
 			rule.check(context, { charset: 'utf-8' }, doc);
 			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('Invalid charset: utf-8-bom');
+			expect(reporter).to.have.been.calledWithExactly('invalid charset: utf-8-bom, expected: utf-8');
 		});
 
 		it('validates utf-8-bom setting', () => {
@@ -73,7 +73,7 @@ describe('charset rule', () => {
 			var doc = linez(new Buffer('foo', 'utf8'));
 			rule.check(context, { charset: 'utf-8-bom' }, doc);
 			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('Expected charset: utf-8-bom');
+			expect(reporter).to.have.been.calledWithExactly('expected charset: utf-8-bom');
 		});
 
 		it('remains silent when an unsupported charset is set', () => {

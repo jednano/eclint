@@ -17,19 +17,19 @@ function resolve(settings: eclint.Settings) {
 
 function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
 	var inferredSetting = infer(doc);
+	var configSetting = resolve(settings);
 	if (inferredSetting) {
 		if (inferredSetting !== settings.charset) {
-			context.report('Invalid charset: ' + inferredSetting);
+			context.report('invalid charset: ' + inferredSetting + ', expected: ' + configSetting);
 		}
 		return;
 	}
-	var configSetting = resolve(settings);
 	if (configSetting === 'latin1') {
 		checkLatin1TextRange(context, settings, doc.lines[0]);
 		return;
 	}
 	if (_.contains(Object.keys(boms), configSetting)) {
-		context.report('Expected charset: ' + settings.charset);
+		context.report('expected charset: ' + settings.charset);
 	}
 }
 
@@ -51,7 +51,11 @@ function checkLatin1TextRange(
 	for (var i = 0, len = text.length; i < len; i++) {
 		var character = text[i];
 		if (character.charCodeAt(0) >= 0x80) {
-			context.report('Character out of latin1 range: ' + character);
+			context.report([
+				'line ' + line.number + ',',
+				'column: ' + (i + 1) + ':',
+				'character out of latin1 range: ' + character
+			].join(' '));
 		}
 	}
 }

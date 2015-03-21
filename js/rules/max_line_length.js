@@ -8,9 +8,9 @@ function check(context, settings, line) {
     var configSetting = resolve(settings);
     if (inferredSetting > settings.max_line_length) {
         context.report([
-            'Line length ' + inferredSetting + ' exceeds max_line_length',
-            'setting of ' + configSetting,
-            'on line number ' + line.number
+            'line ' + line.number + ':',
+            'line length: ' + inferredSetting + ',',
+            'exceeds: ' + configSetting
         ].join(' '));
     }
 }

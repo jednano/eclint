@@ -29,7 +29,7 @@ describe('insert_final_newline rule', () => {
 				createLine('bar')
 			]));
 			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('Expected final newline character');
+			expect(reporter).to.have.been.calledWithExactly('expected final newline');
 		});
 
 		it('reports unexpected final newline character', () => {
@@ -43,7 +43,7 @@ describe('insert_final_newline rule', () => {
 				createLine('bar', { ending: '\n' })
 			]));
 			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('Unexpected final newline character');
+			expect(reporter).to.have.been.calledWithExactly('unexpected final newline');
 		});
 
 		it('remains silent when setting is undefined', () => {

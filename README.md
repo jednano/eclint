@@ -282,7 +282,23 @@ Unsupported encodings:
 
 I'm working on getting a much broader set of supported encodings, but it's rather difficult to support, so it may take a while.
 
+##### check
+
+Reports the following errors:
+
+- `invalid charset: <detected>, expected: <charset>`
+- `expected charset: <charset>`
+- `line <n>, column: <n>: character out of latin1 range: <invalid-character>`
+
+##### fix
+
+Fixes supported charsets by adding or removing BOM signatures and encoding the text in the new charset.
+
 _Note: Since this tool is itself a [Gulp plugin](#gulp-plugin), all BOM signatures will be stripped off internally by means of [strip-bom](https://www.npmjs.com/package/strip-bom). There's not much that can be done about this, but if you specify a supported charset in your `.editorconfig` file the BOMs will be inserted or re-inserted before they are written._
+
+##### infer
+
+Only infers documents with BOM signatures. No other assumptions made at this time.
 
 
 ### indent_style
@@ -291,26 +307,26 @@ Supported settings:
 - space
 - tab
 
-#### check
+##### check
 
 A maximum of one error will be reported per line. The following errors will be reported, listed in order of priority:
 
-1. line n: invalid indentation: found a leading space/tab, expected: tab/space
+- `line <n>: invalid indentation: found a leading <space/tab>, expected: <indent_style>`
   - Reported when the very first character in the line is the opposing indent style.
-2. line n: invalid indentation: found n soft/hard tab(s)
+- `line <n>: invalid indentation: found <n> <soft/hard> <tab/tabs>`
   - This happens when the first character in the line is correct, but the wrong indentation is found somewhere else in the leading indentation.
-3. line n: invalid indentation: found mixed tabs with spaces
+- `line <n>: invalid indentation: found mixed tabs with spaces`
   - Reported when a space is followed by a tab anywhere in the leading whitespace.
 
-#### fix
+##### fix
 
 The fix method can fix indentation in the following ways:
 
-1. Replaces hard tabs with soft tabs or vice versa.
+- Replaces hard tabs with soft tabs or vice versa.
   - Alignment is preserved.
   - Mixed hard/soft tabs are fixed only if soft tabs match the `indent_size` or `tab_width`.
 
-#### infer
+##### infer
 
 Looks at the first character of each line to determine the strongest trend in your file.
 
@@ -321,18 +337,18 @@ Supported settings:
 - An integer
 - tab (pulls value from [tab_width](#tab_width))
 
-#### check
+##### check
 
 Reports the following errors:
 
-1. line n: invalid indent size: n, expected: n
+- `line <n>: invalid indent size: <n>, expected: <indent_size>`
   - Reported when the inferred setting for the line is divided by the configuration setting with no remainder. See the infer method for more information.
 
-#### fix
+##### fix
 
 Fixing indent size issues without any knowledge of the written language or syntax tree is literally impossible. Any attempt would be completely unreliable. I welcome debate over this topic, but I've been over it again and again and it just can't be done. As such, each line is simply passed through without modification.
 
-#### infer
+##### infer
 
 If the first character in a line is a tab, the indent size will be undefined. If it's spaces, however, I count backwards from 8 to 1, dividing the number of leading spaces by this number. If there is no remainder, that number is inferred as the indent size. Every line is tallied up with a score for each possible indent size and the highest score wins for the document. I've found this method to be extremely reliable.
 
@@ -342,12 +358,27 @@ If the first character in a line is a tab, the indent size will be undefined. If
 Supported settings:
 - An integer
 
+This tool only uses `tab_width` as a fallback for `indent_size`.
+
 
 ### trim_trailing_whitespace
 
 Supported settings:
 - true
-- false
+
+##### check
+
+Reports the following errors:
+
+- `line <n>: trailing whitespace found`
+
+##### fix
+
+When `true`, removes trailing whitespace. Anything other than `true` is ignored.
+
+##### infer
+
+Infers `true` if no trailing whitespace is found. Infers `undefined` otherwise. Does not infer `false` under any scenarios.
 
 
 ### end_of_line
@@ -357,12 +388,42 @@ Supported settings:
 - cr
 - crlf
 
+##### check
+
+Reports the following errors:
+
+- `line <n>: invalid newline: <lf/cr/crlf>, expected: <end_of_line>`
+
+##### fix
+
+Replaces all invalid newlines with the one defined in your configuration.
+
+##### infer
+
+Infers the most popular newline found in each document.
+
 
 ### insert_final_newline
 
 Supported settings:
 - true
-- false (removes any and all final newlines)
+- false
+
+##### check
+
+Reports the following errors:
+
+- `<expected/unexpected> final newline character`
+
+##### fix
+
+- When `true`, inserts a single newline at the end of the file.
+- When `false`, removes all newlines found at the end of the file.
+
+##### infer
+
+- Infers `true` when no newlines are found at the end of the file.
+- Infers `false` when a newline is found at the end of the file.
 
 
 ### max_line_length (unofficial)
@@ -370,7 +431,19 @@ Supported settings:
 Supported settings:
 - An integer
 
-_Note: Unsupported for the fix command._
+##### check
+
+Reports the following errors:
+
+- `line <n>: line length: <detected>, exceeds: <max_line_length>`
+
+##### fix
+
+Unsupported.
+
+##### infer
+
+Scans an entire document for line length and infers the greatest line length detected, rounded up to the nearest 10 (e.g., 72 becomes 80).
 
 
 ## API

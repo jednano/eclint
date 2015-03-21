@@ -10,7 +10,10 @@ function resolve(settings) {
 function check(context, settings, line) {
     var configSetting = resolve(settings);
     if (configSetting && !infer(line)) {
-        context.report('Trailing whitespace found.');
+        context.report([
+            'line ' + line.number + ':',
+            'trailing whitespace found'
+        ].join(' '));
     }
 }
 function fix(settings, line) {
@@ -21,7 +24,10 @@ function fix(settings, line) {
     return line;
 }
 function infer(line) {
-    return !TRAILING_WHITESPACE.test(line.text);
+    if (!TRAILING_WHITESPACE.test(line.text)) {
+        return true;
+    }
+    return void (0);
 }
 var TrimTrailingWhitespaceRule = {
     type: 'LineRule',
