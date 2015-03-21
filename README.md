@@ -263,7 +263,7 @@ max_line_length = 90
 
 ## Rules
 
-All EditorConfig rules are supported. Additionally, the [max_line_length](#max-line-length) has been added to the set. This is not an official EditorConfig setting, so it's possible it may be removed in the future. For now, it's has a basic use in this tool.
+All EditorConfig rules are supported. Additionally, the [max_line_length](#max-line-length) rule has been added to the set. This is not an official EditorConfig setting, so it's possible it may be removed in the future. For now, it's has a basic use in this tool.
 
 
 ### charset
@@ -288,15 +288,53 @@ _Note: Since this tool is itself a [Gulp plugin](#gulp-plugin), all BOM signatur
 ### indent_style
 
 Supported settings:
-- `space`
-- `tab`
+- space
+- tab
+
+#### check
+
+A maximum of one error will be reported per line. The following errors will be reported, listed in order of priority:
+
+1. line <n>: invalid indentation: found a leading space/tab, expected: tab/space
+  - Reported when the very first character in the line is the opposing indent style.
+2. line <n>: invalid indentation: found <n> soft/hard tab(s)
+  - This happens when the first character in the line is correct, but the wrong indentation is found somewhere else in the leading indentation.
+3. line <n>: invalid indentation: found mixed tabs with spaces
+  - Reported when a space is followed by a tab anywhere in the leading whitespace.
+
+#### fix
+
+The fix method can fix indentation in the following ways:
+
+1. Replaces hard tabs with soft tabs or vice versa.
+  - Alignment is preserved.
+  - Mixed hard/soft tabs are fixed only if soft tabs match the `indent_size` or `tab_width`.
+
+#### infer
+
+Looks at the first character of each line to determine the strongest trend in your file.
 
 
 ### indent_size
 
 Supported settings:
 - An integer
-- `tab` (uses value from [tab_width](#tab_width))
+- tab (pulls value from [tab_width](#tab_width))
+
+#### check
+
+Reports the following errors:
+
+1. line <n>: invalid indent size: <n>, expected: <n>
+  - Reported when the inferred setting for the line is divided by the configuration setting with no remainder. See the infer method for more information.
+
+#### fix
+
+Fixing indent size issues without any knowledge of the written language or syntax tree is literally impossible. Any attempt would be completely unreliable. I welcome debate over this topic, but I've been over it again and again and it just can't be done. As such, each line is simply passed through without modification.
+
+#### infer
+
+If the first character in a line is a tab, the indent size will be undefined. If it's spaces, however, I count backwards from 8 to 1, dividing the number of leading spaces by this number. If there is no remainder, that number is inferred as the indent size. Every line is tallied up with a score for each possible indent size and the highest score wins for the document. I've found this method to be extremely reliable.
 
 
 ### tab_width
@@ -308,23 +346,23 @@ Supported settings:
 ### trim_trailing_whitespace
 
 Supported settings:
-- `true`
-- `false`
+- true
+- false
 
 
 ### end_of_line
 
 Supported settings:
-- `lf`
-- `cr`
-- `crlf`
+- lf
+- cr
+- crlf
 
 
 ### insert_final_newline
 
 Supported settings:
-- `true`
-- `false` (removes any and all final newlines)
+- true
+- false (removes any and all final newlines)
 
 
 ### max_line_length (unofficial)
