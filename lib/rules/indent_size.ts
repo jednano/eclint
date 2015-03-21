@@ -20,7 +20,7 @@ function check(context: eclint.Context, settings: eclint.Settings, line: linez.L
 	}
 	var configSetting = resolve(settings);
 	if (_.isUndefined(configSetting)) {
-  	return;
+		return;
 	}
 	var inferredSetting = infer(line);
 	if (_.isUndefined(inferredSetting)) {
