@@ -1,6 +1,7 @@
 ///<reference path="../../typings/node/node.d.ts" />
 ///<reference path="../../typings/lodash/lodash.d.ts" />
 var _ = require('lodash');
+var LEADING_SPACES_MATCHER = /^ +/;
 function resolve(settings) {
     var result = (settings.indent_size === 'tab') ? settings.tab_width : settings.indent_size;
     if (!_.isNumber(result)) {
@@ -8,7 +9,7 @@ function resolve(settings) {
     }
     return _.isNumber(result) ? result : void (0);
 }
-function check(context, settings, line) {
+function check(context, settings, doc) {
     if (settings.indent_style === 'tab') {
         return;
     }
@@ -16,38 +17,61 @@ function check(context, settings, line) {
     if (_.isUndefined(configSetting)) {
         return;
     }
-    var inferredSetting = infer(line);
-    if (_.isUndefined(inferredSetting)) {
-        return;
-    }
-    if (inferredSetting % configSetting !== 0) {
-        context.report([
-            'line ' + line.number + ':',
-            'invalid indent size: ' + inferredSetting + ',',
-            'expected: ' + configSetting
-        ].join(' '));
-    }
+    doc.lines.forEach(function (line) {
+        var leadingSpacesLength = getLeadingSpacesLength(line);
+        if (_.isUndefined(leadingSpacesLength)) {
+            return;
+        }
+        if (configSetting === 0) {
+            return;
+        }
+        if (leadingSpacesLength % configSetting !== 0) {
+            context.report([
+                'line ' + line.number + ':',
+                'invalid indent size: ' + leadingSpacesLength + ',',
+                'expected: ' + configSetting
+            ].join(' '));
+        }
+    });
 }
-function fix(settings, line) {
-    return line; // noop
-}
-function infer(line) {
+function getLeadingSpacesLength(line) {
     if (line.text[0] === '\t') {
         return void (0);
     }
-    var m = line.text.match(/^ +/);
-    if (m) {
-        var leadingSpacesLength = m[0].length;
-        for (var i = 8; i > 0; i--) {
-            if (leadingSpacesLength % i === 0) {
-                return i;
-            }
-        }
+    var m = line.text.match(LEADING_SPACES_MATCHER);
+    return (m) ? m[0].length : 0;
+}
+function fix(settings, doc) {
+    return doc; // noop
+}
+function infer(doc) {
+    var scores = {};
+    function vote(indentSize) {
+        scores[indentSize] = scores[indentSize] || 0;
+        scores[indentSize]++;
     }
-    return 0;
+    var lastLineLeadingSpacesLength = 0;
+    doc.lines.forEach(function (line) {
+        var leadingSpacesLength = getLeadingSpacesLength(line);
+        if (_.isUndefined(leadingSpacesLength)) {
+            return;
+        }
+        vote(Math.abs(leadingSpacesLength - lastLineLeadingSpacesLength));
+        lastLineLeadingSpacesLength = leadingSpacesLength;
+    });
+    var bestScore = 0;
+    var result = 0;
+    Object.keys(scores).forEach(function (indentSize) {
+        var score = scores[indentSize];
+        if (score > bestScore) {
+            bestScore = score;
+            result = +indentSize;
+        }
+    });
+    return result;
 }
 var IndentSizeRule = {
-    type: 'LineRule',
+    type: 'DocumentRule',
     resolve: resolve,
     check: check,
     fix: fix,

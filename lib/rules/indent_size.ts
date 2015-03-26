@@ -4,6 +4,8 @@ import _ = require('lodash');
 import linez = require('linez');
 import eclint = require('../eclint');
 
+var LEADING_SPACES_MATCHER = /^ +/;
+
 function resolve(settings: eclint.Settings): number {
 	var result = (settings.indent_size === 'tab')
 		? settings.tab_width
@@ -14,7 +16,7 @@ function resolve(settings: eclint.Settings): number {
 	return _.isNumber(result) ? <number>result : void (0);
 }
 
-function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
+function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
 	if (settings.indent_style === 'tab') {
 		return;
 	}
@@ -22,43 +24,69 @@ function check(context: eclint.Context, settings: eclint.Settings, line: linez.L
 	if (_.isUndefined(configSetting)) {
 		return;
 	}
-	var inferredSetting = infer(line);
-	if (_.isUndefined(inferredSetting)) {
-		return;
-	}
-	if (inferredSetting % configSetting !== 0) {
-		context.report([
-			'line ' + line.number + ':',
-			'invalid indent size: ' + inferredSetting + ',',
-			'expected: ' + configSetting
-		].join(' '));
-	}
+	doc.lines.forEach(line => {
+		var leadingSpacesLength = getLeadingSpacesLength(line);
+		if (_.isUndefined(leadingSpacesLength)) {
+			return;
+		}
+		if (configSetting === 0) {
+			return;
+		}
+		if (leadingSpacesLength % configSetting !== 0) {
+			context.report([
+				'line ' + line.number + ':',
+				'invalid indent size: ' + leadingSpacesLength + ',',
+				'expected: ' + configSetting
+			].join(' '));
+		}
+	});
 }
 
-function fix(settings: eclint.Settings, line: linez.Line) {
-	return line; // noop
-}
-
-function infer(line: linez.Line): number {
+function getLeadingSpacesLength(line: linez.Line): number {
 	if (line.text[0] === '\t') {
 		return void(0);
 	}
-
-	var m = line.text.match(/^ +/);
-	if (m) {
-		var leadingSpacesLength = m[0].length;
-		for (var i = 8; i > 0; i--) {
-			if (leadingSpacesLength % i === 0) {
-				return i;
-			}
-		}
-	}
-
-	return 0;
+	var m = line.text.match(LEADING_SPACES_MATCHER);
+	return (m) ? m[0].length : 0;
 }
 
-var IndentSizeRule: eclint.LineRule = {
-	type: 'LineRule',
+function fix(settings: eclint.Settings, doc: linez.Document) {
+	return doc; // noop
+}
+
+function infer(doc: linez.Document): number {
+	var scores = {};
+
+	function vote(indentSize: number) {
+		scores[indentSize] = scores[indentSize] || 0;
+		scores[indentSize]++;
+	}
+
+	var lastLineLeadingSpacesLength = 0;
+	doc.lines.forEach(line => {
+		var leadingSpacesLength = getLeadingSpacesLength(line);
+		if (_.isUndefined(leadingSpacesLength)) {
+			return;
+		}
+		vote(Math.abs(leadingSpacesLength - lastLineLeadingSpacesLength));
+		lastLineLeadingSpacesLength = leadingSpacesLength;
+	});
+
+	var bestScore = 0;
+	var result = 0;
+	Object.keys(scores).forEach(indentSize => {
+		var score = scores[indentSize];
+		if (score > bestScore) {
+			bestScore = score;
+			result = +indentSize;
+		}
+	});
+
+	return result;
+}
+
+var IndentSizeRule: eclint.DocumentRule = {
+	type: 'DocumentRule',
 	resolve: resolve,
 	check: check,
 	fix: fix,
