@@ -19,7 +19,7 @@
     "url": "git://github.com/jedmao/eclint.git"
   },
   "bugs": {
-    "url": "https://github.com/editorconfig/editorconfig-tools-js/issues"
+    "url": "https://github.com/jedmao/eclint/issues"
   },
   "author": "EditorConfig Team",
   "license": "MIT",
