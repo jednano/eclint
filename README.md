@@ -81,12 +81,12 @@ $ eclint check
     -h, --help                      output help information
     -c, --charset <charset>         Set to latin1, utf-8, utf-8-bom (see docs)
     -i, --indent_style <style>      Set to tab or space
-    -s, --indent_size n           Set to a whole number or tab
-    -t, --tab_width n             Columns used to represent a tab character
+    -s, --indent_size <n>           Set to a whole number or tab
+    -t, --tab_width <n>             Columns used to represent a tab character
     -w, --trim_trailing_whitespace  Trims any trailing whitespace
     -e, --end_of_line <newline>     Set to lf, cr, crlf
     -n, --insert_final_newline      Ensures files ends with a newline
-    -m, --max_line_length n       Set to a whole number
+    -m, --max_line_length <n>       Set to a whole number
 ```
 
 Running this sub-command without any `[options]` will use each file's EditorConfig settings as the validation settings. In fact, you don't even need to pass-in any CLI `[options]` for this sub-command to work, but doing so will allow you to override the `.editorconfig` file settings in cases where you want more fine-grain control over the outcome.
@@ -141,12 +141,12 @@ $ eclint fix
     -h, --help                      output help information
     -c, --charset <charset>         Set to latin1, utf-8, utf-8-bom (see docs)
     -i, --indent_style <style>      Set to tab or space
-    -s, --indent_size n           Set to a whole number or tab
-    -t, --tab_width n             Columns used to represent a tab character
+    -s, --indent_size <n>           Set to a whole number or tab
+    -t, --tab_width <n>             Columns used to represent a tab character
     -w, --trim_trailing_whitespace  Trims any trailing whitespace
     -e, --end_of_line <newline>     Set to lf, cr, crlf
     -n, --insert_final_newline      Ensures files ends with a newline
-    -m, --max_line_length n       Set to a whole number
+    -m, --max_line_length <n>       Set to a whole number
     -d, --dest <folder>             Destination folder to pipe source files
 ```
 
