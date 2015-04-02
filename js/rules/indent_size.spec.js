@@ -56,10 +56,7 @@ describe('indent_size rule', function () {
                 createLine('foo')
             ]));
             rule.check(context, { indent_size: 1 }, new Doc([
-                createLine('foo'),
-                createLine(' foo'),
-                createLine(' foo'),
-                createLine('foo')
+                createLine(' foo')
             ]));
             rule.check(context, { indent_size: 1 }, new Doc([
                 createLine('  foo')

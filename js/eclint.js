@@ -72,6 +72,9 @@ var eclint;
                 };
                 Object.keys(settings).forEach(function (setting) {
                     var rule = rules[setting];
+                    if (_.isUndefined(rule)) {
+                        return;
+                    }
                     try {
                         if (rule.type === 'DocumentRule') {
                             rule.check(context, settings, doc);
@@ -111,6 +114,9 @@ var eclint;
                 var doc = linez(file.contents);
                 Object.keys(settings).forEach(function (setting) {
                     var rule = rules[setting];
+                    if (_.isUndefined(rule)) {
+                        return;
+                    }
                     try {
                         if (rule.type === 'DocumentRule') {
                             rule.fix(settings, doc);

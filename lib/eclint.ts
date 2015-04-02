@@ -174,6 +174,9 @@ module eclint {
 
 					Object.keys(settings).forEach(setting => {
 						var rule: DocumentRule|LineRule = rules[setting];
+						if (_.isUndefined(rule)) {
+							return;
+						}
 						try {
 							if (rule.type === 'DocumentRule') {
 								(<DocumentRule>rule).check(context, settings, doc);
@@ -220,6 +223,9 @@ module eclint {
 
 					Object.keys(settings).forEach(setting => {
 						var rule: DocumentRule|LineRule = rules[setting];
+						if (_.isUndefined(rule)) {
+							return;
+						}
 						try {
 							if (rule.type === 'DocumentRule') {
 								(<DocumentRule>rule).fix(settings, doc);
