@@ -152,7 +152,7 @@ $ eclint fix
 
 You might notice this sub-command looks very similar to the [check sub-command](#check). It works essentially the same way; except, instead of validating files, it enforces the settings on each file by altering their contents. I'll let you read the [check sub-command](#check) so I don't have to repeat myself.
 
-One difference you'll notice is an additional `-d, --dest <folder>` option. This option gives you control over where the result file tree will be written. It's not technically required, but if you don't specify this option then the files won't be written anywhere, which would be pointless. I'm still looking for a way to automatically overwrite the files provided in the `<files>...` args, which, when I do, this `dest` option will only be needed if you want to write the files elsewhere.
+One key difference you'll notice is an additional `-d, --dest <folder>` option. This option gives you control over where the result file tree will be written. Without this specified, the files will be overwritten in the source location by default.
 
 
 ## Infer

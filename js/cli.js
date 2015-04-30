@@ -1,6 +1,3 @@
-///<reference path='../typings/node/node.d.ts'/>
-///<reference path='../typings/lodash/lodash.d.ts'/>
-///<reference path='../typings/vinyl-fs/vinyl-fs.d.ts'/>
 var path = require('path');
 var _ = require('lodash');
 var tap = require('gulp-tap');
@@ -64,7 +61,9 @@ fix.action(function (args, options) {
     if (options.dest) {
         return stream.pipe(vfs.dest(options.dest));
     }
-    return stream;
+    return stream.pipe(vfs.dest(function (file) {
+        return file.base;
+    }));
 });
 var infer = cli.command('infer <files>...');
 infer.description('Infer .editorconfig settings from one or more files');

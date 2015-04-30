@@ -86,7 +86,9 @@ fix.action((args: any, options: FixOptions) => {
 	if (options.dest) {
 		return stream.pipe(vfs.dest(options.dest));
 	}
-	return stream;
+	return stream.pipe((<any>vfs.dest)((file: File) => {
+		return file.base;
+	}));
 });
 
 var infer = cli.command('infer <files>...');
