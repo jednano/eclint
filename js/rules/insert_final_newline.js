@@ -45,7 +45,7 @@ function fix(settings, doc) {
         while (infer(doc)) {
             lastLine = doc.lines[doc.lines.length - 1];
             if (lastLine.text) {
-                lastLine.ending = void (0);
+                lastLine.ending = '';
                 break;
             }
             doc.lines.pop();
