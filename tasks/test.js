@@ -8,8 +8,13 @@ function test(done) {
 		.pipe(istanbul())
 		.pipe(istanbul.hookRequire())
 		.on('finish', function() {
+			var err;
 			gulp.src(['js/**/*.spec.js'], { read: false })
-				.pipe(plumber())
+				.pipe(plumber({
+					errorHandler: function(err2) {
+						err = err2;
+					}
+				}))
 				.pipe(mocha({
 					reporter: 'spec',
 					clearRequireCache: true
@@ -17,7 +22,9 @@ function test(done) {
 				.pipe(istanbul.writeReports({
 					reporters: ['lcov']
 				}))
-				.on('end', done);
+				.on('end', function() {
+					done(err);
+				});
 		});
 }
 

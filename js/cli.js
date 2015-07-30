@@ -1,3 +1,6 @@
+///<reference path='../typings/node/node.d.ts'/>
+///<reference path='../typings/lodash/lodash.d.ts'/>
+///<reference path='../typings/vinyl-fs/vinyl-fs.d.ts'/>
 var path = require('path');
 var _ = require('lodash');
 var tap = require('gulp-tap');
