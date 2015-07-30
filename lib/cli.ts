@@ -61,7 +61,7 @@ check.action((args: any, options: CheckOptions) => {
 				console.error(relativePath + ':', message);
 			})
 		}));
-	stream.on('end', () => {
+	stream.on('finish', () => {
 		if (hasErrors) {
 			process.exit(1);
 		}
