@@ -47,13 +47,12 @@ check.action(function (args, options) {
             var relativePath = path.relative('.', file.path);
             console.error(relativePath + ':', message);
         })
-    }));
-    stream.on('finish', function () {
+    })).on('end', function () {
         if (hasErrors) {
             process.exit(1);
         }
     });
-    return stream;
+    stream.resume();
 });
 var fix = cli.command('fix <files>...');
 fix.description('Fix formatting errors that disobey .editorconfig settings');

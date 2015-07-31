@@ -60,13 +60,13 @@ check.action((args: any, options: CheckOptions) => {
 				var relativePath = path.relative('.', file.path);
 				console.error(relativePath + ':', message);
 			})
-		}));
-	stream.on('finish', () => {
-		if (hasErrors) {
-			process.exit(1);
-		}
-	});
-	return stream;
+		}))
+		.on('end', () => {
+			if (hasErrors) {
+				process.exit(1);
+			}
+		});
+	(<any>stream).resume();
 });
 
 interface FixOptions extends eclint.Settings {

@@ -1,6 +1,6 @@
 {
   "name": "eclint",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Validate or fix code that doesn't adhere to EditorConfig settings or infer settings from existing code.",
   "keywords": [
     "editorconfig",
@@ -43,7 +43,7 @@
     "gulp": "^3.8.11",
     "gulp-istanbul": "^0.6.0",
     "gulp-mocha": "^2.0.0",
-    "gulp-plumber": "^1.0.0",
+    "gulp-plumber": "^1.0.1",
     "gulp-tslint": "^1.4.3",
     "gulp-typescript": "^2.4.2",
     "mocha": "^2.1.0",
