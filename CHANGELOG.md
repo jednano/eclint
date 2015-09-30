@@ -1,3 +1,6 @@
+## 1.1.2
+- Pin iconv-lite version.
+
 ## 1.1.1
 - Fix: exit with non-zero status code when errors are reported.
 

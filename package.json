@@ -1,6 +1,6 @@
 {
   "name": "eclint",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Validate or fix code that doesn't adhere to EditorConfig settings or infer settings from existing code.",
   "keywords": [
     "editorconfig",
