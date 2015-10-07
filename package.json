@@ -1,6 +1,6 @@
 {
   "name": "eclint",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Validate or fix code that doesn't adhere to EditorConfig settings or infer settings from existing code.",
   "keywords": [
     "editorconfig",
@@ -12,7 +12,8 @@
     "gulpplugin"
   ],
   "scripts": {
-    "test": "./node_modules/.bin/gulp"
+    "prepublish": "npm test",
+    "test": "gulp"
   },
   "repository": {
     "type": "git",
@@ -40,7 +41,7 @@
     "chai": "^2.1.0",
     "del": "^1.1.1",
     "event-stream": "^3.2.2",
-    "gulp": "^3.8.11",
+    "gulp": "^3.9.0",
     "gulp-istanbul": "^0.6.0",
     "gulp-mocha": "^2.0.0",
     "gulp-plumber": "^1.0.1",

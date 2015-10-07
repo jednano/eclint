@@ -1,3 +1,6 @@
+## 1.1.5
+- Fix npm publish.
+
 ## 1.1.4
 - Fix `fix` and `infer` in non-interactive environments [#33](https://github.com/jedmao/eclint/pull/33).
 
