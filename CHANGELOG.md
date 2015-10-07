@@ -1,3 +1,6 @@
+## 1.1.3
+- Fix behavior in non-interactive environments [#32](https://github.com/jedmao/eclint/pull/32).
+
 ## 1.1.2
 - Pin iconv-lite version.
 
