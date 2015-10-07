@@ -81,7 +81,7 @@ fix.description('Fix formatting errors that disobey .editorconfig settings');
 addSettings(fix);
 fix.option('-d, --dest <folder>', 'Destination folder to pipe source files');
 fix.action((args: any, options: FixOptions) => {
-	var stream = vfs.src(handleNegativeGlobs(args.files))
+	var stream = vfs.src(handleNegativeGlobs(args.files.filter(file => (typeof file === 'string'))))
 		.pipe(eclint.fix({ settings: _.pick(options, eclint.ruleNames) }));
 	if (options.dest) {
 		return stream.pipe(vfs.dest(options.dest));
@@ -97,7 +97,7 @@ infer.option('-s, --score', 'Shows the tallied score for each setting');
 infer.option('-i, --ini',   'Exports file as ini file type');
 infer.option('-r, --root',  'Adds root = true to your ini file, if any');
 infer.action((args: any, options: eclint.InferOptions) => {
-	return vfs.src(handleNegativeGlobs(args.files))
+	return vfs.src(handleNegativeGlobs(args.files.filter(file => (typeof file === 'string'))))
 		.pipe(eclint.infer(options))
 		.pipe(tap((file: File) => {
 			console.log(file.contents + '');
