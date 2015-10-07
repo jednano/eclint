@@ -1,3 +1,6 @@
+## 1.1.4
+- Fix `fix` and `infer` in non-interactive environments [#33](https://github.com/jedmao/eclint/pull/33).
+
 ## 1.1.3
 - Fix behavior in non-interactive environments [#32](https://github.com/jedmao/eclint/pull/32).
 
