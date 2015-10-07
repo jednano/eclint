@@ -52,7 +52,7 @@ check.description('Validate that file(s) adhere to .editorconfig settings');
 addSettings(check);
 check.action((args: any, options: CheckOptions) => {
 	var hasErrors = false;
-	var stream = vfs.src(handleNegativeGlobs(args.files))
+	var stream = vfs.src(handleNegativeGlobs(args.files.filter(file => (typeof file === 'string'))))
 		.pipe(eclint.check({
 			settings: _.pick(options, eclint.ruleNames),
 			reporter: <any>((file: File, message: string) => {
