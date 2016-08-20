@@ -3,8 +3,10 @@ var tslint = require('gulp-tslint');
 
 module.exports = function() {
 	return gulp.src('lib/**/*.ts')
-		.pipe(tslint())
-		.pipe(tslint.report('prose', {
+		.pipe(tslint({
+			formatter: 'prose'
+		}))
+		.pipe(tslint.report({
 			emitError: false
 		}));
 };
