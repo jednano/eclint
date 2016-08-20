@@ -1,8 +1,5 @@
-///<reference path='../typings/node/node.d.ts'/>
-///<reference path='../typings/lodash/lodash.d.ts'/>
-///<reference path='../typings/vinyl-fs/vinyl-fs.d.ts'/>
 import path = require('path');
-import _ = require('lodash');
+import pick = require('lodash.pick');
 var tap = require('gulp-tap');
 import File = require('vinyl');
 import vfs = require('vinyl-fs');
@@ -54,7 +51,7 @@ check.action((args: any, options: CheckOptions) => {
 	var hasErrors = false;
 	var stream = vfs.src(handleNegativeGlobs(args.files.filter(file => (typeof file === 'string'))))
 		.pipe(eclint.check({
-			settings: _.pick(options, eclint.ruleNames),
+			settings: pick(options, eclint.ruleNames),
 			reporter: <any>((file: File, message: string) => {
 				hasErrors = true;
 				var relativePath = path.relative('.', file.path);
@@ -82,7 +79,7 @@ addSettings(fix);
 fix.option('-d, --dest <folder>', 'Destination folder to pipe source files');
 fix.action((args: any, options: FixOptions) => {
 	var stream = vfs.src(handleNegativeGlobs(args.files.filter(file => (typeof file === 'string'))))
-		.pipe(eclint.fix({ settings: _.pick(options, eclint.ruleNames) }));
+		.pipe(eclint.fix({ settings: pick(options, eclint.ruleNames) }));
 	if (options.dest) {
 		return stream.pipe(vfs.dest(options.dest));
 	}

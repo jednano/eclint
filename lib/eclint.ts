@@ -1,9 +1,12 @@
-///<reference path="../typings/lodash/lodash.d.ts" />
-///<reference path="../typings/gulp-util/gulp-util.d.ts" />
-///<reference path="../node_modules/linez/linez.d.ts" />
 import os = require('os');
 
-import _ = require('lodash');
+import assign = require('lodash.assign');
+import isUndefined = require('lodash.isundefined');
+import noop = require('lodash.noop');
+import omit = require('lodash.omit');
+import template = require('lodash.template');
+import without = require('lodash.without');
+
 import gutil = require('gulp-util');
 import through = require('through2');
 var editorconfig = require('editorconfig');
@@ -107,7 +110,7 @@ module eclint {
 		(err: Error, file?: File): void;
 	}
 
-	var ERROR_TEMPLATE = _.template('ECLint: <%= message %>');
+	var ERROR_TEMPLATE = template('ECLint: <%= message %>');
 
 	function createModuleError(message: string) {
 		return new Error(ERROR_TEMPLATE({ message: message }));
@@ -131,13 +134,13 @@ module eclint {
 	];
 
 	var rules: any = {};
-	_.without(ruleNames, 'tab_width').forEach(name => {
+	without(ruleNames, 'tab_width').forEach(name => {
 		rules[name] = require('./rules/' + name);
 	});
 
 	function getSettings(fileSettings: Settings, commandSettings: Settings) {
-		return _.omit(
-			_.assign(fileSettings, commandSettings),
+		return omit(
+			assign(fileSettings, commandSettings),
 			['tab_width']
 		);
 	}
@@ -169,12 +172,12 @@ module eclint {
 					var doc = linez(file.contents);
 
 					var context = {
-						report: (options.reporter) ? options.reporter.bind(this, file) : _.noop
+						report: (options.reporter) ? options.reporter.bind(this, file) : noop
 					};
 
 					Object.keys(settings).forEach(setting => {
 						var rule: DocumentRule|LineRule = rules[setting];
-						if (_.isUndefined(rule)) {
+						if (isUndefined(rule)) {
 							return;
 						}
 						try {
@@ -223,7 +226,7 @@ module eclint {
 
 					Object.keys(settings).forEach(setting => {
 						var rule: DocumentRule|LineRule = rules[setting];
-						if (_.isUndefined(rule)) {
+						if (isUndefined(rule)) {
 							return;
 						}
 						try {
@@ -359,7 +362,7 @@ module eclint {
 				Object.keys(setting).forEach(value => {
 					var score = setting[value];
 					var parsedValue = parseValue(value);
-					if (score >= maxScore && !_.isUndefined(parsedValue)) {
+					if (score >= maxScore && !isUndefined(parsedValue)) {
 						maxScore = score;
 						result[rule] = parsedValue;
 					}
