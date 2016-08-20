@@ -82,5 +82,6 @@
   },
   "directories": {
     "test": "test"
-  }
+  },
+  "typings": "d.ts/eclint.d.ts"
 }
