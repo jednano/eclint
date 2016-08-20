@@ -75,7 +75,7 @@ module eclint {
 	}
 
 	export interface Context {
-		report(message: string): void
+		report(message: string): void;
 	}
 
 	export interface Rule {
@@ -267,7 +267,7 @@ module eclint {
 	export interface ScoredSetting {
 		[key: string]: {
 			[key: string]: number;
-		}
+		};
 	}
 
 	export interface ScoredSettings {
