@@ -1,5 +1,5 @@
 ///<reference path="../../typings/lodash/lodash.d.ts" />
-var _ = require('lodash');
+import isBoolean = require('lodash.isboolean');
 import linez = require('linez');
 
 import eclint = require('../eclint');
@@ -11,7 +11,7 @@ var newlines = {
 };
 
 function resolve(settings: eclint.Settings) {
-	if (_.isBoolean(settings.insert_final_newline)) {
+	if (isBoolean(settings.insert_final_newline)) {
 		return settings.insert_final_newline;
 	}
 	return void(0);

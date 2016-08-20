@@ -1,6 +1,9 @@
 ///<reference path="../../typings/node/node.d.ts" />
 ///<reference path="../../typings/lodash/lodash.d.ts" />
-import _ = require('lodash');
+
+import isNumber = require('lodash.isnumber');
+import isUndefined = require('lodash.isundefined');
+
 import linez = require('linez');
 import eclint = require('../eclint');
 
@@ -10,10 +13,10 @@ function resolve(settings: eclint.Settings): number {
 	var result = (settings.indent_size === 'tab')
 		? settings.tab_width
 		: settings.indent_size;
-	if (!_.isNumber(result)) {
+	if (!isNumber(result)) {
 		result = settings.tab_width;
 	}
-	return _.isNumber(result) ? <number>result : void (0);
+	return isNumber(result) ? <number>result : void (0);
 }
 
 function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
@@ -21,12 +24,12 @@ function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Do
 		return;
 	}
 	var configSetting = resolve(settings);
-	if (_.isUndefined(configSetting)) {
+	if (isUndefined(configSetting)) {
 		return;
 	}
 	doc.lines.forEach(line => {
 		var leadingSpacesLength = getLeadingSpacesLength(line);
-		if (_.isUndefined(leadingSpacesLength)) {
+		if (isUndefined(leadingSpacesLength)) {
 			return;
 		}
 		if (configSetting === 0) {
@@ -65,7 +68,7 @@ function infer(doc: linez.Document): number {
 	var lastLineLeadingSpacesLength = 0;
 	doc.lines.forEach(line => {
 		var leadingSpacesLength = getLeadingSpacesLength(line);
-		if (_.isUndefined(leadingSpacesLength)) {
+		if (isUndefined(leadingSpacesLength)) {
 			return;
 		}
 		vote(Math.abs(leadingSpacesLength - lastLineLeadingSpacesLength));

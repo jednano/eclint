@@ -1,11 +1,11 @@
 ///<reference path="../../typings/lodash/lodash.d.ts" />
-import _ = require('lodash');
+import isNumber = require('lodash.isnumber');
 import linez = require('linez');
 
 import eclint = require('../eclint');
 
 function resolve(settings: eclint.Settings) {
-	return _.isNumber(settings.max_line_length) ? settings.max_line_length : void(0);
+	return isNumber(settings.max_line_length) ? settings.max_line_length : void(0);
 }
 
 function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {

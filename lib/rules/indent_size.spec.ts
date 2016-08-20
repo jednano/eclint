@@ -1,4 +1,6 @@
-import _ = require('lodash');
+import range = require('lodash.range');
+import repeat = require('lodash.repeat');
+
 import common = require('../test-common');
 import linez = require('linez');
 import rule = require('./indent_size');
@@ -151,10 +153,10 @@ describe('indent_size rule', () => {
 
 	describe('infer command', () => {
 
-		_.range(0, 9).forEach(n => {
+		range(0, 9).forEach(n => {
 			it('infers ' + n + '-space setting', () => {
 				expect(rule.infer(new Doc([
-					createLine(_.repeat(' ', n) + 'foo')
+					createLine(repeat(' ', n) + 'foo')
 				]))).to.eq(n);
 			});
 		});

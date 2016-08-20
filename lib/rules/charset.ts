@@ -1,5 +1,4 @@
-///<reference path='../../typings/lodash/lodash.d.ts'/>
-import _ = require('lodash');
+import contains = require('lodash.contains');
 import linez = require('linez');
 import eclint = require('../eclint');
 
@@ -28,7 +27,7 @@ function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Do
 		checkLatin1TextRange(context, settings, doc.lines[0]);
 		return;
 	}
-	if (_.contains(Object.keys(boms), configSetting)) {
+	if (contains(Object.keys(boms), configSetting)) {
 		context.report('expected charset: ' + settings.charset);
 	}
 }
