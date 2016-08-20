@@ -1,5 +1,3 @@
-///<reference path="../../typings/node/node.d.ts" />
-///<reference path="../../typings/lodash/lodash.d.ts" />
 import isUndefined = require('lodash.isundefined');
 import repeat = require('lodash.repeat');
 import startsWith = require('lodash.startswith');

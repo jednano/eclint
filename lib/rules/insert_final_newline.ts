@@ -1,4 +1,3 @@
-///<reference path="../../typings/lodash/lodash.d.ts" />
 import isBoolean = require('lodash.isboolean');
 import linez = require('linez');
 

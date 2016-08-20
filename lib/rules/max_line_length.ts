@@ -1,4 +1,3 @@
-///<reference path="../../typings/lodash/lodash.d.ts" />
 import isNumber = require('lodash.isnumber');
 import linez = require('linez');
 

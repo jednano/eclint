@@ -1,6 +1,3 @@
-///<reference path="../typings/lodash/lodash.d.ts" />
-///<reference path="../typings/gulp-util/gulp-util.d.ts" />
-///<reference path="../node_modules/linez/linez.d.ts" />
 import os = require('os');
 
 import assign = require('lodash.assign');

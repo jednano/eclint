@@ -1,6 +1,3 @@
-///<reference path='../typings/node/node.d.ts'/>
-///<reference path='../typings/lodash/lodash.d.ts'/>
-///<reference path='../typings/vinyl-fs/vinyl-fs.d.ts'/>
 import path = require('path');
 import pick = require('lodash.pick');
 var tap = require('gulp-tap');

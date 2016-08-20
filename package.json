@@ -49,6 +49,17 @@
     "vinyl-fs": "^2.4.3"
   },
   "devDependencies": {
+    "@types/chai": "^3.4.31",
+    "@types/chalk": "^0.4.28",
+    "@types/gulp-util": "^3.0.28",
+    "@types/lodash": "^4.14.32",
+    "@types/mocha": "^2.2.30",
+    "@types/node": "^6.0.36",
+    "@types/sinon": "^1.16.28",
+    "@types/sinon-chai": "^2.7.26",
+    "@types/through2": "0.0.28",
+    "@types/vinyl": "^1.1.28",
+    "@types/vinyl-fs": "0.0.27",
     "chai": "^3.5.0",
     "del": "^2.2.2",
     "event-stream": "^3.2.2",

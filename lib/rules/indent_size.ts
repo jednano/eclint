@@ -1,6 +1,3 @@
-///<reference path="../../typings/node/node.d.ts" />
-///<reference path="../../typings/lodash/lodash.d.ts" />
-
 import isNumber = require('lodash.isnumber');
 import isUndefined = require('lodash.isundefined');
 
