@@ -477,6 +477,7 @@ The [check](#check), [fix](#fix) and [infer](#infer) API commands are all [Gulp]
 ```js
 var gulp = require('gulp');
 var eclint = require('eclint');
+var path = require('path');
 
 gulp.task('check', function() {
 	var hasErrors = false;
