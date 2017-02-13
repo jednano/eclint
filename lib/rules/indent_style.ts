@@ -1,6 +1,7 @@
-///<reference path="../../typings/node/node.d.ts" />
-///<reference path="../../typings/lodash/lodash.d.ts" />
-import _ = require('lodash');
+import isUndefined = require('lodash.isundefined');
+import repeat = require('lodash.repeat');
+import startsWith = require('lodash.startswith');
+
 import linez = require('linez');
 
 import eclint = require('../eclint');
@@ -19,7 +20,7 @@ function resolve(settings: eclint.Settings) {
 function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
 	switch (resolve(settings)) {
 		case 'tab':
-			if (_.startsWith(line.text, ' ')) {
+			if (startsWith(line.text, ' ')) {
 				context.report([
 					'line ' + line.number + ':',
 					'invalid indentation: found a leading space, expected: tab'
@@ -36,7 +37,7 @@ function check(context: eclint.Context, settings: eclint.Settings, line: linez.L
 			}
 			break;
 		case 'space':
-			if (_.startsWith(line.text, '\t')) {
+			if (startsWith(line.text, '\t')) {
 				context.report([
 					'line ' + line.number + ':',
 					'invalid indentation: found a leading tab, expected: space'
@@ -68,7 +69,7 @@ function check(context: eclint.Context, settings: eclint.Settings, line: linez.L
 }
 
 function identifyIndentation(text: string, settings: eclint.Settings) {
-	var softTab = _.repeat(' ', IndentSizeRule.resolve(settings));
+	var softTab = repeat(' ', IndentSizeRule.resolve(settings));
 
 	function countHardTabs(s: string): number {
 		var hardTabs = s.match(/\t/g);
@@ -94,11 +95,11 @@ function identifyIndentation(text: string, settings: eclint.Settings) {
 
 function fix(settings: eclint.Settings, line: linez.Line) {
 	var indentStyle = resolve(settings);
-	if (_.isUndefined(indentStyle)) {
+	if (isUndefined(indentStyle)) {
 		return line;
 	}
 	var indentation = identifyIndentation(line.text, settings);
-	var softTab = _.repeat(' ', IndentSizeRule.resolve(settings));
+	var softTab = repeat(' ', IndentSizeRule.resolve(settings));
 	var oneFixedIndent: string;
 	switch (indentStyle) {
 		case 'tab':
@@ -116,7 +117,7 @@ function fix(settings: eclint.Settings, line: linez.Line) {
 		default:
 			return line;
 	}
-	var fixedIndentation = _.repeat(oneFixedIndent, indentation.hardTabCount + indentation.softTabCount);
+	var fixedIndentation = repeat(oneFixedIndent, indentation.hardTabCount + indentation.softTabCount);
 	line.text = fixedIndentation + line.text.substr(indentation.text.length);
 	return line;
 }

@@ -1,5 +1,4 @@
-///<reference path="../../typings/lodash/lodash.d.ts" />
-import _ = require('lodash');
+import isBoolean = require('lodash.isboolean');
 import linez = require('linez');
 
 import eclint = require('../eclint');
@@ -7,7 +6,7 @@ import eclint = require('../eclint');
 var TRAILING_WHITESPACE = /[\t ]+$/;
 
 function resolve(settings: eclint.Settings) {
-	if (_.isBoolean(settings.trim_trailing_whitespace)) {
+	if (isBoolean(settings.trim_trailing_whitespace)) {
 		return settings.trim_trailing_whitespace;
 	}
 	return void(0);
