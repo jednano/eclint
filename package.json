@@ -25,7 +25,7 @@
   "author": "EditorConfig Team",
   "license": "MIT",
   "dependencies": {
-    "cli-color": "^0.3.2",
+    "cli-color": "^1.2.0",
     "editorconfig": "^0.13.2",
     "gitlike-cli": "^0.1.0",
     "gulp-tap": "^0.1.3",
