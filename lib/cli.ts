@@ -1,21 +1,22 @@
 ///<reference path='../typings/node/node.d.ts'/>
 ///<reference path='../typings/lodash/lodash.d.ts'/>
 ///<reference path='../typings/vinyl-fs/vinyl-fs.d.ts'/>
+///<reference path="../typings/gulp-util/gulp-util.d.ts" />
 import path = require('path');
 import _ = require('lodash');
 var tap = require('gulp-tap');
 import File = require('vinyl');
 import vfs = require('vinyl-fs');
+import gutil = require('gulp-util');
 
 import eclint = require('./eclint');
 
-var clc = require('cli-color');
 var cli = require('gitlike-cli');
 var pkg = require('../package');
 
 cli.on('error', err => {
 	console.log('');
-	console.log(clc.red('  ' + err.name + ':', err.message));
+	console.log(gutil.colors.red('  ' + err.name + ':', err.message));
 	err.command.outputUsage();
 	err.command.outputCommands();
 	err.command.outputOptions();

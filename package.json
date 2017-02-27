@@ -25,14 +25,13 @@
   "author": "EditorConfig Team",
   "license": "MIT",
   "dependencies": {
-    "cli-color": "^1.2.0",
     "editorconfig": "^0.13.2",
     "gitlike-cli": "^0.1.0",
     "gulp-tap": "^0.1.3",
     "gulp-util": "^3.0.4",
     "iconv-lite": "^0.4.15",
     "linez": "^4.1.0",
-    "lodash": "^3.4.0",
+    "lodash": "^3.10.1",
     "through2": "^2.0.3",
     "vinyl": "^2.0.1",
     "vinyl-fs": "^2.4.4"
