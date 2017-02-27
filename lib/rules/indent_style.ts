@@ -1,10 +1,9 @@
-///<reference path="../../typings/node/node.d.ts" />
-///<reference path="../../typings/lodash/lodash.d.ts" />
 import _ = require('lodash');
-import linez = require('linez');
+import * as linez from 'linez';
 
 import eclint = require('../eclint');
 import IndentSizeRule = require('./indent_size');
+import EditorConfigError =  require('../editor-config-error');
 
 function resolve(settings: eclint.Settings) {
 	switch (settings.indent_style) {
@@ -16,40 +15,33 @@ function resolve(settings: eclint.Settings) {
 	}
 }
 
-function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
+function check(settings: eclint.Settings, line: linez.Line) {
+	function createError(message: string, columnNumber: number = 1) {
+		var error = new EditorConfigError(message);
+		error.lineNumber = line.number;
+		error.columnNumber = columnNumber;
+		error.rule = 'indent_style';
+		error.source = line.text;
+		return error;
+	}
+
 	switch (resolve(settings)) {
 		case 'tab':
 			if (_.startsWith(line.text, ' ')) {
-				context.report([
-					'line ' + line.number + ':',
-					'invalid indentation: found a leading space, expected: tab'
-				].join(' '));
-				return;
+				return createError('invalid indentation: found a leading space, expected: tab');
 			}
 			var softTabCount = identifyIndentation(line.text, settings).softTabCount;
 			if (softTabCount > 0) {
-				context.report([
-					'line ' + line.number + ':',
-					'invalid indentation: found ' + softTabCount + ' soft tab'
-				].join(' ') + ((softTabCount > 1) ? 's' : ''));
-				return;
+				return createError(`invalid indentation: found ${softTabCount} soft tab(s)`);
 			}
 			break;
 		case 'space':
 			if (_.startsWith(line.text, '\t')) {
-				context.report([
-					'line ' + line.number + ':',
-					'invalid indentation: found a leading tab, expected: space'
-				].join(' '));
-				return;
+				return createError('invalid indentation: found a leading tab, expected: space');
 			}
 			var hardTabCount = identifyIndentation(line.text, settings).hardTabCount;
 			if (hardTabCount > 0) {
-				context.report([
-					'line ' + line.number + ':',
-					'invalid indentation: found ' + hardTabCount + ' hard tab'
-				].join(' ') + ((hardTabCount > 1) ? 's' : ''));
-				return;
+				return createError(`invalid indentation: found ${hardTabCount} hard tab(s)`);
 			}
 			break;
 	}
@@ -61,10 +53,7 @@ function check(context: eclint.Context, settings: eclint.Settings, line: linez.L
 	if (!mixedTabsWithSpaces) {
 		return;
 	}
-	context.report([
-		'line ' + line.number + ':',
-		'invalid indentation: found mixed tabs with spaces'
-	].join(' '));
+	return createError('invalid indentation: found mixed tabs with spaces', mixedTabsWithSpaces.index + 2);
 }
 
 function identifyIndentation(text: string, settings: eclint.Settings) {

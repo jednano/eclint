@@ -1,8 +1,3 @@
-///<reference path='../typings/node/node.d.ts'/>
-///<reference path='../typings/lodash/lodash.d.ts'/>
-///<reference path='../typings/vinyl-fs/vinyl-fs.d.ts'/>
-///<reference path="../typings/gulp-util/gulp-util.d.ts" />
-import path = require('path');
 import _ = require('lodash');
 var tap = require('gulp-tap');
 import File = require('vinyl');
@@ -13,6 +8,7 @@ import eclint = require('./eclint');
 
 var cli = require('gitlike-cli');
 var pkg = require('../package');
+var reporter = require('gulp-reporter');
 
 cli.on('error', err => {
 	console.log('');
@@ -52,22 +48,19 @@ var check = cli.command('check <files>...');
 check.description('Validate that file(s) adhere to .editorconfig settings');
 addSettings(check);
 check.action((args: any, options: CheckOptions) => {
-	var hasErrors = false;
 	var stream = vfs.src(handleNegativeGlobs(args.files.filter(file => (typeof file === 'string'))), {
 		stripBOM: false
 	})
 		.pipe(eclint.check({
 			settings: _.pick(options, eclint.ruleNames),
-			reporter: <any>((file: File, message: string) => {
-				hasErrors = true;
-				var relativePath = path.relative('.', file.path);
-				console.error(relativePath + ':', message);
-			})
+		})).pipe(reporter({
+			filter: null,
 		}))
-		.on('end', () => {
-			if (hasErrors) {
-				process.exit(1);
+		.on('error', (error) => {
+			if (error.plugin !== 'gulp-reporter') {
+				console.error(error);
 			}
+			process.exit(1);
 		});
 	(<any>stream).resume();
 });
