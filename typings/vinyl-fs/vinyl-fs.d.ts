@@ -15,9 +15,9 @@ declare module NodeJS {
 declare module "vinyl-fs" {
 	import _events = require("events");
 
-	function src(globs:string, opt?:{read?:boolean;buffer?:boolean;}):NodeJS.ReadWriteStream;
+	function src(globs:string, opt?:{read?:boolean;buffer?:boolean;stripBOM?:boolean}):NodeJS.ReadWriteStream;
 
-	function src(globs:string[], opt?:{read?:boolean;buffer?:boolean;}):NodeJS.ReadWriteStream;
+	function src(globs:string[], opt?:{read?:boolean;buffer?:boolean;stripBOM?:boolean}):NodeJS.ReadWriteStream;
 
 	function watch(globs:string, cb?:(outEvt:{type:any;path:any;old:any;})=>void):_events.EventEmitter;
 
