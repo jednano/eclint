@@ -296,8 +296,6 @@ Reports the following errors:
 
 Fixes supported charsets by adding or removing BOM signatures and encoding the text in the new charset.
 
-_Note: Since this tool is itself a [Gulp plugin](#gulp-plugin), all BOM signatures will be stripped off internally by means of [strip-bom](https://www.npmjs.com/package/strip-bom). There's not much that can be done about this, but if you specify a supported charset in your `.editorconfig` file the BOMs will be inserted or re-inserted before they are written._
-
 ##### infer
 
 Only infers documents with BOM signatures. No other assumptions made at this time.
