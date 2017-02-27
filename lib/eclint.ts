@@ -10,6 +10,7 @@ var editorconfig = require('editorconfig');
 
 import linez = require('linez');
 import File = require('vinyl');
+import EditorConfigError =  require('./editor-config-error');
 
 var PluginError = gutil.PluginError;
 
@@ -84,13 +85,13 @@ module eclint {
 	}
 
 	export interface LineRule extends Rule {
-		check(context: Context, settings: Settings, line: linez.Line): void;
+		check(context: Context, settings: Settings, line: linez.Line): EditorConfigError;
 		fix(settings: Settings, line: linez.Line): linez.Line;
 		infer(line: linez.Line): any;
 	}
 
 	export interface DocumentRule extends Rule {
-		check(context: Context, settings: Settings, doc: linez.Document): void;
+		check(context: Context, settings: Settings, doc: linez.Document): EditorConfigError[];
 		fix(settings: Settings, doc: linez.Document): linez.Document;
 		infer(doc: linez.Document): any;
 	}
@@ -164,6 +165,7 @@ module eclint {
 
 			editorconfig.parse(file.path)
 				.then((fileSettings: Settings) => {
+					var errors = [];
 
 					var settings = getSettings(fileSettings, commandSettings);
 					var doc = linez(file.contents);
@@ -172,6 +174,13 @@ module eclint {
 						report: (options.reporter) ? options.reporter.bind(this, file) : _.noop
 					};
 
+					function addError(error?: EditorConfigError) {
+						if (error) {
+							error.fileName = file.path;
+							errors.push(error);
+						}
+					}
+
 					Object.keys(settings).forEach(setting => {
 						var rule: DocumentRule|LineRule = rules[setting];
 						if (_.isUndefined(rule)) {
@@ -179,17 +188,25 @@ module eclint {
 						}
 						try {
 							if (rule.type === 'DocumentRule') {
-								(<DocumentRule>rule).check(context, settings, doc);
+								var errors = (<DocumentRule>rule).check(context, settings, doc);
+								if (errors) {
+									errors.forEach(addError);
+								}
 							} else {
 								var check = (<LineRule>rule).check;
 								doc.lines.forEach(line => {
-									check(context, settings, line);
+									addError(check(context, settings, line));
 								});
 							}
 						} catch (err) {
 							done(createPluginError(err));
 						}
 					});
+
+					(<any>file).editorconfig = {
+						config: fileSettings,
+						errors
+					};
 
 					done(null, file);
 
@@ -241,6 +258,9 @@ module eclint {
 					});
 
 					file.contents = doc.toBuffer();
+					(<any>file).editorconfig = {
+						config: fileSettings,
+					};
 					done(null, file);
 
 				}, (err: Error) => {

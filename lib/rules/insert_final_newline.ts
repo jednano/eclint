@@ -3,6 +3,7 @@ var _ = require('lodash');
 import linez = require('linez');
 
 import eclint = require('../eclint');
+import EditorConfigError =  require('../editor-config-error');
 
 var newlines = {
 	lf: '\n',
@@ -20,13 +21,24 @@ function resolve(settings: eclint.Settings) {
 function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
 	var configSetting = resolve(settings);
 	var inferredSetting = infer(doc);
-	if (configSetting && !inferredSetting) {
-		context.report('expected final newline');
+	if (configSetting == null || inferredSetting === configSetting) {
 		return;
 	}
-	if (configSetting === false && inferredSetting) {
-		context.report('unexpected final newline');
+	var message: string;
+	if (configSetting) {
+		message = 'expected final newline';
+	} else {
+		message = 'unexpected final newline';
 	}
+	context.report(message);
+
+	var error = new EditorConfigError(message);
+	error.lineNumber = doc.lines.length;
+	var lastLine: linez.Line = doc.lines[doc.lines.length - 1];
+	error.columnNumber = lastLine.text.length;
+	error.rule = 'end_of_line';
+	error.source = lastLine.text.length + lastLine.ending.length;
+	return [error];
 }
 
 function fix(settings: eclint.Settings, doc: linez.Document) {

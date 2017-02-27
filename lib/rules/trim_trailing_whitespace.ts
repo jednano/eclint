@@ -3,6 +3,7 @@ import _ = require('lodash');
 import linez = require('linez');
 
 import eclint = require('../eclint');
+import EditorConfigError =  require('../editor-config-error');
 
 var TRAILING_WHITESPACE = /[\t ]+$/;
 
@@ -20,6 +21,14 @@ function check(context: eclint.Context, settings: eclint.Settings, line: linez.L
 			'line ' + line.number + ':',
 			'trailing whitespace found'
 		].join(' '));
+		var error = new EditorConfigError([
+			'trailing whitespace found'
+		].join(' '));
+		error.lineNumber = line.number;
+		error.columnNumber = line.text.replace(TRAILING_WHITESPACE, '').length + 1;
+		error.rule = 'trim_trailing_whitespace';
+		error.source = line.text;
+		return error;
 	}
 }
 

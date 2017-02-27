@@ -2,6 +2,7 @@
 /// <reference path="../typings/gulp-util/gulp-util.d.ts" />
 /// <reference path="../node_modules/linez/linez.d.ts" />
 import linez = require('linez');
+import EditorConfigError = require('./editor-config-error');
 declare module eclint {
     var charsets: {
         '\u00EF\u00BB\u00BF': string;
@@ -60,12 +61,12 @@ declare module eclint {
         resolve(settings: Settings): any;
     }
     interface LineRule extends Rule {
-        check(context: Context, settings: Settings, line: linez.Line): void;
+        check(context: Context, settings: Settings, line: linez.Line): EditorConfigError;
         fix(settings: Settings, line: linez.Line): linez.Line;
         infer(line: linez.Line): any;
     }
     interface DocumentRule extends Rule {
-        check(context: Context, settings: Settings, doc: linez.Document): void;
+        check(context: Context, settings: Settings, doc: linez.Document): EditorConfigError[];
         fix(settings: Settings, doc: linez.Document): linez.Document;
         infer(doc: linez.Document): any;
     }
