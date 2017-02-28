@@ -17,13 +17,13 @@ function resolve(settings: eclint.Settings): number {
 	return _.isNumber(result) ? <number>result : void (0);
 }
 
-function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
+function check(settings: eclint.Settings, doc: linez.Document) {
 	if (settings.indent_style === 'tab') {
-		return;
+		return [];
 	}
 	var configSetting = resolve(settings);
 	if (_.isUndefined(configSetting)) {
-		return;
+		return [];
 	}
 	return doc.lines.map(line => {
 		var leadingSpacesLength = getLeadingSpacesLength(line);
@@ -34,11 +34,6 @@ function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Do
 			return;
 		}
 		if (leadingSpacesLength % configSetting !== 0) {
-			context.report([
-				'line ' + line.number + ':',
-				'invalid indent size: ' + leadingSpacesLength + ',',
-				'expected: ' + configSetting
-			].join(' '));
 			var error = new EditorConfigError([
 				'invalid indent size: ' + leadingSpacesLength + ',',
 				'expected: ' + configSetting
@@ -49,7 +44,7 @@ function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Do
 			error.source = line.text;
 			return error;
 		}
-	});
+	}).filter(Boolean);
 }
 
 function getLeadingSpacesLength(line: linez.Line): number {

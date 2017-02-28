@@ -75,8 +75,14 @@ module eclint {
 		max_line_length?: number;
 	}
 
-	export interface Context {
-		report(message: string): void
+	export interface EditorConfigLintFile extends File {
+		editorconfig?: EditorConfigLintResult
+	}
+
+	export interface EditorConfigLintResult {
+		config: Settings;
+		errors?: EditorConfigError[];
+		fixed: boolean;
 	}
 
 	export interface Rule {
@@ -85,13 +91,13 @@ module eclint {
 	}
 
 	export interface LineRule extends Rule {
-		check(context: Context, settings: Settings, line: linez.Line): EditorConfigError;
+		check(settings: Settings, line: linez.Line): EditorConfigError;
 		fix(settings: Settings, line: linez.Line): linez.Line;
 		infer(line: linez.Line): any;
 	}
 
 	export interface DocumentRule extends Rule {
-		check(context: Context, settings: Settings, doc: linez.Document): EditorConfigError[];
+		check(settings: Settings, doc: linez.Document): EditorConfigError[];
 		fix(settings: Settings, doc: linez.Document): linez.Document;
 		infer(doc: linez.Document): any;
 	}
@@ -143,6 +149,14 @@ module eclint {
 		);
 	}
 
+	function updateResult(file: EditorConfigLintFile, options: any) {
+		if (file.editorconfig) {
+			_.assign(file.editorconfig, options);
+		} else {
+			file.editorconfig = options;
+		}
+	}
+
 	export interface CheckCommandOptions extends CommandOptions {
 		reporter?: (message: string) => void;
 	}
@@ -151,7 +165,7 @@ module eclint {
 
 		options = options || {};
 		var commandSettings = options.settings || {};
-		return through.obj((file: File, enc: string, done: Done) => {
+		return through.obj((file: EditorConfigLintFile, enc: string, done: Done) => {
 
 			if (file.isNull()) {
 				done(null, file);
@@ -165,14 +179,10 @@ module eclint {
 
 			editorconfig.parse(file.path)
 				.then((fileSettings: Settings) => {
-					var errors = [];
+					var errors: EditorConfigError[] = [];
 
 					var settings = getSettings(fileSettings, commandSettings);
 					var doc = linez(file.contents);
-
-					var context = {
-						report: (options.reporter) ? options.reporter.bind(this, file) : _.noop
-					};
 
 					function addError(error?: EditorConfigError) {
 						if (error) {
@@ -188,14 +198,11 @@ module eclint {
 						}
 						try {
 							if (rule.type === 'DocumentRule') {
-								var errors = (<DocumentRule>rule).check(context, settings, doc);
-								if (errors) {
-									errors.forEach(addError);
-								}
+								(<DocumentRule>rule).check(settings, doc).forEach(addError);
 							} else {
 								var check = (<LineRule>rule).check;
 								doc.lines.forEach(line => {
-									addError(check(context, settings, line));
+									addError(check(settings, line));
 								});
 							}
 						} catch (err) {
@@ -203,10 +210,15 @@ module eclint {
 						}
 					});
 
-					(<any>file).editorconfig = {
+					updateResult(file, {
+						fixed: Boolean(file.editorconfig && file.editorconfig.fixed),
 						config: fileSettings,
 						errors
-					};
+					});
+
+					if (options.reporter && errors.length) {
+						errors.forEach(options.reporter.bind(this, file));
+					}
 
 					done(null, file);
 
@@ -220,7 +232,7 @@ module eclint {
 
 		options = options || {};
 		var commandSettings = options.settings || {};
-		return through.obj((file: File, enc: string, done: Done) => {
+		return through.obj((file: EditorConfigLintFile, enc: string, done: Done) => {
 
 			if (file.isNull()) {
 				done(null, file);
@@ -258,9 +270,13 @@ module eclint {
 					});
 
 					file.contents = doc.toBuffer();
-					(<any>file).editorconfig = {
+
+					updateResult(file, {
+						fixed: true,
 						config: fileSettings,
-					};
+						errors: (file.editorconfig && file.editorconfig.errors) || []
+					});
+
 					done(null, file);
 
 				}, (err: Error) => {

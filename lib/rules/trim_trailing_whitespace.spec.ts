@@ -3,15 +3,9 @@ import rule = require('./trim_trailing_whitespace');
 var createLine = common.createLine;
 
 var expect = common.expect;
-var reporter = common.reporter;
-var context = common.context;
 
 // ReSharper disable WrongExpressionStatement
 describe('trim_trailing_whitespace rule', () => {
-
-	beforeEach(() => {
-		reporter.reset();
-	});
 
 	var settings = {
 		true: { trim_trailing_whitespace: true },
@@ -23,33 +17,51 @@ describe('trim_trailing_whitespace rule', () => {
 		describe('true setting', () => {
 
 			it('reports trailing whitespace', () => {
-				rule.check(context, settings.true, createLine('foo '));
-				rule.check(context, settings.true, createLine('foo\t '));
-				rule.check(context, settings.true, createLine('\t \t'));
-				expect(reporter).to.have.been.calledThrice;
-				expect(reporter).to.always.have.been.calledWithExactly('line 1: trailing whitespace found');
+				var error;
+				error = rule.check(settings.true, createLine('foo '));
+				expect(error).to.be.ok;
+				expect(error.message).to.be.equal('trailing whitespace found');
+				expect(error.lineNumber).to.equal(1);
+				expect(error.columnNumber).to.equal(4);
+				error = rule.check(settings.true, createLine('foo\t '));
+				expect(error).to.be.ok;
+				expect(error.message).to.be.equal('trailing whitespace found');
+				expect(error.lineNumber).to.equal(1);
+				expect(error.columnNumber).to.equal(4);
+				error = rule.check(settings.true, createLine('\t \t'));
+				expect(error).to.be.ok;
+				expect(error.message).to.be.equal('trailing whitespace found');
+				expect(error.lineNumber).to.equal(1);
+				expect(error.columnNumber).to.equal(1);
 			});
 
 			it('remains silent when no trailing whitespace is found', () => {
-				rule.check(context, settings.true, createLine('foo'));
-				rule.check(context, settings.true, createLine(''));
-				expect(reporter).to.not.have.been.called;
+				var error;
+				error = rule.check(settings.true, createLine('foo'));
+				expect(error).to.be.undefined;
+				error = rule.check(settings.true, createLine(''));
+				expect(error).to.be.undefined;
 			});
 		});
 
 		describe('false setting', () => {
 
 			it('remains silent when trailing whitespace is found', () => {
-				rule.check(context, settings.false, createLine('foo '));
-				rule.check(context, settings.false, createLine('foo\t '));
-				rule.check(context, settings.false, createLine('\t \t'));
-				expect(reporter).to.not.have.been.called;
+				var error;
+				error = rule.check(settings.false, createLine('foo '));
+				expect(error).to.be.undefined;
+				error = rule.check(settings.false, createLine('foo\t '));
+				expect(error).to.be.undefined;
+				error = rule.check(settings.false, createLine('\t \t'));
+				expect(error).to.be.undefined;
 			});
 
 			it('remains silent when no trailing whitespace is found', () => {
-				rule.check(context, settings.false, createLine('foo'));
-				rule.check(context, settings.false, createLine(''));
-				expect(reporter).to.not.have.been.called;
+				var error;
+				error = rule.check(settings.false, createLine('foo'));
+				expect(error).to.be.undefined;
+				error = rule.check(settings.false, createLine(''));
+				expect(error).to.be.undefined;
 			});
 		});
 	});

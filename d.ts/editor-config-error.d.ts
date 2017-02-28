@@ -7,5 +7,7 @@ declare class EditorConfigError extends Error {
     source: string;
     name: string;
     constructor(message: string);
+    toString(): string;
+    inspect(): string;
 }
 export = EditorConfigError;

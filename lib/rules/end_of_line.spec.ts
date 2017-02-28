@@ -2,51 +2,53 @@ import common = require('../test-common');
 import rule = require('./end_of_line');
 
 var expect = common.expect;
-var reporter = common.reporter;
-var context = common.context;
 var createLine = common.createLine;
 
 // ReSharper disable WrongExpressionStatement
 describe('end_of_line rule', () => {
 
-	beforeEach(() => {
-		reporter.reset();
-	});
-
 	describe('check command', () => {
 
 		it('validates "lf" setting', () => {
-			rule.check(context, { end_of_line: 'lf' }, createLine('foo', { ending: '\r' }));
-			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('line 1: invalid newline: cr, expected: lf');
+			var error = rule.check({ end_of_line: 'lf' }, createLine('foo', { ending: '\r' }));
+			expect(error).to.be.ok;
+			expect(error.message).to.equal('invalid newline: cr, expected: lf');
+			expect(error.lineNumber).to.equal(1);
+			expect(error.columnNumber).to.equal(4);
 		});
 
 		it('validates "crlf" setting', () => {
-			rule.check(context, { end_of_line: 'crlf' }, createLine('foo', { ending: '\n' }));
-			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('line 1: invalid newline: lf, expected: crlf');
+			var error = rule.check({ end_of_line: 'crlf' }, createLine('foo', { ending: '\n' }));
+			expect(error).to.be.ok;
+			expect(error.message).to.equal('invalid newline: lf, expected: crlf');
+			expect(error.lineNumber).to.equal(1);
+			expect(error.columnNumber).to.equal(4);
 		});
 
 		it('validates "cr" setting', () => {
-			rule.check(context, { end_of_line: 'cr' }, createLine('foo', { ending: '\r\n' }));
-			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('line 1: invalid newline: crlf, expected: cr');
+			var error = rule.check({ end_of_line: 'cr' }, createLine('foo', { ending: '\r\n' }));
+			expect(error).to.be.ok;
+			expect(error.message).to.equal('invalid newline: crlf, expected: cr');
+			expect(error.lineNumber).to.equal(1);
+			expect(error.columnNumber).to.equal(4);
 		});
 
 		it('remains silent when the correct end_of_line setting is specified', () => {
-			rule.check(context, { end_of_line: 'lf' }, createLine('foo', { ending: '\n' }));
-			expect(reporter).not.to.have.been.called;
+			var error = rule.check({ end_of_line: 'lf' }, createLine('foo', { ending: '\n' }));
+			expect(error).to.be.undefined;
 		});
 
 		it('remains silent when no end_of_line setting is specified', () => {
-			rule.check(context, {}, createLine('', { ending: '\n' }));
-			rule.check(context, {}, createLine('', { ending: '\r\n' }));
-			expect(reporter).not.to.have.been.called;
+			var error;
+			error = rule.check({}, createLine('', { ending: '\n' }));
+			expect(error).to.be.undefined;
+			error = rule.check({}, createLine('', { ending: '\r\n' }));
+			expect(error).to.be.undefined;
 		});
 
 		it('remains silent when no newline is detected', () => {
-			rule.check(context, { end_of_line: 'lf' }, createLine(''));
-			expect(reporter).not.to.have.been.called;
+			var error = rule.check({ end_of_line: 'lf' }, createLine(''));
+			expect(error).to.be.undefined;
 		});
 
 	});

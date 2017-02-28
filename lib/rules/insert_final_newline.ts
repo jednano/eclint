@@ -18,11 +18,11 @@ function resolve(settings: eclint.Settings) {
 	return void(0);
 }
 
-function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
+function check(settings: eclint.Settings, doc: linez.Document) {
 	var configSetting = resolve(settings);
 	var inferredSetting = infer(doc);
 	if (configSetting == null || inferredSetting === configSetting) {
-		return;
+		return [];
 	}
 	var message: string;
 	if (configSetting) {
@@ -30,14 +30,13 @@ function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Do
 	} else {
 		message = 'unexpected final newline';
 	}
-	context.report(message);
 
 	var error = new EditorConfigError(message);
 	error.lineNumber = doc.lines.length;
 	var lastLine: linez.Line = doc.lines[doc.lines.length - 1];
-	error.columnNumber = lastLine.text.length;
-	error.rule = 'end_of_line';
-	error.source = lastLine.text.length + lastLine.ending.length;
+	error.columnNumber = lastLine.text.length + lastLine.ending.length;
+	error.rule = 'insert_final_newline';
+	error.source = lastLine.text + lastLine.ending;
 	return [error];
 }
 

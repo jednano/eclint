@@ -36,17 +36,17 @@
     "vinyl-fs": "^2.4.4"
   },
   "devDependencies": {
-    "chai": "^2.1.0",
+    "chai": "^3.5.0",
     "del": "^1.1.1",
     "event-stream": "^3.2.2",
     "gulp": "^3.9.0",
-    "gulp-istanbul": "^0.6.0",
-    "gulp-mocha": "^2.0.0",
+    "gulp-istanbul": "^1.1.1",
+    "gulp-mocha": "^2.2.0",
     "gulp-plumber": "^1.0.1",
     "gulp-tslint": "^1.4.3",
     "gulp-typescript": "^2.4.2",
-    "mocha": "^2.1.0",
     "iconv-lite": "0.4.11",
+    "mocha": "^3.2.0",
     "sinon": "^1.12.2",
     "sinon-chai": "^2.7.0"
   },

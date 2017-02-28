@@ -14,13 +14,9 @@ function resolve(settings: eclint.Settings) {
 	return void(0);
 }
 
-function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
+function check(settings: eclint.Settings, line: linez.Line) {
 	var configSetting = resolve(settings);
 	if (configSetting && !infer(line)) {
-		context.report([
-			'line ' + line.number + ':',
-			'trailing whitespace found'
-		].join(' '));
 		var error = new EditorConfigError([
 			'trailing whitespace found'
 		].join(' '));

@@ -5,8 +5,6 @@ import rule = require('./charset');
 import linez = require('linez');
 
 var expect = common.expect;
-var reporter = common.reporter;
-var context = common.context;
 var createLine = common.createLine;
 var Doc = linez.Document;
 
@@ -15,70 +13,72 @@ iconv.extendNodeEncodings();
 // ReSharper disable WrongExpressionStatement
 describe('charset rule', () => {
 
-	beforeEach(() => {
-		reporter.reset();
-	});
-
 	describe('check command', () => {
 
 		it('reports out of range characters for latin1 setting',() => {
-			rule.check(context, { charset: 'latin1' }, linez('foo\u0080bar'));
-			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('line 1, column: 4: character out of latin1 range: \u0080');
+			var errors = rule.check({ charset: 'latin1' }, linez('foo\u0080bar'));
+			expect(errors).to.have.lengthOf(1);
+			expect(errors[0].message).to.equal('character out of latin1 range: "\u0080"');
+			expect(errors[0].lineNumber).to.equal(1);
+			expect(errors[0].columnNumber).to.equal(4);
 		});
 
 		it('remains silent on in-range characters for latin1 setting', () => {
-			rule.check(context, { charset: 'latin1' }, linez('foo\u007Fbar'));
-			expect(reporter).to.not.have.been.called;
+			var errors = rule.check({ charset: 'latin1' }, linez('foo\u007Fbar'));
+			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('reports invalid charsets', () => {
 			var doc = linez(new Buffer([0xef, 0xbb, 0xbf]));
-			rule.check(context, { charset: 'utf-8' }, doc);
-			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('invalid charset: utf-8-bom, expected: utf-8');
+			var errors = rule.check({ charset: 'utf-8' }, doc);
+			expect(errors).to.have.lengthOf(1);
+			expect(errors[0].message).to.equal('invalid charset: utf-8-bom, expected: utf-8');
+			expect(errors[0].lineNumber).to.equal(1);
+			expect(errors[0].columnNumber).to.equal(1);
 		});
 
 		it('validates utf-8-bom setting', () => {
 			var doc = linez(new Buffer([0xef, 0xbb, 0xbf]));
-			rule.check(context, { charset: 'utf-8-bom' }, doc);
-			expect(reporter).to.not.have.been.called;
+			var errors = rule.check({ charset: 'utf-8-bom' }, doc);
+			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('validates utf-16le setting', () => {
 			var doc = linez(new Buffer([0xff, 0xfe]));
-			rule.check(context, { charset: 'utf-16le' }, doc);
-			expect(reporter).to.not.have.been.called;
+			var errors = rule.check({ charset: 'utf-16le' }, doc);
+			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('validates utf-16be setting', () => {
 			var doc = linez(new Buffer([0xfe, 0xff]));
-			rule.check(context, { charset: 'utf-16be' }, doc);
-			expect(reporter).to.not.have.been.called;
+			var errors = rule.check({ charset: 'utf-16be' }, doc);
+			expect(errors).to.have.lengthOf(0);
 		});
 
 		it.skip('validates utf-32le setting', () => {
 			var doc = linez(new Buffer([0xff, 0xfe, 0x00, 0x00]));
-			rule.check(context, { charset: 'utf-32le' }, doc);
-			expect(reporter).to.not.have.been.called;
+			var errors = rule.check({ charset: 'utf-32le' }, doc);
+			expect(errors).to.have.lengthOf(0);
 		});
 
 		it.skip('validates utf-32be setting', () => {
 			var doc = linez(new Buffer([0x00, 0x00, 0xfe, 0xff]));
-			rule.check(context, { charset: 'utf-32be' }, doc);
-			expect(reporter).to.not.have.been.called;
+			var errors = rule.check({ charset: 'utf-32be' }, doc);
+			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('reports an expected/missing charset', () => {
 			var doc = linez(new Buffer('foo', 'utf8'));
-			rule.check(context, { charset: 'utf-8-bom' }, doc);
-			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('expected charset: utf-8-bom');
+			var errors = rule.check({ charset: 'utf-8-bom' }, doc);
+			expect(errors).to.have.lengthOf(1);
+			expect(errors[0].message).to.equal('expected charset: utf-8-bom');
+			expect(errors[0].lineNumber).to.equal(1);
+			expect(errors[0].columnNumber).to.equal(1);
 		});
 
 		it('remains silent when an unsupported charset is set', () => {
-			rule.check(context, { charset: 'foo' }, linez(''));
-			expect(reporter).not.to.have.been.called;
+			var errors = rule.check({ charset: 'foo' }, linez(''));
+			expect(errors).to.have.lengthOf(0);
 		});
 
 	});

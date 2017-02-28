@@ -2,6 +2,7 @@
 /// <reference path="../typings/gulp-util/gulp-util.d.ts" />
 /// <reference path="../node_modules/linez/linez.d.ts" />
 import linez = require('linez');
+import File = require('vinyl');
 import EditorConfigError = require('./editor-config-error');
 declare module eclint {
     var charsets: {
@@ -53,20 +54,25 @@ declare module eclint {
          */
         max_line_length?: number;
     }
-    interface Context {
-        report(message: string): void;
+    interface EditorConfigLintFile extends File {
+        editorconfig?: EditorConfigLintResult;
+    }
+    interface EditorConfigLintResult {
+        config: Settings;
+        errors?: EditorConfigError[];
+        fixed: boolean;
     }
     interface Rule {
         type: string;
         resolve(settings: Settings): any;
     }
     interface LineRule extends Rule {
-        check(context: Context, settings: Settings, line: linez.Line): EditorConfigError;
+        check(settings: Settings, line: linez.Line): EditorConfigError;
         fix(settings: Settings, line: linez.Line): linez.Line;
         infer(line: linez.Line): any;
     }
     interface DocumentRule extends Rule {
-        check(context: Context, settings: Settings, doc: linez.Document): EditorConfigError[];
+        check(settings: Settings, doc: linez.Document): EditorConfigError[];
         fix(settings: Settings, doc: linez.Document): linez.Document;
         infer(doc: linez.Document): any;
     }

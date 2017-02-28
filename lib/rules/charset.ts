@@ -16,9 +16,10 @@ function resolve(settings: eclint.Settings) {
 	return settings.charset;
 }
 
-function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
-	function creatErroe(message: string) {
+function check(settings: eclint.Settings, doc: linez.Document) {
+	function creatErrorArray(message: string) {
 		var error = new EditorConfigError(message);
+		error.source = doc.toString();
 		error.rule = 'charset';
 		return [error];
 	}
@@ -26,18 +27,18 @@ function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Do
 	var configSetting = resolve(settings);
 	if (inferredSetting) {
 		if (inferredSetting !== settings.charset) {
-			context.report('invalid charset: ' + inferredSetting + ', expected: ' + configSetting);
-			return creatErroe('invalid charset: ' + inferredSetting + ', expected: ' + configSetting);
+			return creatErrorArray('invalid charset: ' + inferredSetting + ', expected: ' + configSetting);
 		}
-		return;
+		return [];
 	}
 	if (configSetting === 'latin1') {
-		return checkLatin1TextRange(context, settings, doc.lines[0]);
+		var errors = doc.lines.map(checkLatin1TextRange.bind(this, settings));
+		return [].concat.apply([], errors);
 	}
 	if (_.contains(Object.keys(boms), configSetting)) {
-		context.report('expected charset: ' + settings.charset);
-		return creatErroe('expected charset: ' + settings.charset);
+		return creatErrorArray('expected charset: ' + settings.charset);
 	}
+	return [];
 }
 
 function fix(settings: eclint.Settings, doc: linez.Document) {
@@ -50,25 +51,19 @@ function infer(doc: linez.Document): string {
 }
 
 function checkLatin1TextRange(
-	context: eclint.Context,
 	settings: eclint.Settings,
 	line: linez.Line
 ) {
 	return [].slice.call(line.text, 0).map(function(character: string, i: number) {
 		if (character.charCodeAt(0) >= 0x80) {
-			context.report([
-				'line ' + line.number + ',',
-				'column: ' + (i + 1) + ':',
-				'character out of latin1 range: ' + character
-			].join(' '));
+			var error = new EditorConfigError('character out of latin1 range: ' + JSON.stringify(character));
+			error.lineNumber = line.number;
+			error.columnNumber = i + 1;
+			error.source = line.text;
+			error.rule = 'charset';
+			return error;
 		}
-		var error = new EditorConfigError('character out of latin1 range: ' + character);
-		error.lineNumber = line.number;
-		error.columnNumber = i + 1;
-		error.source = line.text;
-		error.rule = 'charset';
-		return error;
-	});
+	}).filter(Boolean);
 }
 
 var CharsetRule: eclint.DocumentRule = {

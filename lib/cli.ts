@@ -58,10 +58,10 @@ check.action((args: any, options: CheckOptions) => {
 	})
 		.pipe(eclint.check({
 			settings: _.pick(options, eclint.ruleNames),
-			reporter: <any>((file: File, message: string) => {
+			reporter: <any>((file: File, error: Error) => {
 				hasErrors = true;
 				var relativePath = path.relative('.', file.path);
-				console.error(relativePath + ':', message);
+				console.error(relativePath + ':', String(error));
 			})
 		}))
 		.on('end', () => {

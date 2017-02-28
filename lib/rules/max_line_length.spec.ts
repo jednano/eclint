@@ -3,25 +3,22 @@ import rule = require('./max_line_length');
 var createLine = common.createLine;
 
 var expect = common.expect;
-var reporter = common.reporter;
-var context = common.context;
 
 // ReSharper disable WrongExpressionStatement
 describe('max_line_length rule', () => {
-
-	beforeEach(() => {
-		reporter.reset();
-	});
 
 	describe('check command', () => {
 
 		it('validates max_line_length setting',() => {
 			var fooLine = createLine('foo', { number: 1 });
-			rule.check(context, { max_line_length: 3 }, fooLine);
-			expect(reporter).not.to.have.been.called;
-			rule.check(context, { max_line_length: 2 }, fooLine);
-			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('line 1: line length: 3, exceeds: 2');
+			var error;
+			error = rule.check({ max_line_length: 3 }, fooLine);
+			expect(error).to.be.undefined;
+			error = rule.check({ max_line_length: 2 }, fooLine);
+			expect(error).to.be.ok;
+			expect(error.message).to.be.equal('line length: 3, exceeds: 2');
+			expect(error.lineNumber).to.equal(1);
+			expect(error.columnNumber).to.equal(2);
 		});
 
 	});

@@ -24,7 +24,7 @@ function resolve(settings: eclint.Settings) {
 	}
 }
 
-function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
+function check(settings: eclint.Settings, line: linez.Line) {
 	var configSetting = resolve(settings);
 	if (!configSetting) {
 		return;
@@ -34,11 +34,6 @@ function check(context: eclint.Context, settings: eclint.Settings, line: linez.L
 		return;
 	}
 	if (inferredSetting !== configSetting) {
-		context.report([
-			'line ' + line.number + ':',
-			'invalid newline: ' + inferredSetting + ',',
-			'expected: ' + configSetting
-		].join(' '));
 		var error = new EditorConfigError([
 			'invalid newline: ' + inferredSetting + ',',
 			'expected: ' + configSetting
