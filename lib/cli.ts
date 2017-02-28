@@ -1,21 +1,22 @@
 ///<reference path='../typings/node/node.d.ts'/>
 ///<reference path='../typings/lodash/lodash.d.ts'/>
 ///<reference path='../typings/vinyl-fs/vinyl-fs.d.ts'/>
+///<reference path="../typings/gulp-util/gulp-util.d.ts" />
 import path = require('path');
 import _ = require('lodash');
 var tap = require('gulp-tap');
 import File = require('vinyl');
 import vfs = require('vinyl-fs');
+import gutil = require('gulp-util');
 
 import eclint = require('./eclint');
 
-var clc = require('cli-color');
 var cli = require('gitlike-cli');
 var pkg = require('../package');
 
 cli.on('error', err => {
 	console.log('');
-	console.log(clc.red('  ' + err.name + ':', err.message));
+	console.log(gutil.colors.red('  ' + err.name + ':', err.message));
 	err.command.outputUsage();
 	err.command.outputCommands();
 	err.command.outputOptions();
@@ -52,7 +53,9 @@ check.description('Validate that file(s) adhere to .editorconfig settings');
 addSettings(check);
 check.action((args: any, options: CheckOptions) => {
 	var hasErrors = false;
-	var stream = vfs.src(handleNegativeGlobs(args.files.filter(file => (typeof file === 'string'))))
+	var stream = vfs.src(handleNegativeGlobs(args.files.filter(file => (typeof file === 'string'))), {
+		stripBOM: false
+	})
 		.pipe(eclint.check({
 			settings: _.pick(options, eclint.ruleNames),
 			reporter: <any>((file: File, message: string) => {
@@ -81,7 +84,9 @@ fix.description('Fix formatting errors that disobey .editorconfig settings');
 addSettings(fix);
 fix.option('-d, --dest <folder>', 'Destination folder to pipe source files');
 fix.action((args: any, options: FixOptions) => {
-	var stream = vfs.src(handleNegativeGlobs(args.files.filter(file => (typeof file === 'string'))))
+	var stream = vfs.src(handleNegativeGlobs(args.files.filter(file => (typeof file === 'string'))), {
+		stripBOM: false
+	})
 		.pipe(eclint.fix({ settings: _.pick(options, eclint.ruleNames) }));
 	if (options.dest) {
 		return stream.pipe(vfs.dest(options.dest));
@@ -97,7 +102,9 @@ infer.option('-s, --score', 'Shows the tallied score for each setting');
 infer.option('-i, --ini',   'Exports file as ini file type');
 infer.option('-r, --root',  'Adds root = true to your ini file, if any');
 infer.action((args: any, options: eclint.InferOptions) => {
-	return vfs.src(handleNegativeGlobs(args.files.filter(file => (typeof file === 'string'))))
+	return vfs.src(handleNegativeGlobs(args.files.filter(file => (typeof file === 'string'))), {
+		stripBOM: false
+	})
 		.pipe(eclint.infer(options))
 		.pipe(tap((file: File) => {
 			console.log(file.contents + '');
