@@ -11,12 +11,9 @@ class EditorConfigError extends Error {
 		super();
 		this.message = message;
 	}
-	toString() {
-		return `line ${ this.lineNumber }, column: ${ this.columnNumber }: ${ this.message }`;
-	}
 	inspect() {
 		return [
-			`${ this.message } (${ this.rule })`,
+			`${ this.name }: ${ this.message } (${ this.rule })`,
 			`    at (${ this.fileName }:${ this.lineNumber }:${ this.columnNumber })`
 		].join('\n');
 	}

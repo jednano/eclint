@@ -116,13 +116,9 @@ module eclint {
 
 	var ERROR_TEMPLATE = _.template('ECLint: <%= message %>');
 
-	function createModuleError(message: string) {
-		return new Error(ERROR_TEMPLATE({ message: message }));
-	}
-
 	var PLUGIN_NAME = 'ECLint';
 
-	function createPluginError(err: Error) {
+	function createPluginError(err: any) {
 		return new PluginError(PLUGIN_NAME, err, { showStack: true });
 	}
 
@@ -158,7 +154,7 @@ module eclint {
 	}
 
 	export interface CheckCommandOptions extends CommandOptions {
-		reporter?: (message: string) => void;
+		reporter?: (file: EditorConfigLintFile, message: string) => void;
 	}
 
 	export function check(options?: CheckCommandOptions) {
@@ -173,7 +169,7 @@ module eclint {
 			}
 
 			if (file.isStream()) {
-				done(createModuleError('Streams are not supported'));
+				done(createPluginError('Streams are not supported'));
 				return;
 			}
 
@@ -240,7 +236,7 @@ module eclint {
 			}
 
 			if (file.isStream()) {
-				done(createModuleError('Streams are not supported'));
+				done(createPluginError('Streams are not supported'));
 				return;
 			}
 

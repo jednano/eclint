@@ -1,3 +1,4 @@
+import gutil = require('gulp-util');
 import common = require('./test-common');
 import eclint = require('./eclint');
 import vfs = require('vinyl-fs');
@@ -8,13 +9,114 @@ var expect = common.expect;
 
 // ReSharper disable WrongExpressionStatement
 describe('eclint gulp plugin', () => {
+	describe('fix file', () => {
+
+		it('fix by default options', (done) => {
+			vfs.src('*.sln*', {
+				stripBOM: false
+			}).pipe(eclint.fix()).on('data', (file: eclint.EditorConfigLintFile) => {
+				expect(file.editorconfig.fixed).to.be.ok;
+				expect(file.editorconfig.errors).to.have.lengthOf(0);
+			}).on('end', () => {
+				done();
+			}).on('error', done);
+		});
+
+		it('check after fix', (done) => {
+			var errors = [];
+			vfs.src('*.sln*', {
+				stripBOM: false
+			}).pipe(eclint.fix()).pipe(eclint.check({
+				reporter: function(file) {
+					errors.push(file);
+				}
+			})).on('data', (file: eclint.EditorConfigLintFile) => {
+				expect(file.editorconfig).to.be.ok;
+				expect(file.editorconfig.fixed).to.be.ok;
+				expect(file.editorconfig.errors).to.have.lengthOf(0);
+			}).on('end', () => {
+				expect(errors).to.have.lengthOf(0);
+				done();
+			}).on('error', done);
+		});
+
+		it('should skip null', (done) => {
+			vfs.src('lib', {
+				stripBOM: false
+			}).pipe(eclint.fix()).on('data', (file: eclint.EditorConfigLintFile) => {
+				expect(file.editorconfig).not.to.be.ok;
+			}).on('end', () => {
+				done();
+			}).on('error', done);
+		});
+
+		it('should skip stream', (done) => {
+			vfs.src('*.sln*', {
+				buffer: false,
+				stripBOM: false
+			}).pipe(eclint.fix()).on('data', (file: eclint.EditorConfigLintFile) => {
+				expect(file.editorconfig).not.to.be.ok;
+			}).on('error', (error: gutil.PluginError) => {
+				expect(error.message).to.be.equal('Streams are not supported');
+				expect(error.plugin).to.be.equal('ECLint');
+				done();
+			});
+		});
+
+	});
+
+	describe('check file', () => {
+
+		it('should skip null', (done) => {
+			vfs.src('lib', {
+				stripBOM: false
+			}).pipe(eclint.check()).on('data', (file: eclint.EditorConfigLintFile) => {
+				expect(file.editorconfig).not.to.be.ok;
+			}).on('end', () => {
+				done();
+			}).on('error', done);
+		});
+
+		it('should skip stream', (done) => {
+			vfs.src('*.sln*', {
+				buffer: false,
+				stripBOM: false
+			}).pipe(eclint.check()).on('data', (file: eclint.EditorConfigLintFile) => {
+				expect(file.editorconfig).not.to.be.ok;
+			}).on('error', (error: gutil.PluginError) => {
+				expect(error.message).to.be.equal('Streams are not supported');
+				expect(error.plugin).to.be.equal('ECLint');
+				done();
+			});
+		});
+
+		it('fix after check', (done) => {
+			var errors = [];
+			vfs.src('*.sln*', {
+				stripBOM: false
+			}).pipe(eclint.check({
+				reporter: function(file) {
+					errors.push(file);
+				}
+			})).pipe(eclint.fix()).on('data', (file: eclint.EditorConfigLintFile) => {
+				expect(file.editorconfig).to.be.ok;
+				expect(file.editorconfig.fixed).to.be.ok;
+				expect(file.editorconfig.errors).to.have.lengthOf(1);
+			}).on('end', () => {
+				expect(errors).to.have.length.above(1);
+				done();
+			}).on('error', done);
+		});
+
+	});
+
 	describe('charset rule', () => {
 
 		it('invalid charset: utf-8-bom, expected: utf-8', (done) => {
 			var result = [];
 			vfs.src('*.sln*', {
 				stripBOM: false
-			}).pipe(eclint.check()).on('data', (file) => {
+			}).pipe(eclint.check()).on('data', (file: eclint.EditorConfigLintFile) => {
 				expect(file.editorconfig.errors).to.have.lengthOf(1);
 				var error = file.editorconfig.errors[0];
 				expect(error.lineNumber).to.equal(1);
@@ -24,6 +126,8 @@ describe('eclint gulp plugin', () => {
 				expect(error.rule).to.equal('charset');
 				expect(error.source).to.have.length.above(1);
 				expect(error.fileName).to.equal(file.path);
+				expect(error.inspect()).to.match(/^EditorConfigError:/);
+				expect(error.inspect()).to.match(/\s+at\s+/);
 				result.push(file);
 			}).on('end', () => {
 				expect(result).to.have.length.above(1);
@@ -38,7 +142,7 @@ describe('eclint gulp plugin', () => {
 		it('invalid newline: crlf, expected: lf', (done) => {
 			var stream = eclint.check();
 
-			stream.on('data', (file) => {
+			stream.on('data', (file: eclint.EditorConfigLintFile) => {
 				expect(file.editorconfig.errors).to.have.lengthOf(1);
 				var error = file.editorconfig.errors[0];
 				expect(error.lineNumber).to.equal(1);
