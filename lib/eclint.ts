@@ -10,6 +10,8 @@ var editorconfig = require('editorconfig');
 
 import linez = require('linez');
 import File = require('vinyl');
+var fileType = require('file-type');
+var binaryExtensions = require('binary-extensions');
 
 var PluginError = gutil.PluginError;
 
@@ -97,6 +99,7 @@ module eclint {
 
 	export interface CommandOptions {
 		settings?: Settings;
+		skipBinary?: boolean;
 	}
 
 	export interface Command {
@@ -142,8 +145,17 @@ module eclint {
 		);
 	}
 
+	function shouldSkipFile(file: File, options?: CommandOptions) {
+		var skipBinary = options && options.skipBinary;
+		if (skipBinary || skipBinary == null) {
+			var type = fileType(file.contents);
+			return type && type.ext && binaryExtensions.indexOf(type.ext) >= 0;
+		}
+		return false;
+	}
+
 	export interface CheckCommandOptions extends CommandOptions {
-		reporter?: (message: string) => void;
+		reporter?: (file: File, message: string) => void;
 	}
 
 	export function check(options?: CheckCommandOptions) {
@@ -159,6 +171,11 @@ module eclint {
 
 			if (file.isStream()) {
 				done(createModuleError('Streams are not supported'));
+				return;
+			}
+
+			if (shouldSkipFile(file, options)) {
+				done(null, file);
 				return;
 			}
 
@@ -212,6 +229,11 @@ module eclint {
 
 			if (file.isStream()) {
 				done(createModuleError('Streams are not supported'));
+				return;
+			}
+
+			if (shouldSkipFile(file, options)) {
+				done(null, file);
 				return;
 			}
 

@@ -2,6 +2,7 @@
 /// <reference path="../typings/gulp-util/gulp-util.d.ts" />
 /// <reference path="../node_modules/linez/linez.d.ts" />
 import linez = require('linez');
+import File = require('vinyl');
 declare module eclint {
     var charsets: {
         '\u00EF\u00BB\u00BF': string;
@@ -71,13 +72,14 @@ declare module eclint {
     }
     interface CommandOptions {
         settings?: Settings;
+        skipBinary?: boolean;
     }
     interface Command {
         (options?: CommandOptions): NodeJS.ReadWriteStream;
     }
     var ruleNames: string[];
     interface CheckCommandOptions extends CommandOptions {
-        reporter?: (message: string) => void;
+        reporter?: (file: File, message: string) => void;
     }
     function check(options?: CheckCommandOptions): NodeJS.ReadWriteStream;
     function fix(options?: CommandOptions): NodeJS.ReadWriteStream;
