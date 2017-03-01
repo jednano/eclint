@@ -6,56 +6,60 @@ var createLine = common.createLine;
 var Doc = linez.Document;
 
 var expect = common.expect;
-var reporter = common.reporter;
-var context = common.context;
 
 // ReSharper disable WrongExpressionStatement
 describe('insert_final_newline rule', () => {
 
-	beforeEach(() => {
-		reporter.reset();
-	});
-
 	describe('check command',() => {
 
 		it('reports expected final newline character', () => {
-			rule.check(context, { insert_final_newline: true }, new Doc([
+			var errors;
+			errors = rule.check({ insert_final_newline: true }, new Doc([
 				createLine('foo', { ending: '\n' }),
 				createLine('bar', { ending: '\n' })
 			]));
-			expect(reporter).not.to.have.been.called;
-			rule.check(context, { insert_final_newline: true }, new Doc([
+			expect(errors).to.be.have.lengthOf(0);
+			errors = rule.check({ insert_final_newline: true }, new Doc([
 				createLine('foo', { ending: '\n' }),
 				createLine('bar')
 			]));
-			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('expected final newline');
+			expect(errors).to.be.have.lengthOf(1);
+			expect(errors[0].rule).to.equal('insert_final_newline');
+			expect(errors[0].message).to.be.equal('expected final newline');
+			expect(errors[0].lineNumber).to.equal(2);
+			expect(errors[0].columnNumber).to.equal(3);
 		});
 
 		it('reports unexpected final newline character', () => {
-			rule.check(context, { insert_final_newline: false }, new Doc([
+			var errors;
+			errors = rule.check({ insert_final_newline: false }, new Doc([
 				createLine('foo', { ending: '\n' }),
 				createLine('bar')
 			]));
-			expect(reporter).not.to.have.been.called;
-			rule.check(context, { insert_final_newline: false }, new Doc([
+			expect(errors).to.be.have.lengthOf(0);
+			errors = rule.check({ insert_final_newline: false }, new Doc([
 				createLine('foo', { ending: '\n' }),
 				createLine('bar', { ending: '\n' })
 			]));
-			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('unexpected final newline');
+			expect(errors).to.be.have.lengthOf(1);
+			expect(errors[0].rule).to.equal('insert_final_newline');
+			expect(errors[0].message).to.be.equal('unexpected final newline');
+			expect(errors[0].lineNumber).to.equal(2);
+			expect(errors[0].columnNumber).to.equal(4);
 		});
 
 		it('remains silent when setting is undefined', () => {
-			rule.check(context, {}, new Doc([
+			var errors;
+			errors = rule.check({}, new Doc([
 				createLine('foo', { ending: '\n' }),
 				createLine('bar')
 			]));
-			rule.check(context, {}, new Doc([
+			expect(errors).to.be.have.lengthOf(0);
+			errors = rule.check({}, new Doc([
 				createLine('foo', { ending: '\n' }),
 				createLine('bar', { ending: '\n' })
 			]));
-			expect(reporter).not.to.have.been.called;
+			expect(errors).to.be.have.lengthOf(0);
 		});
 
 	});

@@ -4,7 +4,7 @@ var mocha = require('gulp-mocha');
 var plumber = require('gulp-plumber');
 
 function test(done) {
-	gulp.src('js/**/*.js')
+	gulp.src(['js/**/*.js', '!**/*.spec.js'])
 		.pipe(istanbul())
 		.pipe(istanbul.hookRequire())
 		.on('finish', function() {
