@@ -156,7 +156,7 @@ module eclint {
 	}
 
 	export interface CheckCommandOptions extends CommandOptions {
-		reporter?: (file: EditorConfigLintFile, message: string) => void;
+		reporter?: (file: EditorConfigLintFile, error: EditorConfigError) => void;
 	}
 
 	export function check(options?: CheckCommandOptions) {
