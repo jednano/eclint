@@ -13,6 +13,7 @@ import eclint = require('./eclint');
 
 var cli = require('gitlike-cli');
 var pkg = require('../package');
+var reporter = require('gulp-reporter');
 
 cli.on('error', err => {
 	console.log('');
@@ -58,16 +59,14 @@ check.action((args: any, options: CheckOptions) => {
 	})
 		.pipe(eclint.check({
 			settings: _.pick(options, eclint.ruleNames),
-			reporter: <any>((file: File, message: string) => {
-				hasErrors = true;
-				var relativePath = path.relative('.', file.path);
-				console.error(relativePath + ':', message);
-			})
+		})).pipe(reporter({
+			filter: null,
 		}))
-		.on('end', () => {
-			if (hasErrors) {
-				process.exit(1);
+		.on('error', (error) => {
+			if (error.plugin !== 'gulp-reporter') {
+				console.error(error);
 			}
+			process.exit(1);
 		});
 	(<any>stream).resume();
 });

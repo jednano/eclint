@@ -4,132 +4,154 @@ import linez = require('linez');
 import rule = require('./indent_size');
 
 var expect = common.expect;
-var reporter = common.reporter;
-var context = common.context;
 var createLine = common.createLine;
 var Doc = linez.Document;
 
 // ReSharper disable WrongExpressionStatement
 describe('indent_size rule', () => {
 
-	beforeEach(() => {
-		reporter.reset();
-	});
-
 	describe('check command', () => {
 
 		it('reports invalid indent size: 2, expected: 4', () => {
-			rule.check(context, { indent_size: 4 }, new Doc([
+			var errors = rule.check({ indent_size: 4 }, new Doc([
 				createLine('  foo')
 			]));
-			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('line 1: invalid indent size: 2, expected: 4');
+			expect(errors).to.have.lengthOf(1);
+			expect(errors[0].rule).to.equal('indent_size');
+			expect(errors[0].message).to.equal('invalid indent size: 2, expected: 4');
+			expect(errors[0].lineNumber).to.equal(1);
+			expect(errors[0].columnNumber).to.equal(1);
 		});
 
 		it('reports invalid indent size: 3, expected: 2', () => {
-			rule.check(context, { indent_size: 2 }, new Doc([
+			var errors = rule.check({ indent_size: 2 }, new Doc([
 				createLine('   foo')
 			]));
-			expect(reporter).to.have.been.calledOnce;
-			expect(reporter).to.have.been.calledWithExactly('line 1: invalid indent size: 3, expected: 2');
+			expect(errors).to.have.lengthOf(1);
+			expect(errors[0].rule).to.equal('indent_size');
+			expect(errors[0].message).to.equal('invalid indent size: 3, expected: 2');
+			expect(errors[0].lineNumber).to.equal(1);
+			expect(errors[0].columnNumber).to.equal(1);
 		});
 
 		it('remains silent when indent size is an unsupported string', () => {
-			rule.check(context, { indent_size: 'foo' }, new Doc([
+			var errors = rule.check({ indent_size: 'foo' }, new Doc([
 				createLine('')
 			]));
-			expect(reporter).not.to.have.been.called;
+			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('remains silent when inferred indent size is tab', () => {
-			rule.check(context, { indent_size: 4 }, new Doc([
+			var errors = rule.check({ indent_size: 4 }, new Doc([
 				createLine('\tfoo')
 			]));
-			expect(reporter).not.to.have.been.called;
+			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('remains silent when the indent style setting is tab', () => {
-			rule.check(context, { indent_size: 4, indent_style: 'tab' }, new Doc([
+			var errors = rule.check({ indent_size: 4, indent_style: 'tab' }, new Doc([
 				createLine('  foo')
 			]));
-			expect(reporter).not.to.have.been.called;
+			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('remains silent when indent size is indeterminate', () => {
-			rule.check(context, { indent_size: 4 }, new Doc([
+			var errors = rule.check({ indent_size: 4 }, new Doc([
 				createLine('foo')
 			]));
-			expect(reporter).to.not.have.been.called;
+			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('remains silent when indent size is valid', () => {
-			rule.check(context, { indent_size: 0 }, new Doc([
+			var errors;
+			errors = rule.check({ indent_size: 0 }, new Doc([
 				createLine('foo')
 			]));
-			rule.check(context, { indent_size: 1 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 1 }, new Doc([
 				createLine(' foo')
 			]));
-			rule.check(context, { indent_size: 1 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 1 }, new Doc([
 				createLine('  foo')
 			]));
-			rule.check(context, { indent_size: 1 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 1 }, new Doc([
 				createLine('   foo')
 			]));
-			rule.check(context, { indent_size: 1 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 1 }, new Doc([
 				createLine('    foo')
 			]));
-			rule.check(context, { indent_size: 1 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 1 }, new Doc([
 				createLine('     foo')
 			]));
-			rule.check(context, { indent_size: 1 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 1 }, new Doc([
 				createLine('      foo')
 			]));
-			rule.check(context, { indent_size: 1 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 1 }, new Doc([
 				createLine('       foo')
 			]));
-			rule.check(context, { indent_size: 1 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 1 }, new Doc([
 				createLine('        foo')
 			]));
-			rule.check(context, { indent_size: 2 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 2 }, new Doc([
 				createLine('  foo')
 			]));
-			rule.check(context, { indent_size: 2 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 2 }, new Doc([
 				createLine('    foo')
 			]));
-			rule.check(context, { indent_size: 2 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 2 }, new Doc([
 				createLine('      foo')
 			]));
-			rule.check(context, { indent_size: 2 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 2 }, new Doc([
 				createLine('        foo')
 			]));
-			rule.check(context, { indent_size: 2 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 2 }, new Doc([
 				createLine('          foo')
 			]));
-			rule.check(context, { indent_size: 3 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 3 }, new Doc([
 				createLine('   foo')
 			]));
-			rule.check(context, { indent_size: 3 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 3 }, new Doc([
 				createLine('      foo')
 			]));
-			rule.check(context, { indent_size: 4 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 4 }, new Doc([
 				createLine('    foo')
 			]));
-			rule.check(context, { indent_size: 4 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 4 }, new Doc([
 				createLine('        foo')
 			]));
-			rule.check(context, { indent_size: 5 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 5 }, new Doc([
 				createLine('     foo')
 			]));
-			rule.check(context, { indent_size: 6 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 6 }, new Doc([
 				createLine('      foo')
 			]));
-			rule.check(context, { indent_size: 7 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 7 }, new Doc([
 				createLine('       foo')
 			]));
-			rule.check(context, { indent_size: 8 }, new Doc([
+			expect(errors).to.have.lengthOf(0);
+			errors = rule.check({ indent_size: 8 }, new Doc([
 				createLine('        foo')
 			]));
-			expect(reporter).to.not.have.been.called;
+			expect(errors).to.have.lengthOf(0);
 		});
 
 	});

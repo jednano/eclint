@@ -3,6 +3,7 @@
 /// <reference path="../node_modules/linez/linez.d.ts" />
 import linez = require('linez');
 import File = require('vinyl');
+import EditorConfigError = require('./editor-config-error');
 declare module eclint {
     var charsets: {
         '\u00EF\u00BB\u00BF': string;
@@ -53,20 +54,25 @@ declare module eclint {
          */
         max_line_length?: number;
     }
-    interface Context {
-        report(message: string): void;
+    interface EditorConfigLintFile extends File {
+        editorconfig?: EditorConfigLintResult;
+    }
+    interface EditorConfigLintResult {
+        config: Settings;
+        errors: EditorConfigError[];
+        fixed: boolean;
     }
     interface Rule {
         type: string;
         resolve(settings: Settings): any;
     }
     interface LineRule extends Rule {
-        check(context: Context, settings: Settings, line: linez.Line): void;
+        check(settings: Settings, line: linez.Line): EditorConfigError;
         fix(settings: Settings, line: linez.Line): linez.Line;
         infer(line: linez.Line): any;
     }
     interface DocumentRule extends Rule {
-        check(context: Context, settings: Settings, doc: linez.Document): void;
+        check(settings: Settings, doc: linez.Document): EditorConfigError[];
         fix(settings: Settings, doc: linez.Document): linez.Document;
         infer(doc: linez.Document): any;
     }
@@ -79,7 +85,7 @@ declare module eclint {
     }
     var ruleNames: string[];
     interface CheckCommandOptions extends CommandOptions {
-        reporter?: (file: File, message: string) => void;
+        reporter?: (file: EditorConfigLintFile, error: EditorConfigError) => void;
     }
     function check(options?: CheckCommandOptions): NodeJS.ReadWriteStream;
     function fix(options?: CommandOptions): NodeJS.ReadWriteStream;

@@ -7,16 +7,6 @@ import sinonChai = require('sinon-chai');
 chai.use(sinonChai);
 export var expect = chai.expect;
 
-// ReSharper disable once DeclarationHides
-export var context = {
-	// ReSharper disable once UnusedParameter
-	report: (message: string) => {
-		// noop
-	}
-};
-
-export var reporter = sinon.spy(context, 'report');
-
 export function createLine(text: string, options?: {
 	number?: number;
 	offset?: number;
