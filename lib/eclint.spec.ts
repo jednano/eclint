@@ -50,7 +50,7 @@ describe('eclint gulp plugin', () => {
 			}).on('error', done);
 		});
 
-		it('should skip stream', (done) => {
+		it('should error for stream', (done) => {
 			vfs.src('*.sln*', {
 				buffer: false,
 				stripBOM: false
@@ -59,6 +59,7 @@ describe('eclint gulp plugin', () => {
 			}).on('error', (error: gutil.PluginError) => {
 				expect(error.message).to.be.equal('Streams are not supported');
 				expect(error.plugin).to.be.equal('ECLint');
+				expect(error.showStack).to.be.false;
 				done();
 			});
 		});
@@ -77,7 +78,7 @@ describe('eclint gulp plugin', () => {
 			}).on('error', done);
 		});
 
-		it('should skip stream', (done) => {
+		it('should error for stream', (done) => {
 			vfs.src('*.sln*', {
 				buffer: false,
 				stripBOM: false
@@ -86,6 +87,7 @@ describe('eclint gulp plugin', () => {
 			}).on('error', (error: gutil.PluginError) => {
 				expect(error.message).to.be.equal('Streams are not supported');
 				expect(error.plugin).to.be.equal('ECLint');
+				expect(error.showStack).to.be.false;
 				done();
 			});
 		});

@@ -119,7 +119,9 @@ module eclint {
 	var PLUGIN_NAME = 'ECLint';
 
 	function createPluginError(err: any) {
-		return new PluginError(PLUGIN_NAME, err, { showStack: true });
+		return new PluginError(PLUGIN_NAME, err, {
+			showStack: typeof err !== 'string'
+		});
 	}
 
 	export var ruleNames = [
