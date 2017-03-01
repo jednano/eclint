@@ -18,6 +18,7 @@ describe('charset rule', () => {
 		it('reports out of range characters for latin1 setting',() => {
 			var errors = rule.check({ charset: 'latin1' }, linez('foo\u0080bar'));
 			expect(errors).to.have.lengthOf(1);
+			expect(errors[0].rule).to.equal('charset');
 			expect(errors[0].message).to.equal('character out of latin1 range: "\u0080"');
 			expect(errors[0].lineNumber).to.equal(1);
 			expect(errors[0].columnNumber).to.equal(4);
@@ -32,6 +33,7 @@ describe('charset rule', () => {
 			var doc = linez(new Buffer([0xef, 0xbb, 0xbf]));
 			var errors = rule.check({ charset: 'utf-8' }, doc);
 			expect(errors).to.have.lengthOf(1);
+			expect(errors[0].rule).to.equal('charset');
 			expect(errors[0].message).to.equal('invalid charset: utf-8-bom, expected: utf-8');
 			expect(errors[0].lineNumber).to.equal(1);
 			expect(errors[0].columnNumber).to.equal(1);
@@ -71,6 +73,7 @@ describe('charset rule', () => {
 			var doc = linez(new Buffer('foo', 'utf8'));
 			var errors = rule.check({ charset: 'utf-8-bom' }, doc);
 			expect(errors).to.have.lengthOf(1);
+			expect(errors[0].rule).to.equal('charset');
 			expect(errors[0].message).to.equal('expected charset: utf-8-bom');
 			expect(errors[0].lineNumber).to.equal(1);
 			expect(errors[0].columnNumber).to.equal(1);

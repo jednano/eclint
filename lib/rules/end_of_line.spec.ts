@@ -12,6 +12,7 @@ describe('end_of_line rule', () => {
 		it('validates "lf" setting', () => {
 			var error = rule.check({ end_of_line: 'lf' }, createLine('foo', { ending: '\r' }));
 			expect(error).to.be.ok;
+			expect(error.rule).to.equal('end_of_line');
 			expect(error.message).to.equal('invalid newline: cr, expected: lf');
 			expect(error.lineNumber).to.equal(1);
 			expect(error.columnNumber).to.equal(4);
@@ -20,6 +21,7 @@ describe('end_of_line rule', () => {
 		it('validates "crlf" setting', () => {
 			var error = rule.check({ end_of_line: 'crlf' }, createLine('foo', { ending: '\n' }));
 			expect(error).to.be.ok;
+			expect(error.rule).to.equal('end_of_line');
 			expect(error.message).to.equal('invalid newline: lf, expected: crlf');
 			expect(error.lineNumber).to.equal(1);
 			expect(error.columnNumber).to.equal(4);
@@ -28,6 +30,7 @@ describe('end_of_line rule', () => {
 		it('validates "cr" setting', () => {
 			var error = rule.check({ end_of_line: 'cr' }, createLine('foo', { ending: '\r\n' }));
 			expect(error).to.be.ok;
+			expect(error.rule).to.equal('end_of_line');
 			expect(error.message).to.equal('invalid newline: crlf, expected: cr');
 			expect(error.lineNumber).to.equal(1);
 			expect(error.columnNumber).to.equal(4);

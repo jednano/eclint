@@ -27,6 +27,7 @@
   "dependencies": {
     "editorconfig": "^0.13.2",
     "gitlike-cli": "^0.1.0",
+    "gulp-reporter": "^1.5.0",
     "gulp-tap": "^0.1.3",
     "gulp-util": "^3.0.4",
     "linez": "^4.1.0",

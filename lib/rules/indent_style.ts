@@ -21,10 +21,10 @@ function check(settings: eclint.Settings, line: linez.Line) {
 	function creatErroe(message: string, columnNumber: number = 1) {
 		message = message.replace(/\b(\d+)\s.+?$/, function(str, count) {
 			if (+count > 1) {
-				str += 's'
+				str += 's';
 			}
 			return str;
-		})
+		});
 		var error = new EditorConfigError(message);
 		error.lineNumber = line.number;
 		error.columnNumber = columnNumber;

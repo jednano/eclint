@@ -17,6 +17,7 @@ describe('indent_size rule', () => {
 				createLine('  foo')
 			]));
 			expect(errors).to.have.lengthOf(1);
+			expect(errors[0].rule).to.equal('indent_size');
 			expect(errors[0].message).to.equal('invalid indent size: 2, expected: 4');
 			expect(errors[0].lineNumber).to.equal(1);
 			expect(errors[0].columnNumber).to.equal(1);
@@ -27,6 +28,7 @@ describe('indent_size rule', () => {
 				createLine('   foo')
 			]));
 			expect(errors).to.have.lengthOf(1);
+			expect(errors[0].rule).to.equal('indent_size');
 			expect(errors[0].message).to.equal('invalid indent size: 3, expected: 2');
 			expect(errors[0].lineNumber).to.equal(1);
 			expect(errors[0].columnNumber).to.equal(1);

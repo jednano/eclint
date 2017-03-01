@@ -24,6 +24,7 @@ describe('insert_final_newline rule', () => {
 				createLine('bar')
 			]));
 			expect(errors).to.be.have.lengthOf(1);
+			expect(errors[0].rule).to.equal('insert_final_newline');
 			expect(errors[0].message).to.be.equal('expected final newline');
 			expect(errors[0].lineNumber).to.equal(2);
 			expect(errors[0].columnNumber).to.equal(3);
@@ -41,6 +42,7 @@ describe('insert_final_newline rule', () => {
 				createLine('bar', { ending: '\n' })
 			]));
 			expect(errors).to.be.have.lengthOf(1);
+			expect(errors[0].rule).to.equal('insert_final_newline');
 			expect(errors[0].message).to.be.equal('unexpected final newline');
 			expect(errors[0].lineNumber).to.equal(2);
 			expect(errors[0].columnNumber).to.equal(4);

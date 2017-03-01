@@ -19,7 +19,17 @@ function resolve(settings: eclint.Settings) {
 function check(settings: eclint.Settings, doc: linez.Document) {
 	function creatErrorArray(message: string) {
 		var error = new EditorConfigError(message);
-		error.source = doc.toString();
+		var source = '';
+		doc.lines.some(function(line) {
+			if (/\S/.test(line.text)) {
+				source += line.text;
+				return true;
+			} else {
+				source += line.text + line.ending;
+			}
+		});
+
+		error.source = source;
 		error.rule = 'charset';
 		return [error];
 	}

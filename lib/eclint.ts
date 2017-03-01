@@ -81,7 +81,7 @@ module eclint {
 
 	export interface EditorConfigLintResult {
 		config: Settings;
-		errors?: EditorConfigError[];
+		errors: EditorConfigError[];
 		fixed: boolean;
 	}
 
