@@ -84,6 +84,7 @@ module eclint {
 	export interface EditorConfigLintResult {
 		config: Settings;
 		errors: EditorConfigError[];
+		skiped: boolean;
 		fixed: boolean;
 	}
 
@@ -151,6 +152,12 @@ module eclint {
 	}
 
 	function updateResult(file: EditorConfigLintFile, options: any) {
+		options = _.assign({
+			config: {},
+			errors: [],
+			skiped: false,
+			fixed: false,
+		}, options);
 		if (file.editorconfig) {
 			_.assign(file.editorconfig, options);
 		} else {
@@ -158,11 +165,18 @@ module eclint {
 		}
 	}
 
-	function shouldSkipFile(file: File, options?: CommandOptions) {
+	function isBinFile(file: EditorConfigLintFile, options?: CommandOptions) {
+		var type = fileType(file.contents);
+		return type && type.ext && binaryExtensions.indexOf(type.ext) >= 0;
+	}
+
+	function shouldSkipFile(file: EditorConfigLintFile, options?: CommandOptions) {
 		var skipBinary = options && options.skipBinary;
-		if (skipBinary || skipBinary == null) {
-			var type = fileType(file.contents);
-			return type && type.ext && binaryExtensions.indexOf(type.ext) >= 0;
+		if ((skipBinary || skipBinary == null) && isBinFile(file, options)) {
+			updateResult(file, {
+				skiped: true,
+			});
+			return true;
 		}
 		return false;
 	}
@@ -177,17 +191,12 @@ module eclint {
 		var commandSettings = options.settings || {};
 		return through.obj((file: EditorConfigLintFile, enc: string, done: Done) => {
 
-			if (file.isNull()) {
-				done(null, file);
-				return;
-			}
-
 			if (file.isStream()) {
 				done(createPluginError('Streams are not supported'));
 				return;
 			}
 
-			if (shouldSkipFile(file, options)) {
+			if (file.isNull() || shouldSkipFile(file, options)) {
 				done(null, file);
 				return;
 			}
@@ -249,17 +258,12 @@ module eclint {
 		var commandSettings = options.settings || {};
 		return through.obj((file: EditorConfigLintFile, enc: string, done: Done) => {
 
-			if (file.isNull()) {
-				done(null, file);
-				return;
-			}
-
 			if (file.isStream()) {
 				done(createPluginError('Streams are not supported'));
 				return;
 			}
 
-			if (shouldSkipFile(file, options)) {
+			if (file.isNull() || shouldSkipFile(file, options)) {
 				done(null, file);
 				return;
 			}

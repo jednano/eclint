@@ -60,6 +60,7 @@ declare module eclint {
     interface EditorConfigLintResult {
         config: Settings;
         errors: EditorConfigError[];
+        skiped: boolean;
         fixed: boolean;
     }
     interface Rule {
