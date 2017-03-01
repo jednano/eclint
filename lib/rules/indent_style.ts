@@ -33,10 +33,6 @@ function check(settings: eclint.Settings, line: linez.Line) {
 		return error;
 	}
 
-	function complex(count: number) {
-		return softTabCount > 1 ? 's' : '';
-	}
-
 	switch (resolve(settings)) {
 		case 'tab':
 			if (_.startsWith(line.text, ' ')) {
