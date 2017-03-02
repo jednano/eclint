@@ -1,11 +1,13 @@
+import os = require('os');
+
 class EditorConfigError extends Error {
-	fileName: string = '<anonymous>';
-	lineNumber: number = 1;
-	columnNumber: number = 1;
-	message: string = '';
-	rule: string = '';
-	source: string = '';
-	name: string = 'EditorConfigError';
+	fileName = '<anonymous>';
+	lineNumber = 1;
+	columnNumber = 1;
+	message = '';
+	rule = '';
+	source = '';
+	name = 'EditorConfigError';
 
 	constructor(message: string) {
 		super();
@@ -15,7 +17,7 @@ class EditorConfigError extends Error {
 		return [
 			`${ this.name }: ${ this.message } (${ this.rule })`,
 			`    at (${ this.fileName }:${ this.lineNumber }:${ this.columnNumber })`
-		].join('\n');
+		].join(os.EOL);
 	}
 }
 

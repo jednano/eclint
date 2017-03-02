@@ -22,13 +22,13 @@ describe('eclint gulp plugin', () => {
 			}).on('error', done);
 		});
 
-		it('check after fix', (done) => {
+		it('checks after fix', (done) => {
 			var errors = [];
 			vfs.src('*.sln*', {
 				stripBOM: false
 			}).pipe(eclint.fix()).pipe(eclint.check({
-				reporter: function(file) {
-					errors.push(file);
+				reporter: function(file, error) {
+					errors.push(error);
 				}
 			})).on('data', (file: eclint.EditorConfigLintFile) => {
 				expect(file.editorconfig).to.be.ok;
@@ -92,13 +92,13 @@ describe('eclint gulp plugin', () => {
 			});
 		});
 
-		it('fix after check', (done) => {
+		it('fixes after check', (done) => {
 			var errors = [];
 			vfs.src('*.sln*', {
 				stripBOM: false
 			}).pipe(eclint.check({
-				reporter: function(file) {
-					errors.push(file);
+				reporter: function(file, error) {
+					errors.push(error);
 				}
 			})).pipe(eclint.fix()).on('data', (file: eclint.EditorConfigLintFile) => {
 				expect(file.editorconfig).to.be.ok;
@@ -141,7 +141,7 @@ describe('eclint gulp plugin', () => {
 
 	describe('end_of_line rule', () => {
 
-		it('invalid newline: crlf, expected: lf', (done) => {
+		it('throws invalid "invalid newline: crlf, expected: lf"', (done) => {
 			var stream = eclint.check();
 
 			stream.on('data', (file: eclint.EditorConfigLintFile) => {
@@ -169,7 +169,7 @@ describe('eclint gulp plugin', () => {
 
 	describe('insert_final_newline rule', () => {
 
-		it('expected final newline', (done) => {
+		it('expects final newline', (done) => {
 			var stream = eclint.check();
 
 			stream.on('data', (file) => {

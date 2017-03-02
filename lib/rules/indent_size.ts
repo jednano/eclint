@@ -39,7 +39,7 @@ function check(settings: eclint.Settings, doc: linez.Document) {
 				'expected: ' + configSetting
 			].join(' '));
 			error.lineNumber = line.number;
-			// error.columnNumber = 1;
+			error.columnNumber = 1;
 			error.rule = 'indent_size';
 			error.source = line.text;
 			return error;

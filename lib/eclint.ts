@@ -209,7 +209,7 @@ module eclint {
 					});
 
 					updateResult(file, {
-						fixed: Boolean(file.editorconfig && file.editorconfig.fixed),
+						fixed: new Boolean(file.editorconfig && file.editorconfig.fixed).valueOf(),
 						config: fileSettings,
 						errors
 					});
