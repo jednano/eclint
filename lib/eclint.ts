@@ -205,8 +205,7 @@ module eclint {
 					});
 
 					updateResult(file, {
-						// Forced type conversion, not wrapper class
-						fixed: Boolean(file.editorconfig && file.editorconfig.fixed),
+						fixed: !!(_.get(file, 'editorconfig.fixed')),
 						config: fileSettings,
 						errors
 					});
@@ -269,7 +268,7 @@ module eclint {
 					updateResult(file, {
 						fixed: true,
 						config: fileSettings,
-						errors: (file.editorconfig && file.editorconfig.errors) || []
+						errors: _.get(file, 'editorconfig.errors') || [],
 					});
 
 					done(null, file);
