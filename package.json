@@ -27,10 +27,6 @@
     "tslint": "tslint --project tsconfig.json"
   },
   "nyc": {
-    "lines": 100,
-    "statements": 100,
-    "functions": 100,
-    "branches": 94.12,
     "include": [
       "dist/**/*.js"
     ],
@@ -42,8 +38,7 @@
       "text"
     ],
     "cache": true,
-    "all": true,
-    "check-coverage": true
+    "all": true
   },
   "repository": {
     "type": "git",
