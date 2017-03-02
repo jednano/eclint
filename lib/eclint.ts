@@ -209,7 +209,8 @@ module eclint {
 					});
 
 					updateResult(file, {
-						fixed: new Boolean(file.editorconfig && file.editorconfig.fixed).valueOf(),
+						// Forced type conversion, not wrapper class
+						fixed: Boolean(file.editorconfig && file.editorconfig.fixed),
 						config: fileSettings,
 						errors
 					});

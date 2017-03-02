@@ -43,7 +43,7 @@ function check(settings: eclint.Settings, line: linez.Line) {
 			}
 			var hardTabCount = identifyIndentation(line.text, settings).hardTabCount;
 			if (hardTabCount > 0) {
-				return createError(`invalid indentation: found ${hardTabCount} soft tab(s)`);
+				return createError(`invalid indentation: found ${hardTabCount} hard tab(s)`);
 			}
 			break;
 	}

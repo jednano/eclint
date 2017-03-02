@@ -206,7 +206,7 @@ describe('eclint gulp plugin', () => {
 				expect(error.name).to.equal('EditorConfigError');
 				expect(error.message).to.equal('unexpected final newline');
 				expect(error.rule).to.equal('insert_final_newline');
-				// expect(error.source).to.equal('');
+				expect(error.source.trim()).to.have.length.above(0);
 				expect(error.fileName).to.equal(file.path);
 				done();
 			});
