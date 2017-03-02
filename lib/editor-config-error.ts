@@ -8,17 +8,17 @@ class EditorConfigError extends Error {
 	rule = '';
 	source = '';
 	name = 'EditorConfigError';
-
-	constructor(message: string) {
-		super();
-		this.message = message;
-	}
-	inspect() {
+	inspect = function() {
 		return [
 			`${ this.name }: ${ this.message } (${ this.rule })`,
 			`    at (${ this.fileName }:${ this.lineNumber }:${ this.columnNumber })`
 		].join(os.EOL);
-	}
+	};
+
+	constructor(message: string) {
+		super();
+		this.message = message;
+	};
 }
 
 export = EditorConfigError;

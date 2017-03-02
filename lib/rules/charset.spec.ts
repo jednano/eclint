@@ -1,14 +1,8 @@
-var iconv = require('iconv-lite');
-
 import common = require('../test-common');
 import rule = require('./charset');
-import linez = require('linez');
+import linez from 'linez';
 
 var expect = common.expect;
-var createLine = common.createLine;
-var Doc = linez.Document;
-
-iconv.extendNodeEncodings();
 
 // ReSharper disable WrongExpressionStatement
 describe('charset rule', () => {

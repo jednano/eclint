@@ -1,7 +1,5 @@
-///<reference path="../../typings/node/node.d.ts" />
-///<reference path="../../typings/lodash/lodash.d.ts" />
 import _ = require('lodash');
-import linez = require('linez');
+import linez from 'linez';
 
 import eclint = require('../eclint');
 import IndentSizeRule = require('./indent_size');

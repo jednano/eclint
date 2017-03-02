@@ -1,7 +1,5 @@
-///<reference path='../typings/tsd.d.ts'/>
-
 import chai = require('chai');
-import sinon = require('sinon');
+// import sinon = require('sinon');
 import sinonChai = require('sinon-chai');
 
 chai.use(sinonChai);

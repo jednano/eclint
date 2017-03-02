@@ -1,6 +1,5 @@
-///<reference path='../../typings/lodash/lodash.d.ts'/>
 import _ = require('lodash');
-import linez = require('linez');
+import linez from 'linez';
 import eclint = require('../eclint');
 import EditorConfigError =  require('../editor-config-error');
 
@@ -42,7 +41,7 @@ function check(settings: eclint.Settings, doc: linez.Document) {
 		return [];
 	}
 	if (configSetting === 'latin1') {
-		var errors = doc.lines.map(checkLatin1TextRange.bind(this, settings));
+		var errors = doc.lines.map(checkLatin1TextRange);
 		return [].concat.apply([], errors);
 	}
 	if (_.contains(Object.keys(boms), configSetting)) {
@@ -60,10 +59,7 @@ function infer(doc: linez.Document): string {
 	return doc.charset;
 }
 
-function checkLatin1TextRange(
-	settings: eclint.Settings,
-	line: linez.Line
-) {
+function checkLatin1TextRange(line: linez.Line) {
 	return [].slice.call(line.text, 0).map(function(character: string, i: number) {
 		if (character.charCodeAt(0) >= 0x80) {
 			var error = new EditorConfigError('character out of latin1 range: ' + JSON.stringify(character));

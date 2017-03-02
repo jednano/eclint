@@ -1,4 +1,4 @@
-import linez = require('linez');
+import linez from 'linez';
 import eclint = require('../eclint');
 import EditorConfigError =  require('../editor-config-error');
 

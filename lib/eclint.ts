@@ -1,6 +1,3 @@
-///<reference path="../typings/lodash/lodash.d.ts" />
-///<reference path="../typings/gulp-util/gulp-util.d.ts" />
-///<reference path="../node_modules/linez/linez.d.ts" />
 import os = require('os');
 
 import _ = require('lodash');
@@ -8,7 +5,7 @@ import gutil = require('gulp-util');
 import through = require('through2');
 var editorconfig = require('editorconfig');
 
-import linez = require('linez');
+import linez from 'linez';
 import File = require('vinyl');
 import EditorConfigError =  require('./editor-config-error');
 
@@ -76,7 +73,8 @@ module eclint {
 	}
 
 	export interface EditorConfigLintFile extends File {
-		editorconfig?: EditorConfigLintResult
+		editorconfig?: EditorConfigLintResult;
+		contents: Buffer;
 	}
 
 	export interface EditorConfigLintResult {
@@ -114,11 +112,9 @@ module eclint {
 		(err: Error, file?: File): void;
 	}
 
-	var ERROR_TEMPLATE = _.template('ECLint: <%= message %>');
-
 	var PLUGIN_NAME = 'ECLint';
 
-	function createPluginError(err: any) {
+	function createPluginError(err: Error | string) {
 		return new PluginError(PLUGIN_NAME, err, {
 			showStack: typeof err !== 'string'
 		});
@@ -163,7 +159,7 @@ module eclint {
 
 		options = options || {};
 		var commandSettings = options.settings || {};
-		return through.obj((file: EditorConfigLintFile, enc: string, done: Done) => {
+		return through.obj((file: EditorConfigLintFile, _enc: string, done: Done) => {
 
 			if (file.isNull()) {
 				done(null, file);
@@ -231,7 +227,7 @@ module eclint {
 
 		options = options || {};
 		var commandSettings = options.settings || {};
-		return through.obj((file: EditorConfigLintFile, enc: string, done: Done) => {
+		return through.obj((file: EditorConfigLintFile, _enc: string, done: Done) => {
 
 			if (file.isNull()) {
 				done(null, file);
@@ -302,7 +298,7 @@ module eclint {
 	export interface ScoredSetting {
 		[key: string]: {
 			[key: string]: number;
-		}
+		};
 	}
 
 	export interface ScoredSettings {
@@ -324,7 +320,7 @@ module eclint {
 
 		var settings: ScoredSettings = {};
 
-		function bufferContents(file: File, enc: string, done: Function) {
+		function bufferContents(file: EditorConfigLintFile, _enc: string, done: Function) {
 			if (file.isNull()) {
 				done();
 				return;

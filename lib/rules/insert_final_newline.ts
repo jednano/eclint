@@ -1,6 +1,5 @@
-///<reference path="../../typings/lodash/lodash.d.ts" />
 var _ = require('lodash');
-import linez = require('linez');
+import linez from 'linez';
 
 import eclint = require('../eclint');
 import EditorConfigError =  require('../editor-config-error');

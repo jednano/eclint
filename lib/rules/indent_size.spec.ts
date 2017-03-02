@@ -1,6 +1,6 @@
 import _ = require('lodash');
 import common = require('../test-common');
-import linez = require('linez');
+import linez from 'linez';
 import rule = require('./indent_size');
 
 var expect = common.expect;

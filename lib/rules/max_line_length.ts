@@ -1,6 +1,5 @@
-///<reference path="../../typings/lodash/lodash.d.ts" />
 import _ = require('lodash');
-import linez = require('linez');
+import linez from 'linez';
 
 import eclint = require('../eclint');
 import EditorConfigError =  require('../editor-config-error');
@@ -25,7 +24,7 @@ function check(settings: eclint.Settings, line: linez.Line) {
 	}
 }
 
-function fix(settings: eclint.Settings, line: linez.Line) {
+function fix(_settings: eclint.Settings, line: linez.Line) {
 	return line; // noop
 }
 

@@ -1,7 +1,5 @@
-///<reference path="../../typings/node/node.d.ts" />
-///<reference path="../../typings/lodash/lodash.d.ts" />
 import _ = require('lodash');
-import linez = require('linez');
+import linez from 'linez';
 import eclint = require('../eclint');
 import EditorConfigError =  require('../editor-config-error');
 
@@ -55,7 +53,7 @@ function getLeadingSpacesLength(line: linez.Line): number {
 	return (m) ? m[0].length : 0;
 }
 
-function fix(settings: eclint.Settings, doc: linez.Document) {
+function fix(_settings: eclint.Settings, doc: linez.Document) {
 	return doc; // noop
 }
 
