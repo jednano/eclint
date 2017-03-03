@@ -1,4 +1,4 @@
-import linez from 'linez';
+import * as linez from 'linez';
 import common = require('../test-common');
 import rule = require('./insert_final_newline');
 

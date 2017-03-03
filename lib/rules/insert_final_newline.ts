@@ -1,5 +1,5 @@
 var _ = require('lodash');
-import linez from 'linez';
+import * as linez from 'linez';
 
 import eclint = require('../eclint');
 import EditorConfigError =  require('../editor-config-error');

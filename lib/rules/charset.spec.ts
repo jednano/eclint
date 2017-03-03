@@ -1,6 +1,6 @@
 import common = require('../test-common');
 import rule = require('./charset');
-import linez from 'linez';
+import * as linez from 'linez';
 
 var expect = common.expect;
 

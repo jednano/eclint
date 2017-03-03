@@ -1,5 +1,5 @@
 import _ = require('lodash');
-import linez from 'linez';
+import * as linez from 'linez';
 
 import eclint = require('../eclint');
 import IndentSizeRule = require('./indent_size');

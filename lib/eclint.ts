@@ -5,7 +5,7 @@ import gutil = require('gulp-util');
 import through = require('through2');
 var editorconfig = require('editorconfig');
 
-import linez from 'linez';
+import * as linez from 'linez';
 import File = require('vinyl');
 import EditorConfigError =  require('./editor-config-error');
 
