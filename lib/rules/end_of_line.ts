@@ -1,5 +1,6 @@
-import linez = require('linez');
+import * as linez from 'linez';
 import eclint = require('../eclint');
+import EditorConfigError =  require('../editor-config-error');
 
 var newlines = {
 	lf: '\n',
@@ -23,7 +24,7 @@ function resolve(settings: eclint.Settings) {
 	}
 }
 
-function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
+function check(settings: eclint.Settings, line: linez.Line) {
 	var configSetting = resolve(settings);
 	if (!configSetting) {
 		return;
@@ -33,11 +34,15 @@ function check(context: eclint.Context, settings: eclint.Settings, line: linez.L
 		return;
 	}
 	if (inferredSetting !== configSetting) {
-		context.report([
-			'line ' + line.number + ':',
+		var error = new EditorConfigError([
 			'invalid newline: ' + inferredSetting + ',',
 			'expected: ' + configSetting
 		].join(' '));
+		error.lineNumber = line.number;
+		error.columnNumber = line.text.length + 1;
+		error.rule = 'end_of_line';
+		error.source = line.text + line.ending;
+		return error;
 	}
 }
 

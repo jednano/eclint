@@ -1,8 +1,7 @@
-///<reference path="../../typings/node/node.d.ts" />
-///<reference path="../../typings/lodash/lodash.d.ts" />
 import _ = require('lodash');
-import linez = require('linez');
+import * as linez from 'linez';
 import eclint = require('../eclint');
+import EditorConfigError =  require('../editor-config-error');
 
 var LEADING_SPACES_MATCHER = /^ +/;
 
@@ -16,15 +15,15 @@ function resolve(settings: eclint.Settings): number {
 	return _.isNumber(result) ? <number>result : void (0);
 }
 
-function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Document) {
+function check(settings: eclint.Settings, doc: linez.Document) {
 	if (settings.indent_style === 'tab') {
-		return;
+		return [];
 	}
 	var configSetting = resolve(settings);
 	if (_.isUndefined(configSetting)) {
-		return;
+		return [];
 	}
-	doc.lines.forEach(line => {
+	return doc.lines.map(line => {
 		var leadingSpacesLength = getLeadingSpacesLength(line);
 		if (_.isUndefined(leadingSpacesLength)) {
 			return;
@@ -33,13 +32,17 @@ function check(context: eclint.Context, settings: eclint.Settings, doc: linez.Do
 			return;
 		}
 		if (leadingSpacesLength % configSetting !== 0) {
-			context.report([
-				'line ' + line.number + ':',
+			var error = new EditorConfigError([
 				'invalid indent size: ' + leadingSpacesLength + ',',
 				'expected: ' + configSetting
 			].join(' '));
+			error.lineNumber = line.number;
+			error.columnNumber = 1;
+			error.rule = 'indent_size';
+			error.source = line.text;
+			return error;
 		}
-	});
+	}).filter(Boolean);
 }
 
 function getLeadingSpacesLength(line: linez.Line): number {
@@ -50,7 +53,7 @@ function getLeadingSpacesLength(line: linez.Line): number {
 	return (m) ? m[0].length : 0;
 }
 
-function fix(settings: eclint.Settings, doc: linez.Document) {
+function fix(_settings: eclint.Settings, doc: linez.Document) {
 	return doc; // noop
 }
 

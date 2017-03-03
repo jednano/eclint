@@ -1,8 +1,8 @@
-///<reference path="../../typings/lodash/lodash.d.ts" />
 import _ = require('lodash');
-import linez = require('linez');
+import * as linez from 'linez';
 
 import eclint = require('../eclint');
+import EditorConfigError =  require('../editor-config-error');
 
 var TRAILING_WHITESPACE = /[\t ]+$/;
 
@@ -13,13 +13,17 @@ function resolve(settings: eclint.Settings) {
 	return void(0);
 }
 
-function check(context: eclint.Context, settings: eclint.Settings, line: linez.Line) {
+function check(settings: eclint.Settings, line: linez.Line) {
 	var configSetting = resolve(settings);
 	if (configSetting && !infer(line)) {
-		context.report([
-			'line ' + line.number + ':',
+		var error = new EditorConfigError([
 			'trailing whitespace found'
 		].join(' '));
+		error.lineNumber = line.number;
+		error.columnNumber = line.text.replace(TRAILING_WHITESPACE, '').length + 1;
+		error.rule = 'trim_trailing_whitespace';
+		error.source = line.text;
+		return error;
 	}
 }
 

@@ -1,6 +1,3 @@
-///<reference path="../typings/lodash/lodash.d.ts" />
-///<reference path="../typings/gulp-util/gulp-util.d.ts" />
-///<reference path="../node_modules/linez/linez.d.ts" />
 import os = require('os');
 
 import _ = require('lodash');
@@ -8,8 +5,9 @@ import gutil = require('gulp-util');
 import through = require('through2');
 var editorconfig = require('editorconfig');
 
-import linez = require('linez');
+import * as linez from 'linez';
 import File = require('vinyl');
+import EditorConfigError =  require('./editor-config-error');
 
 var PluginError = gutil.PluginError;
 
@@ -74,8 +72,15 @@ module eclint {
 		max_line_length?: number;
 	}
 
-	export interface Context {
-		report(message: string): void
+	export interface EditorConfigLintFile extends File {
+		editorconfig?: EditorConfigLintResult;
+		contents: Buffer;
+	}
+
+	export interface EditorConfigLintResult {
+		config: Settings;
+		errors: EditorConfigError[];
+		fixed: boolean;
 	}
 
 	export interface Rule {
@@ -84,13 +89,13 @@ module eclint {
 	}
 
 	export interface LineRule extends Rule {
-		check(context: Context, settings: Settings, line: linez.Line): void;
+		check(settings: Settings, line: linez.Line): EditorConfigError;
 		fix(settings: Settings, line: linez.Line): linez.Line;
 		infer(line: linez.Line): any;
 	}
 
 	export interface DocumentRule extends Rule {
-		check(context: Context, settings: Settings, doc: linez.Document): void;
+		check(settings: Settings, doc: linez.Document): EditorConfigError[];
 		fix(settings: Settings, doc: linez.Document): linez.Document;
 		infer(doc: linez.Document): any;
 	}
@@ -107,16 +112,12 @@ module eclint {
 		(err: Error, file?: File): void;
 	}
 
-	var ERROR_TEMPLATE = _.template('ECLint: <%= message %>');
-
-	function createModuleError(message: string) {
-		return new Error(ERROR_TEMPLATE({ message: message }));
-	}
-
 	var PLUGIN_NAME = 'ECLint';
 
-	function createPluginError(err: Error) {
-		return new PluginError(PLUGIN_NAME, err, { showStack: true });
+	function createPluginError(err: Error | string) {
+		return new PluginError(PLUGIN_NAME, err, {
+			showStack: typeof err !== 'string'
+		});
 	}
 
 	export var ruleNames = [
@@ -142,15 +143,23 @@ module eclint {
 		);
 	}
 
+	function updateResult(file: EditorConfigLintFile, options: any) {
+		if (file.editorconfig) {
+			_.assign(file.editorconfig, options);
+		} else {
+			file.editorconfig = options;
+		}
+	}
+
 	export interface CheckCommandOptions extends CommandOptions {
-		reporter?: (message: string) => void;
+		reporter?: (file: EditorConfigLintFile, error: EditorConfigError) => void;
 	}
 
 	export function check(options?: CheckCommandOptions) {
 
 		options = options || {};
 		var commandSettings = options.settings || {};
-		return through.obj((file: File, enc: string, done: Done) => {
+		return through.obj((file: EditorConfigLintFile, _enc: string, done: Done) => {
 
 			if (file.isNull()) {
 				done(null, file);
@@ -158,19 +167,23 @@ module eclint {
 			}
 
 			if (file.isStream()) {
-				done(createModuleError('Streams are not supported'));
+				done(createPluginError('Streams are not supported'));
 				return;
 			}
 
 			editorconfig.parse(file.path)
 				.then((fileSettings: Settings) => {
+					var errors: EditorConfigError[] = [];
 
 					var settings = getSettings(fileSettings, commandSettings);
 					var doc = linez(file.contents);
 
-					var context = {
-						report: (options.reporter) ? options.reporter.bind(this, file) : _.noop
-					};
+					function addError(error?: EditorConfigError) {
+						if (error) {
+							error.fileName = file.path;
+							errors.push(error);
+						}
+					}
 
 					Object.keys(settings).forEach(setting => {
 						var rule: DocumentRule|LineRule = rules[setting];
@@ -179,17 +192,27 @@ module eclint {
 						}
 						try {
 							if (rule.type === 'DocumentRule') {
-								(<DocumentRule>rule).check(context, settings, doc);
+								(<DocumentRule>rule).check(settings, doc).forEach(addError);
 							} else {
 								var check = (<LineRule>rule).check;
 								doc.lines.forEach(line => {
-									check(context, settings, line);
+									addError(check(settings, line));
 								});
 							}
 						} catch (err) {
 							done(createPluginError(err));
 						}
 					});
+
+					updateResult(file, {
+						fixed: !!(_.get(file, 'editorconfig.fixed')),
+						config: fileSettings,
+						errors
+					});
+
+					if (options.reporter && errors.length) {
+						errors.forEach(options.reporter.bind(this, file));
+					}
 
 					done(null, file);
 
@@ -203,7 +226,7 @@ module eclint {
 
 		options = options || {};
 		var commandSettings = options.settings || {};
-		return through.obj((file: File, enc: string, done: Done) => {
+		return through.obj((file: EditorConfigLintFile, _enc: string, done: Done) => {
 
 			if (file.isNull()) {
 				done(null, file);
@@ -211,7 +234,7 @@ module eclint {
 			}
 
 			if (file.isStream()) {
-				done(createModuleError('Streams are not supported'));
+				done(createPluginError('Streams are not supported'));
 				return;
 			}
 
@@ -241,6 +264,13 @@ module eclint {
 					});
 
 					file.contents = doc.toBuffer();
+
+					updateResult(file, {
+						fixed: true,
+						config: fileSettings,
+						errors: _.get(file, 'editorconfig.errors') || [],
+					});
+
 					done(null, file);
 
 				}, (err: Error) => {
@@ -267,7 +297,7 @@ module eclint {
 	export interface ScoredSetting {
 		[key: string]: {
 			[key: string]: number;
-		}
+		};
 	}
 
 	export interface ScoredSettings {
@@ -289,7 +319,7 @@ module eclint {
 
 		var settings: ScoredSettings = {};
 
-		function bufferContents(file: File, enc: string, done: Function) {
+		function bufferContents(file: EditorConfigLintFile, _enc: string, done: Function) {
 			if (file.isNull()) {
 				done();
 				return;
