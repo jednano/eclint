@@ -18,7 +18,7 @@ This version of ECLint runs on [EditorConfig Core](https://www.npmjs.com/package
 
 ## Installation
 
-```
+```bash
 $ npm install [-g] eclint
 ```
 
@@ -45,7 +45,7 @@ The command-line interface (CLI) for this project uses [gitlike-cli](https://www
 
 Running just `eclint` will provide the following help information:
 
-```
+```bash
 $ eclint
 
   CommandError: Missing required sub-command.
@@ -67,14 +67,14 @@ $ eclint
 
 ## Check
 
-The `eclint check` sub-command allows you to validate that files adhere to their respective EditorConfig settings. Running just `eclint check` will provide you the following help information:
+The `eclint check` sub-command allows you to validate that files adhere to their respective EditorConfig settings. Running `eclint check --help` will provide you the following help information:
 
-```
+```bash
 $ eclint check
 
-  CommandError: Missing required arguments.
+  Validate that file(s) adhere to .editorconfig settings
 
-  Usage: check [options] <files>...
+  Usage: check [options] [<files>...]
 
   Options:
 
@@ -93,7 +93,7 @@ Running this sub-command without any `[options]` will use each file's EditorConf
 
 Each CLI option has both short and long flag variations. As such, you can use `--indent_size 2` or `-i 2`, whichever you prefer. Short flags may be combined into a single argument. For example, `-swe 2 lf` is the same as `-s 2 -w -e lf`.
 
-The `<files>...` args allows you to pass-in one or more file paths or [globs](https://github.com/isaacs/node-glob). You may, however, need to surround your glob expressions in quotes for it to work properly. Unfortunately, in bash, you can't add a negative glob with "!foo.js". Instead, you can put square brackets around the `!` and eclint will take care of it. For example, "[!]foo.js".
+The `[<files>...]` args allows you to pass-in one or more file paths or [globs](https://github.com/isaacs/node-glob). You may, however, need to surround your glob expressions in quotes for it to work properly. Unfortunately, in bash, you can't add a negative glob with "!foo.js". Instead, you can put square brackets around the `!` and eclint will take care of it. For example, "[!]foo.js".
 
 The result of running `eclint check *` in this project's root, if there were issues, would look something like the following:
 
@@ -127,14 +127,14 @@ Now should be a great time to segue into the [fix sub-command](#fix).
 	</tr>
 </table>
 
-The `eclint fix` sub-command allows you to fix files that don't adhere to their respective EditorConfig settings. Running just `eclint fix` will provide you the following help information:
+The `eclint fix` sub-command allows you to fix files that don't adhere to their respective EditorConfig settings. Running `eclint fix --help` will provide you the following help information:
 
-```
+```bash
 $ eclint fix
 
-  CommandError: Missing required arguments.
+  Fix formatting errors that disobey .editorconfig settings
 
-  Usage: fix [options] <files>...
+  Usage: fix [options] [<files>...]
 
   Options:
 
@@ -157,14 +157,14 @@ One key difference you'll notice is an additional `-d, --dest <folder>` option. 
 
 ## Infer
 
-The `eclint infer` sub-command allows you to infer what the EditorConfig settings **_should_** be for all files you specify. Running just `eclint infer` will provide you the following help information:
+The `eclint infer` sub-command allows you to infer what the EditorConfig settings **_should_** be for all files you specify. Running `eclint infer --help` will provide you the following help information:
 
-```
+```bash
 $ eclint infer
 
-  CommandError: Missing required arguments.
+  Infer .editorconfig settings from one or more files
 
-  Usage: infer [options] <files>...
+  Usage: infer [options] [<files>...]
 
   Options:
 
@@ -178,7 +178,7 @@ This sub-command generates a report that reveals whatever trends you have growin
 
 By default, the CLI will print out the report in JSON format.
 
-```
+```bash
 $ eclint infer * "lib/**/*.js"
 ```
 
@@ -196,7 +196,7 @@ Outputs:
 
 If this isn't enough information for you and you want the full report, complete with scores, you can add the `-s, --score` flag. Each setting will have a numeric value assigned to it that indicates the number of times that setting was inferred across the files:
 
-```
+```bash
 $ eclint infer --score * "lib/**/*.js"
 ```
 
@@ -230,19 +230,19 @@ Outputs:
 
 You can pipe these files to any destination file you wish, like so:
 
-```
+```bash
 $ eclint infer * "lib/**/*.js" > editorconfig.json
 ```
 
 You can also use the `-i, --ini` flag to generate the report as an INI file format, which is exactly the format in which the `.editorconfig` file should be written. This means you can create your `.editorconfig` file automatically! Here's how you might do it:
 
-```
+```bash
 $ eclint infer --ini * "lib/**/*.js" > .editorconfig
 ```
 
 If this is your root `.editorconfig` file, you'll definitely want to pair the `-i, --ini` flag with the `-r, --root` flag to add `root = true` to your `.editorconfig` file. We'll combine the 2 short flags into one:
 
-```
+```bash
 $ eclint infer -ir * "lib/**/*.js" > .editorconfig
 ```
 
