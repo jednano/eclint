@@ -20,7 +20,7 @@
     "compile:watch": "tsc --watch",
     "eclint": "node bin/eclint.js check * lib/**/*",
     "lint": "npm run tslint",
-    "mocha": "mocha dist/**/*.spec.js",
+    "mocha": "mocha \"dist/**/*.spec.js\"",
     "prepublish": "npm test",
     "pretest": "npm run lint && npm run clean && npm run compile && npm run eclint",
     "test": "nyc --show-process-tree npm run mocha -- --reporter lcov --reporter spec",
