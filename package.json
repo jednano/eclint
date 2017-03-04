@@ -23,11 +23,15 @@
     "mocha": "mocha \"dist/**/*.spec.js\"",
     "prepublish": "npm test",
     "pretest": "npm run lint && npm run clean && npm run compile && npm run eclint",
-    "test": "nyc --show-process-tree npm run mocha -- --reporter lcov --reporter spec",
+    "test": "nyc npm run mocha -- --reporter lcov --reporter spec",
     "test:watch": "npm run mocha -- --watch --reporter min",
     "tslint": "tslint --project tsconfig.json"
   },
   "nyc": {
+    "lines": 56.73,
+    "statements": 56.36,
+    "functions": 48.89,
+    "branches": 60.85,
     "include": [
       "dist/**/*.js"
     ],

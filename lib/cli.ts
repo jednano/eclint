@@ -36,7 +36,7 @@ function addSettings(cmd): void {
 }
 
 function excludeBinaryFile(file: File) {
-	const type = fileType(file.contents);
+	const type = file && file.isBuffer() && fileType(file.contents);
 	return !(type && type.ext && binaryexts.indexOf(type.ext) >= 1);
 }
 
