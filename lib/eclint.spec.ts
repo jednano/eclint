@@ -9,6 +9,11 @@ var expect = common.expect;
 
 // ReSharper disable WrongExpressionStatement
 describe('eclint gulp plugin', () => {
+	before(() => {
+		eclint.configure({
+			newlines: ['\n', '\r\n']
+		});
+	});
 	describe('fix file', () => {
 
 		it('fix by default options', (done) => {
@@ -106,6 +111,20 @@ describe('eclint gulp plugin', () => {
 				expect(file.editorconfig.errors).to.have.lengthOf(1);
 				done();
 			}).on('error', done);
+
+			stream.write(new File({
+				path: path.join(__dirname, "testcase.js"),
+				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a])
+			}));
+		});
+
+		it('options.reporter', (done) => {
+			var stream = eclint.check({
+				reporter: (_file: eclint.EditorConfigLintFile, error: Error) => {
+					expect(error.message).to.have.equal('invalid charset: utf-8-bom, expected: utf-8');
+					done();
+				}
+			});
 
 			stream.write(new File({
 				path: path.join(__dirname, "testcase.js"),
