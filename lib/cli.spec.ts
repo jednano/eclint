@@ -25,10 +25,7 @@ describe('eclint cli', function() {
 			eclint(['check', 'images/*'], done);
 		});
 		it('node_modules/.bin/_mocha', (done) => {
-			eclint(['check', 'node_modules/.bin/_mocha'], (error: Error, stdout, stderr) => {
-				console.error(error);
-				console.error(stdout);
-				console.error(stderr);
+			eclint(['check', 'node_modules/mocha/package.json'], (error: Error, stdout, stderr) => {
 				expect(error.message).to.be.match(/\binvalid indentation\b/);
 				done();
 			});
