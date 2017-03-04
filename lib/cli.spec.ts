@@ -3,12 +3,12 @@ const execFile = require('child_process').execFile;
 const cliPath = require.resolve('../bin/eclint');
 const expect = common.expect;
 
-function eclint(args: string[], callback?: any) {
-	args.unshift(cliPath);
-	return execFile(process.execPath, args, callback);
-}
-
+// ReSharper disable WrongExpressionStatement
 describe('eclint cli', function() {
+	function eclint(args: string[], callback?: any) {
+		args.unshift(cliPath);
+		return execFile(process.execPath, args, callback);
+	}
 	this.timeout(8000);
 	it('Missing sub-command', (done) => {
 		eclint([], (error: Error) => {
