@@ -32,6 +32,17 @@ describe('eclint cli', function() {
 		});
 	});
 	describe('infer', function() {
+		it('lib/**/*', (done) => {
+			eclint(['infer', '--ini', 'lib/**/*'], (error, stdout, stderr) => {
+				if (error) {
+					done(error);
+				} else {
+					expect(stdout).to.be.match(/\bindent_style = tab\b/);
+					expect(stderr).not.to.be.ok;
+					done();
+				}
+			});
+		});
 		it('README.md', (done) => {
 			eclint(['infer', 'README.md'], done);
 		});
