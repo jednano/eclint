@@ -2,6 +2,7 @@ import _ = require('lodash');
 const tap = require('gulp-tap');
 import File = require('vinyl');
 import vfs = require('vinyl-fs');
+import gitignore = require('gulp-gitignore');
 import gutil = require('gulp-util');
 
 import eclint = require('./eclint');
@@ -46,7 +47,37 @@ interface CheckOptions extends eclint.Settings {
 
 function handleNegativeGlobs(files?: string[]): string[] {
 	if (!files) {
-		return ['**/*', '!**/.git', '!**/.svn', '!**/.hg', '!**/.DS_Store', '!**/node_modules', '!**/bower_components'];
+		return [
+			'**/*',
+
+			// # Repository
+			// Git
+			'!.git/**/*',
+			// Subversion
+			'!.svn/**/*',
+			// Mercurial
+			'!.hg/**/*',
+
+			// # Dependency directories
+			'!node_modules/**/*',
+			'!bower_components/**/*',
+
+			// # macOS
+			// Stores custom folder attributes
+			'!**/.DS_Store',
+			// Stores additional file resources
+			'!**/.AppleDouble',
+			// Contains the absolute path to the app to be used
+			'!**/.LSOverride',
+			// Resource fork
+			'!**/__MACOSX/**/*',
+
+			// # Windows
+			// Image file cache
+			'!**/Thumbs.db',
+			// Folder config file
+			'!**/ehthumbs.db',
+		];
 	}
 	return files.filter(file => (
 		typeof file === 'string'
@@ -55,14 +86,19 @@ function handleNegativeGlobs(files?: string[]): string[] {
 	));
 }
 
+const vfsOptions = {
+	base: process.cwd(),
+	dot: true,
+	stripBOM: false
+};
+
 const check = cli.command('check [<files>...]');
 check.description('Validate that file(s) adhere to .editorconfig settings');
 addSettings(check);
 check.action((args: any, options: CheckOptions) => {
-	const stream = vfs.src(handleNegativeGlobs(args.files), {
-		stripBOM: false
-	})
+	const stream = vfs.src(handleNegativeGlobs(args.files), vfsOptions)
 		.pipe(filter(excludeBinaryFile))
+		.pipe(args.files ? gutil.noop() : gitignore())
 		.pipe(eclint.check({
 			settings: _.pick(options, eclint.ruleNames),
 		})).pipe(reporter({
@@ -90,10 +126,9 @@ fix.description('Fix formatting errors that disobey .editorconfig settings');
 addSettings(fix);
 fix.option('-d, --dest <folder>', 'Destination folder to pipe source files');
 fix.action((args: any, options: FixOptions) => {
-	const stream = vfs.src(handleNegativeGlobs(args.files), {
-		stripBOM: false
-	})
+	const stream = vfs.src(handleNegativeGlobs(args.files), vfsOptions)
 		.pipe(filter(excludeBinaryFile))
+		.pipe(args.files ? gutil.noop() : gitignore())
 		.pipe(eclint.fix({ settings: _.pick(options, eclint.ruleNames) }));
 	if (options.dest) {
 		return stream.pipe(vfs.dest(options.dest));
@@ -109,10 +144,9 @@ infer.option('-s, --score', 'Shows the tallied score for each setting');
 infer.option('-i, --ini',   'Exports file as ini file type');
 infer.option('-r, --root',  'Adds root = true to your ini file, if any');
 infer.action((args: any, options: eclint.InferOptions) => {
-	return vfs.src(handleNegativeGlobs(args.files), {
-		stripBOM: false
-	})
+	return vfs.src(handleNegativeGlobs(args.files), vfsOptions)
 		.pipe(filter(excludeBinaryFile))
+		.pipe(args.files ? gutil.noop() : gitignore())
 		.pipe(eclint.infer(options))
 		.pipe(tap((file: File) => {
 			console.log(file.contents + '');
