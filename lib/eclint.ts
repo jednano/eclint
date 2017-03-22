@@ -11,7 +11,6 @@ import EditorConfigError =  require('./editor-config-error');
 
 var PluginError = gutil.PluginError;
 
-// ReSharper disable once InconsistentNaming
 module eclint {
 
 	export var charsets = {
@@ -35,40 +34,40 @@ module eclint {
 
 	export interface Settings {
 		/**
-		 * Set to latin1, utf-8, utf-8-bom, utf-16be or utf-16le to control the
-		 * character set.
-		 */
+		* Set to latin1, utf-8, utf-8-bom, utf-16be or utf-16le to control the
+		* character set.
+		*/
 		charset?: string;
 		/**
-		 * Set to tab or space to use hard tabs or soft tabs respectively.
-		 */
+		* Set to tab or space to use hard tabs or soft tabs respectively.
+		*/
 		indent_style?: string;
 		/**
-		 * The number of columns used for each indentation level and the width
-		 * of soft tabs (when supported). When set to tab, the value of
-		 * tab_width (if specified) will be used.
-		 */
+		* The number of columns used for each indentation level and the width
+		* of soft tabs (when supported). When set to tab, the value of
+		* tab_width (if specified) will be used.
+		*/
 		indent_size?: number|string;
 		/**
-		 * Number of columns used to represent a tab character. This defaults
-		 * to the value of indent_size and doesn't usually need to be specified.
-		 */
+		* Number of columns used to represent a tab character. This defaults
+		* to the value of indent_size and doesn't usually need to be specified.
+		*/
 		tab_width?: number;
 		/**
-		 * Removes any whitespace characters preceding newline characters.
-		 */
+		* Removes any whitespace characters preceding newline characters.
+		*/
 		trim_trailing_whitespace?: boolean;
 		/**
-		 * Set to lf, cr, or crlf to control how line breaks are represented.
-		 */
+		* Set to lf, cr, or crlf to control how line breaks are represented.
+		*/
 		end_of_line?: string;
 		/**
-		 * Ensures files ends with a newline.
-		 */
+		* Ensures files ends with a newline.
+		*/
 		insert_final_newline?: boolean;
 		/**
-		 * Enforces the maximum number of columns you can have in a line.
-		 */
+		* Enforces the maximum number of columns you can have in a line.
+		*/
 		max_line_length?: number;
 	}
 
@@ -115,7 +114,7 @@ module eclint {
 	var PLUGIN_NAME = 'ECLint';
 
 	function createPluginError(err: Error | string) {
-		return new PluginError(PLUGIN_NAME, err, {
+		return new PluginError(PLUGIN_NAME, _.get(err, 'message', <string>err), {
 			showStack: typeof err !== 'string'
 		});
 	}
@@ -281,16 +280,16 @@ module eclint {
 
 	export interface InferOptions {
 		/**
-		 * Shows the tallied score for each setting.
-		 */
+		* Shows the tallied score for each setting.
+		*/
 		score?: boolean;
 		/**
-		 * Exports file as ini file type.
-		 */
+		* Exports file as ini file type.
+		*/
 		ini?: boolean;
 		/**
-		 * Adds root = true to the top of your ini file, if any.
-		 */
+		* Adds root = true to the top of your ini file, if any.
+		*/
 		root?: boolean;
 	}
 

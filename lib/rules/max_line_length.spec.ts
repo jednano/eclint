@@ -4,7 +4,6 @@ var createLine = common.createLine;
 
 var expect = common.expect;
 
-// ReSharper disable WrongExpressionStatement
 describe('max_line_length rule', () => {
 
 	describe('check command', () => {

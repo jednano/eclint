@@ -1,3 +1,14 @@
+## 2.0.0
+- **Breaking Change:** `console.error` instead of `console.log` to output error messages [#55](https://github.com/jedmao/eclint/pull/55).
+- Added: Default value for options <files...> [#46](https://github.com/jedmao/eclint/issues/46).
+- Added: Exclude binary files [#45](https://github.com/jedmao/eclint/issues/45).
+- Added: Beautiful console report [#53](https://github.com/jedmao/eclint/pull/53).
+- Added: Support for `.gitignore` when `[<files>...]` are not provided [#56](https://github.com/jedmao/eclint/pull/56).
+- Added: Test cases for CLI [#55](https://github.com/jedmao/eclint/pull/55).
+- Fixed: Stripping of BOMs [#50](https://github.com/jedmao/eclint/pull/50).
+- Fixed: path import in README [#48](https://github.com/jedmao/eclint/pull/48).
+- Upgraded dependencies.
+
 ## 1.1.5
 - Fix npm publish.
 

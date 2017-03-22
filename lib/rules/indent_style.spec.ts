@@ -4,7 +4,6 @@ var createLine = common.createLine;
 
 var expect = common.expect;
 
-// ReSharper disable WrongExpressionStatement
 describe('indent_style rule', () => {
 
 	describe('check command', () => {

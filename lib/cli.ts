@@ -100,7 +100,7 @@ check.action((args: any, options: CheckOptions) => {
 		.pipe(filter(excludeBinaryFile))
 		.pipe(args.files ? gutil.noop() : gitignore())
 		.pipe(eclint.check({
-			settings: _.pick(options, eclint.ruleNames),
+			settings: _.pickBy(_.pick(options, eclint.ruleNames)),
 		})).pipe(reporter({
 			console: console.error,
 			filter: null,
@@ -116,8 +116,8 @@ check.action((args: any, options: CheckOptions) => {
 
 interface FixOptions extends eclint.Settings {
 	/**
-	 * Destination folder to pipe source files.
-	 */
+	* Destination folder to pipe source files.
+	*/
 	dest?: string;
 }
 
@@ -129,7 +129,9 @@ fix.action((args: any, options: FixOptions) => {
 	const stream = vfs.src(handleNegativeGlobs(args.files), vfsOptions)
 		.pipe(filter(excludeBinaryFile))
 		.pipe(args.files ? gutil.noop() : gitignore())
-		.pipe(eclint.fix({ settings: _.pick(options, eclint.ruleNames) }));
+		.pipe(eclint.fix({
+			settings: _.pickBy(_.pick(options, eclint.ruleNames))
+		}));
 	if (options.dest) {
 		return stream.pipe(vfs.dest(options.dest));
 	}

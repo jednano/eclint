@@ -4,7 +4,6 @@ import rule = require('./end_of_line');
 var expect = common.expect;
 var createLine = common.createLine;
 
-// ReSharper disable WrongExpressionStatement
 describe('end_of_line rule', () => {
 
 	describe('check command', () => {

@@ -5,7 +5,6 @@ const fork = require('child_process').fork;
 const cliPath = require.resolve('../bin/eclint');
 const expect = common.expect;
 
-// ReSharper disable WrongExpressionStatement
 describe('eclint cli', function() {
 	function eclint(args: string[], callback?: any) {
 		args.unshift(cliPath);

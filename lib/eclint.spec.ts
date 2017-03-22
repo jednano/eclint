@@ -7,7 +7,6 @@ import path = require('path');
 
 var expect = common.expect;
 
-// ReSharper disable WrongExpressionStatement
 describe('eclint gulp plugin', () => {
 	before(() => {
 		eclint.configure({
