@@ -1,3 +1,6 @@
+## 2.0.1
+- Fix bin path [#58](https://github.com/jedmao/eclint/issues/58).
+
 ## 2.0.0
 - **Breaking Change:** `console.error` instead of `console.log` to output error messages [#55](https://github.com/jedmao/eclint/pull/55).
 - Added: Default value for options <files...> [#46](https://github.com/jedmao/eclint/issues/46).
