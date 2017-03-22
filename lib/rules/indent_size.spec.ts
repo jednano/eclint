@@ -7,7 +7,6 @@ var expect = common.expect;
 var createLine = common.createLine;
 var Doc = linez.Document;
 
-// ReSharper disable WrongExpressionStatement
 describe('indent_size rule', () => {
 
 	describe('check command', () => {

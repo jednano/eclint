@@ -44,7 +44,7 @@ function check(settings: eclint.Settings, doc: linez.Document) {
 		var errors = doc.lines.map(checkLatin1TextRange);
 		return [].concat.apply([], errors);
 	}
-	if (_.contains(Object.keys(boms), configSetting)) {
+	if (_.includes(Object.keys(boms), configSetting)) {
 		return creatErrorArray('expected charset: ' + settings.charset);
 	}
 	return [];

@@ -7,7 +7,6 @@ var Doc = linez.Document;
 
 var expect = common.expect;
 
-// ReSharper disable WrongExpressionStatement
 describe('insert_final_newline rule', () => {
 
 	describe('check command',() => {

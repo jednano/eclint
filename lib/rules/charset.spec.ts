@@ -4,7 +4,6 @@ import * as linez from 'linez';
 
 var expect = common.expect;
 
-// ReSharper disable WrongExpressionStatement
 describe('charset rule', () => {
 
 	describe('check command', () => {

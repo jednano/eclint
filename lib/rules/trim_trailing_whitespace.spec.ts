@@ -4,7 +4,6 @@ var createLine = common.createLine;
 
 var expect = common.expect;
 
-// ReSharper disable WrongExpressionStatement
 describe('trim_trailing_whitespace rule', () => {
 
 	var settings = {

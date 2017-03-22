@@ -2,8 +2,7 @@
 
 [![Build Status](https://travis-ci.org/jedmao/eclint.svg?branch=master)](https://travis-ci.org/jedmao/eclint)
 [![npm version](https://badge.fury.io/js/eclint.svg)](http://badge.fury.io/js/eclint)
-[![Code Climate](https://codeclimate.com/github/jedmao/eclint/badges/gpa.svg)](https://codeclimate.com/github/jedmao/eclint)
-[![Test Coverage](https://codeclimate.com/github/jedmao/eclint/badges/coverage.svg)](https://codeclimate.com/github/jedmao/eclint)
+[![codecov](https://codecov.io/gh/jedmao/eclint/branch/master/graph/badge.svg)](https://codecov.io/gh/jedmao/eclint)
 [![npm license](http://img.shields.io/npm/l/eclint.svg?style=flat-square)](https://www.npmjs.org/package/eclint)
 
 [![npm](https://nodei.co/npm/eclint.svg?downloads=true)](https://nodei.co/npm/eclint/)
