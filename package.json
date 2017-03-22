@@ -1,6 +1,6 @@
 {
   "name": "eclint",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Validate or fix code that doesn't adhere to EditorConfig settings or infer settings from existing code.",
   "keywords": [
     "editorconfig",
@@ -11,6 +11,9 @@
     "infer",
     "gulpplugin"
   ],
+  "bin": {
+    "eclint": "bin/eclint.js"
+  },
   "main": "dist/eclint.js",
   "types": "dist/eclint.d.ts",
   "scripts": {
