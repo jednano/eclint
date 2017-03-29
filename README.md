@@ -261,6 +261,10 @@ insert_final_newline = true
 max_line_length = 90
 ```
 
+### Locales supported:
+
+- English
+- Simplified Chinese
 
 ## Rules
 

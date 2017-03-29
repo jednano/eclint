@@ -16,9 +16,7 @@ function resolve(settings: eclint.Settings) {
 function check(settings: eclint.Settings, line: linez.Line) {
 	var configSetting = resolve(settings);
 	if (configSetting && !infer(line)) {
-		var error = new EditorConfigError([
-			'trailing whitespace found'
-		].join(' '));
+		var error = new EditorConfigError('trailing whitespace found');
 		error.lineNumber = line.number;
 		error.columnNumber = line.text.replace(TRAILING_WHITESPACE, '').length + 1;
 		error.rule = 'trim_trailing_whitespace';

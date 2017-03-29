@@ -28,7 +28,7 @@ describe('eclint gulp plugin', () => {
 			stream.on('error', done);
 
 			stream.write(new File({
-				path: path.join(__dirname, "testcase.js"),
+				path: path.join(__dirname, 'testcase.js'),
 				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a])
 			}));
 		});
@@ -44,7 +44,7 @@ describe('eclint gulp plugin', () => {
 			}).on('error', done);
 
 			stream.write(new File({
-				path: path.join(__dirname, "testcase.js"),
+				path: path.join(__dirname, 'testcase.js'),
 				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a])
 			}));
 		});
@@ -112,7 +112,7 @@ describe('eclint gulp plugin', () => {
 			}).on('error', done);
 
 			stream.write(new File({
-				path: path.join(__dirname, "testcase.js"),
+				path: path.join(__dirname, 'testcase.js'),
 				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a])
 			}));
 		});
@@ -126,7 +126,7 @@ describe('eclint gulp plugin', () => {
 			});
 
 			stream.write(new File({
-				path: path.join(__dirname, "testcase.js"),
+				path: path.join(__dirname, 'testcase.js'),
 				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a])
 			}));
 		});
@@ -156,7 +156,7 @@ describe('eclint gulp plugin', () => {
 			stream.on('error', done);
 
 			stream.write(new File({
-				path: path.join(__dirname, "testcase.js"),
+				path: path.join(__dirname, 'testcase.js'),
 				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a])
 			}));
 		});
@@ -184,7 +184,7 @@ describe('eclint gulp plugin', () => {
 			stream.on('error', done);
 
 			stream.write(new File({
-				path: path.join(__dirname, "testcase.js"),
+				path: path.join(__dirname, 'testcase.js'),
 				contents: new Buffer('testcase\r\n')
 			}));
 		});
@@ -211,7 +211,7 @@ describe('eclint gulp plugin', () => {
 			stream.on('error', done);
 
 			stream.write(new File({
-				path: path.join(__dirname, "testcase.js"),
+				path: path.join(__dirname, 'testcase.js'),
 				contents: new Buffer('testcase')
 			}));
 		});
@@ -238,7 +238,7 @@ describe('eclint gulp plugin', () => {
 			stream.on('error', done);
 
 			stream.write(new File({
-				path: path.join(__dirname, "testcase.js"),
+				path: path.join(__dirname, 'testcase.js'),
 				contents: new Buffer('testcase\n')
 			}));
 		});

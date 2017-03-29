@@ -28,20 +28,20 @@ function check(settings: eclint.Settings, line: linez.Line) {
 	switch (resolve(settings)) {
 		case 'tab':
 			if (_.startsWith(line.text, ' ')) {
-				return createError('invalid indentation: found a leading space, expected: tab');
+				return createError('invalid indent style: found a leading space, expected: tab');
 			}
 			var softTabCount = identifyIndentation(line.text, settings).softTabCount;
 			if (softTabCount > 0) {
-				return createError(`invalid indentation: found ${softTabCount} soft tab(s)`);
+				return createError(`invalid indent style: found ${softTabCount} soft tab(s)`);
 			}
 			break;
 		case 'space':
 			if (_.startsWith(line.text, '\t')) {
-				return createError('invalid indentation: found a leading tab, expected: space');
+				return createError('invalid indent style: found a leading tab, expected: space');
 			}
 			var hardTabCount = identifyIndentation(line.text, settings).hardTabCount;
 			if (hardTabCount > 0) {
-				return createError(`invalid indentation: found ${hardTabCount} hard tab(s)`);
+				return createError(`invalid indent style: found ${hardTabCount} hard tab(s)`);
 			}
 			break;
 	}
@@ -53,7 +53,7 @@ function check(settings: eclint.Settings, line: linez.Line) {
 	if (!mixedTabsWithSpaces) {
 		return;
 	}
-	return createError('invalid indentation: found mixed tabs with spaces', mixedTabsWithSpaces.index + 2);
+	return createError('invalid indent style: found mixed tabs with spaces', mixedTabsWithSpaces.index + 2);
 }
 
 function identifyIndentation(text: string, settings: eclint.Settings) {

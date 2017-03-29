@@ -16,7 +16,7 @@ describe('max_line_length rule', () => {
 			error = rule.check({ max_line_length: 2 }, fooLine);
 			expect(error).to.be.ok;
 			expect(error.rule).to.equal('max_line_length');
-			expect(error.message).to.be.equal('line length: 3, exceeds: 2');
+			expect(error.message).to.be.equal('invalid line length: 3, expected: 2');
 			expect(error.lineNumber).to.equal(1);
 			expect(error.columnNumber).to.equal(2);
 		});
