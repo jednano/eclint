@@ -1,4 +1,8 @@
 import os = require('os');
+import path = require('path');
+const i18n = require('y18n')({
+	directory: path.relative(__dirname, '../locales')
+}).__;
 
 class EditorConfigError extends Error {
 	fileName = '<anonymous>';
@@ -14,10 +18,9 @@ class EditorConfigError extends Error {
 			`    at (${ this.fileName }:${ this.lineNumber }:${ this.columnNumber })`
 		].join(os.EOL);
 	};
-
-	constructor(message: string) {
+	constructor(message: any[]) {
 		super();
-		this.message = message;
+		this.message = i18n(...message);
 	};
 }
 

@@ -33,9 +33,10 @@ function check(settings: eclint.Settings, doc: linez.Document) {
 		}
 		if (leadingSpacesLength % configSetting !== 0) {
 			var error = new EditorConfigError([
-				'invalid indent size: ' + leadingSpacesLength + ',',
-				'expected: ' + configSetting
-			].join(' '));
+				'invalid indent size: %s, expected: %s',
+				leadingSpacesLength,
+				configSetting
+			]);
 			error.lineNumber = line.number;
 			error.columnNumber = 1;
 			error.rule = 'indent_size';

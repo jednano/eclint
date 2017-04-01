@@ -16,7 +16,7 @@ function resolve(settings: eclint.Settings) {
 }
 
 function check(settings: eclint.Settings, line: linez.Line) {
-	function createError(message: string, columnNumber: number = 1) {
+	function createError(message: any[], columnNumber: number = 1) {
 		var error = new EditorConfigError(message);
 		error.lineNumber = line.number;
 		error.columnNumber = columnNumber;
@@ -28,20 +28,20 @@ function check(settings: eclint.Settings, line: linez.Line) {
 	switch (resolve(settings)) {
 		case 'tab':
 			if (_.startsWith(line.text, ' ')) {
-				return createError('invalid indent style: found a leading space, expected: tab');
+				return createError(['invalid indent style: found a leading space, expected: tab']);
 			}
 			var softTabCount = identifyIndentation(line.text, settings).softTabCount;
 			if (softTabCount > 0) {
-				return createError(`invalid indent style: found ${softTabCount} soft tab(s)`);
+				return createError(['invalid indent style: found %s soft tab(s)', softTabCount]);
 			}
 			break;
 		case 'space':
 			if (_.startsWith(line.text, '\t')) {
-				return createError('invalid indent style: found a leading tab, expected: space');
+				return createError(['invalid indent style: found a leading tab, expected: space']);
 			}
 			var hardTabCount = identifyIndentation(line.text, settings).hardTabCount;
 			if (hardTabCount > 0) {
-				return createError(`invalid indent style: found ${hardTabCount} hard tab(s)`);
+				return createError(['invalid indent style: found %s hard tab(s)', hardTabCount]);
 			}
 			break;
 	}
@@ -53,7 +53,7 @@ function check(settings: eclint.Settings, line: linez.Line) {
 	if (!mixedTabsWithSpaces) {
 		return;
 	}
-	return createError('invalid indent style: found mixed tabs with spaces', mixedTabsWithSpaces.index + 2);
+	return createError(['invalid indent style: found mixed tabs with spaces'], mixedTabsWithSpaces.index + 2);
 }
 
 function identifyIndentation(text: string, settings: eclint.Settings) {

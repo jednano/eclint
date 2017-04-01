@@ -1,0 +1,15 @@
+{
+  "invalid charset: %s, expected: %s": "错误的文件编码：%s，期望：%s",
+  "expected charset: %s": "期望的文件编码：%s",
+  "character out of latin1 range: %s": "超出latin1编码范围的字符：%s",
+  "invalid newline: %s, expected: %s": "错误的缩进尺寸：%s，期望：%s",
+  "invalid indent size: %s, expected: %s": "错误的缩进尺寸：%s，期望：%s",
+  "invalid indent style: found a leading space, expected: tab": "错误的缩进风格：使用了空格，期望：tab",
+  "invalid indent style: found a leading tab, expected: space": "错误的缩进风格：使用了tab，期望：空格",
+  "invalid indent style: found %s soft tab(s)": "错误的缩进风格：发现%s个软缩进",
+  "invalid indent style: found %s hard tab(s)": "错误的缩进风格：发现%s个硬缩进",
+  "expected final newline": "文件结尾期望换行",
+  "unexpected final newline": "文件结尾不许换行",
+  "invalid line length: %s, expected: %s": "错误的行长度：%s，期望：%s以内",
+  "trailing whitespace found": "行尾禁用空白"
+}
