@@ -263,9 +263,9 @@ max_line_length = 90
 
 Locales currently supported:
 
-en: American English.
-zh_CN: Simplified Chinese.
-zh_TW: Traditional Chinese.
+- en: American English.
+- zh_CN: Simplified Chinese.
+- zh_TW: Traditional Chinese.
 
 ## Rules
 
