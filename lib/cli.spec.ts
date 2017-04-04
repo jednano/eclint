@@ -35,7 +35,7 @@ describe('eclint cli', function() {
 		});
 		it('node_modules/.bin/_mocha', (done) => {
 			eclint(['check', 'node_modules/.bin/_mocha'], (error: Error) => {
-				expect(error.message).to.be.match(/\binvalid indentation\b/);
+				expect(error.message).to.be.match(/\(EditorConfig indent_style\b/);
 				done();
 			});
 		});

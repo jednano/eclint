@@ -66,14 +66,15 @@
     "gitlike-cli": "^0.1.0",
     "gulp-filter": "^5.0.0",
     "gulp-gitignore": "^0.1.0",
-    "gulp-reporter": "^1.5.4",
+    "gulp-reporter": "^1.8.0",
     "gulp-tap": "^0.1.3",
     "gulp-util": "^3.0.8",
     "linez": "^4.1.4",
     "lodash": "^4.17.4",
     "through2": "^2.0.3",
     "vinyl": "^2.0.1",
-    "vinyl-fs": "^2.4.4"
+    "vinyl-fs": "^2.4.4",
+    "y18n": "^3.2.1"
   },
   "devDependencies": {
     "@types/chai": "^3.4.35",
@@ -82,6 +83,7 @@
     "@types/sinon": "^1.16.36",
     "@types/sinon-chai": "^2.7.27",
     "@types/vinyl": "^2.0.0",
+    "@types/vinyl-fs": "^2.4.4",
     "chai": "^3.5.0",
     "event-stream": "^3.3.4",
     "mocha": "^3.2.0",

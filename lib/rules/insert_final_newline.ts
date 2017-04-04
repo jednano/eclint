@@ -30,7 +30,7 @@ function check(settings: eclint.Settings, doc: linez.Document) {
 		message = 'unexpected final newline';
 	}
 
-	var error = new EditorConfigError(message);
+	var error = new EditorConfigError([message]);
 	error.lineNumber = doc.lines.length;
 	var lastLine: linez.Line = doc.lines[doc.lines.length - 1];
 	error.columnNumber = lastLine.text.length + lastLine.ending.length;
