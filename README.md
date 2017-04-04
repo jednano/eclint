@@ -261,9 +261,9 @@ insert_final_newline = true
 max_line_length = 90
 ```
 
-Locales currently supported:
+## Locales currently supported:
 
-- en: American English.
+- en: English.
 - zh_CN: Simplified Chinese.
 - zh_TW: Traditional Chinese.
 
