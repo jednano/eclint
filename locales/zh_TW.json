@@ -10,6 +10,6 @@
   "invalid indent style: found %s hard tab(s)": "錯誤的縮排風格：發現%s個硬縮排",
   "expected final newline": "檔案結尾期望換行",
   "unexpected final newline": "檔案結尾不許換行",
-  "invalid line length: %s, expected: %s": "錯誤的行長度：%s，期望：%s以內",
+  "invalid line length: %s, exceeds: %s": "錯誤的行長度：%s，超出了：%s",
   "trailing whitespace found": "行尾禁用空白"
 }

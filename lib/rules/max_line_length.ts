@@ -13,7 +13,7 @@ function check(settings: eclint.Settings, line: linez.Line) {
 	var configSetting = resolve(settings);
 	if (inferredSetting > settings.max_line_length) {
 		var error = new EditorConfigError([
-			'invalid line length: %s, expected: %s',
+			'invalid line length: %s, exceeds: %s',
 			inferredSetting,
 			configSetting
 		]);

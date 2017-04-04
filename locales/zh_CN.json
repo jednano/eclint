@@ -10,6 +10,6 @@
   "invalid indent style: found %s hard tab(s)": "错误的缩进风格：发现%s个硬缩进",
   "expected final newline": "文件结尾期望换行",
   "unexpected final newline": "文件结尾不许换行",
-  "invalid line length: %s, expected: %s": "错误的行长度：%s，期望：%s以内",
+  "invalid line length: %s, exceeds: %s": "错误的行长度：%s，超出了：%s",
   "trailing whitespace found": "行尾禁用空白"
 }
