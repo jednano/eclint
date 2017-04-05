@@ -116,8 +116,8 @@ check.action((args: any, options: CheckOptions) => {
 
 interface FixOptions extends eclint.Settings {
 	/**
-	* Destination folder to pipe source files.
-	*/
+	 * Destination folder to pipe source files.
+	 */
 	dest?: string;
 }
 

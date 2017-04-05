@@ -21,7 +21,7 @@ class EditorConfigError extends Error {
 	constructor(message: any[]) {
 		super();
 		this.message = i18n(...message);
-	};
+	}
 }
 
 export = EditorConfigError;
