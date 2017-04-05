@@ -243,5 +243,32 @@ describe('eclint gulp plugin', () => {
 			}));
 		});
 
+		it('check documentation comments', (done) => {
+			var stream = eclint.check({
+				settings: {
+					indent_style: 'space',
+					indent_size: '2'
+				}
+			});
+
+			stream.on('data', (file) => {
+				expect(file.editorconfig.errors).to.have.lengthOf(2);
+				expect(file.editorconfig.errors[0].message).to.equal('invalid indent size: 1, expected: 2');
+				expect(file.editorconfig.errors[0].lineNumber).to.equal(8);
+				expect(file.editorconfig.errors[0].rule).to.equal('indent_size');
+				expect(file.editorconfig.errors[1].message).to.equal('invalid indent size: 1, expected: 2');
+				expect(file.editorconfig.errors[1].lineNumber).to.equal(9);
+				expect(file.editorconfig.errors[1].rule).to.equal('indent_size');
+				done();
+			});
+
+			stream.on('error', done);
+
+			stream.write(new File({
+				path: path.join(__dirname, 'testcase.js'),
+				contents: new Buffer(`  /**\n   * indent 1\n   */\n/**\n * indent 0\n */\n  /**\n  * indent 1\n  */\n`)
+			}));
+		});
+
 	});
 });

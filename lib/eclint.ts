@@ -34,40 +34,40 @@ module eclint {
 
 	export interface Settings {
 		/**
-		* Set to latin1, utf-8, utf-8-bom, utf-16be or utf-16le to control the
-		* character set.
-		*/
+		 * Set to latin1, utf-8, utf-8-bom, utf-16be or utf-16le to control the
+		 * character set.
+		 */
 		charset?: string;
 		/**
-		* Set to tab or space to use hard tabs or soft tabs respectively.
-		*/
+		 * Set to tab or space to use hard tabs or soft tabs respectively.
+		 */
 		indent_style?: string;
 		/**
-		* The number of columns used for each indentation level and the width
-		* of soft tabs (when supported). When set to tab, the value of
-		* tab_width (if specified) will be used.
-		*/
+		 * The number of columns used for each indentation level and the width
+		 * of soft tabs (when supported). When set to tab, the value of
+		 * tab_width (if specified) will be used.
+		 */
 		indent_size?: number|string;
 		/**
-		* Number of columns used to represent a tab character. This defaults
-		* to the value of indent_size and doesn't usually need to be specified.
-		*/
+		 * Number of columns used to represent a tab character. This defaults
+		 * to the value of indent_size and doesn't usually need to be specified.
+		 */
 		tab_width?: number;
 		/**
-		* Removes any whitespace characters preceding newline characters.
-		*/
+		 * Removes any whitespace characters preceding newline characters.
+		 */
 		trim_trailing_whitespace?: boolean;
 		/**
-		* Set to lf, cr, or crlf to control how line breaks are represented.
-		*/
+		 * Set to lf, cr, or crlf to control how line breaks are represented.
+		 */
 		end_of_line?: string;
 		/**
-		* Ensures files ends with a newline.
-		*/
+		 * Ensures files ends with a newline.
+		 */
 		insert_final_newline?: boolean;
 		/**
-		* Enforces the maximum number of columns you can have in a line.
-		*/
+		 * Enforces the maximum number of columns you can have in a line.
+		 */
 		max_line_length?: number;
 	}
 
@@ -91,6 +91,10 @@ module eclint {
 		check(settings: Settings, line: linez.Line): EditorConfigError;
 		fix(settings: Settings, line: linez.Line): linez.Line;
 		infer(line: linez.Line): any;
+	}
+
+	export interface Line extends linez.Line {
+		isDocComment: boolean;
 	}
 
 	export interface DocumentRule extends Rule {
@@ -150,6 +154,30 @@ module eclint {
 		}
 	}
 
+	function getDoc(contents: Buffer) {
+		var doc = linez(contents);
+		var docCommentLines: Line[] | null;
+		doc.lines.forEach((line: Line) => {
+			if (/^\s*\/\*\*\s*$/.test(line.text)) {
+				// Documentation comments start: `/**`
+				docCommentLines = [];
+			} else if (/^\s*\*\/\s*$/.test(line.text)) {
+				// Documentation comments end: `*/`
+				if (docCommentLines) {
+					docCommentLines.push(line);
+					docCommentLines.forEach((line: Line) => {
+						line.isDocComment = true;
+					});
+				}
+				docCommentLines = null;
+			} else if (docCommentLines && /^\s*\*/.test(line.text)) {
+				// Maybe documentation comments line: `* xxxx`
+				docCommentLines.push(line);
+			}
+		});
+		return doc;
+	}
+
 	export interface CheckCommandOptions extends CommandOptions {
 		reporter?: (file: EditorConfigLintFile, error: EditorConfigError) => void;
 	}
@@ -175,7 +203,7 @@ module eclint {
 					var errors: EditorConfigError[] = [];
 
 					var settings = getSettings(fileSettings, commandSettings);
-					var doc = linez(file.contents);
+					var doc = getDoc(file.contents);
 
 					function addError(error?: EditorConfigError) {
 						if (error) {
@@ -241,7 +269,7 @@ module eclint {
 				.then((fileSettings: Settings) => {
 
 					var settings = getSettings(fileSettings, commandSettings);
-					var doc = linez(file.contents);
+					var doc = getDoc(file.contents);
 
 					Object.keys(settings).forEach(setting => {
 						var rule: DocumentRule|LineRule = rules[setting];
@@ -280,16 +308,16 @@ module eclint {
 
 	export interface InferOptions {
 		/**
-		* Shows the tallied score for each setting.
-		*/
+		 * Shows the tallied score for each setting.
+		 */
 		score?: boolean;
 		/**
-		* Exports file as ini file type.
-		*/
+		 * Exports file as ini file type.
+		 */
 		ini?: boolean;
 		/**
-		* Adds root = true to the top of your ini file, if any.
-		*/
+		 * Adds root = true to the top of your ini file, if any.
+		 */
 		root?: boolean;
 	}
 
@@ -334,7 +362,7 @@ module eclint {
 				setting[value]++;
 			}
 
-			var doc = linez(file.contents);
+			var doc = getDoc(file.contents);
 			Object.keys(rules).forEach(key => {
 				if (key === 'max_line_length') {
 					settings.max_line_length = 0;

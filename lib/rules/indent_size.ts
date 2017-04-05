@@ -5,14 +5,25 @@ import EditorConfigError =  require('../editor-config-error');
 
 var LEADING_SPACES_MATCHER = /^ +/;
 
+function getNumber(num: string | number, fallback?: Function) {
+	if (typeof num === 'number') {
+		return num;
+	}
+
+	num = parseInt(num, undefined);
+
+	if (isNaN(num)) {
+		return fallback && fallback();
+	}
+	return num;
+}
+
 function resolve(settings: eclint.Settings): number {
 	var result = (settings.indent_size === 'tab')
 		? settings.tab_width
 		: settings.indent_size;
-	if (!_.isNumber(result)) {
-		result = settings.tab_width;
-	}
-	return _.isNumber(result) ? <number>result : void (0);
+
+	return getNumber(result, getNumber.bind(this, settings.tab_width));
 }
 
 function check(settings: eclint.Settings, doc: linez.Document) {
@@ -24,7 +35,7 @@ function check(settings: eclint.Settings, doc: linez.Document) {
 		return [];
 	}
 	return doc.lines.map(line => {
-		var leadingSpacesLength = getLeadingSpacesLength(line);
+		var leadingSpacesLength = getLeadingSpacesLength(<eclint.Line>line);
 		if (_.isUndefined(leadingSpacesLength)) {
 			return;
 		}
@@ -46,11 +57,15 @@ function check(settings: eclint.Settings, doc: linez.Document) {
 	}).filter(Boolean);
 }
 
-function getLeadingSpacesLength(line: linez.Line): number {
+function getLeadingSpacesLength(line: eclint.Line): number {
 	if (line.text[0] === '\t') {
 		return void(0);
 	}
-	var m = line.text.match(LEADING_SPACES_MATCHER);
+	var text = line.text;
+	if (line.isDocComment) {
+		text = text.replace(/^(\s*) \*.*$/, '$1');
+	}
+	var m = text.match(LEADING_SPACES_MATCHER);
 	return (m) ? m[0].length : 0;
 }
 
@@ -68,7 +83,7 @@ function infer(doc: linez.Document): number {
 
 	var lastLineLeadingSpacesLength = 0;
 	doc.lines.forEach(line => {
-		var leadingSpacesLength = getLeadingSpacesLength(line);
+		var leadingSpacesLength = getLeadingSpacesLength(<eclint.Line>line);
 		if (_.isUndefined(leadingSpacesLength)) {
 			return;
 		}
