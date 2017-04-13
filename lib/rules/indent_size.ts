@@ -1,78 +1,102 @@
-import _ = require('lodash');
-import * as linez from 'linez';
+import * as doc from '../doc';
 import eclint = require('../eclint');
 import EditorConfigError =  require('../editor-config-error');
 
-var LEADING_SPACES_MATCHER = /^ +/;
+var RE_LEADING_SPACES = /^ +$/;
+
+function getNumber(num: string | number, fallback?: Function) {
+	if (typeof num === 'number') {
+		return num;
+	}
+
+	num = parseInt(num, undefined);
+
+	if (isNaN(num)) {
+		return fallback && fallback();
+	}
+	return num;
+}
 
 function resolve(settings: eclint.Settings): number {
 	var result = (settings.indent_size === 'tab')
 		? settings.tab_width
 		: settings.indent_size;
-	if (!_.isNumber(result)) {
-		result = settings.tab_width;
-	}
-	return _.isNumber(result) ? <number>result : void (0);
+
+	return getNumber(result, getNumber.bind(this, settings.tab_width));
 }
 
-function check(settings: eclint.Settings, doc: linez.Document) {
+function checkSpaces(line: doc.Line, indentSize: number): EditorConfigError {
+	if (!RE_LEADING_SPACES.test(line.prefix)) {
+		return;
+	}
+	var leadingSpacesLength = line.prefix.length;
+	var padSpacesLength = leadingSpacesLength % indentSize;
+	var padSize = line.padSize || 0;
+
+	var softTabCount = leadingSpacesLength / indentSize;
+	if (indentSize % 2) {
+		softTabCount = Math.floor(softTabCount);
+	} else {
+		softTabCount = Math.round(softTabCount);
+	}
+
+	if (padSpacesLength !== 0 && padSpacesLength !== padSize) {
+		var error = new EditorConfigError([
+			'invalid indent size: %s, expected: %s',
+			leadingSpacesLength,
+			softTabCount * indentSize + padSize,
+		]);
+		error.lineNumber = line.number;
+		error.rule = 'indent_size';
+		error.source = line.text;
+		return error;
+	}
+}
+
+function check(settings: eclint.Settings, document: doc.Document): EditorConfigError[] {
 	if (settings.indent_style === 'tab') {
 		return [];
 	}
-	var configSetting = resolve(settings);
-	if (_.isUndefined(configSetting)) {
-		return [];
+	var indentSize = resolve(settings);
+	if (indentSize) {
+		return document.lines.map(line => {
+			return checkSpaces(line, indentSize);
+		}).filter(Boolean);
 	}
-	return doc.lines.map(line => {
-		var leadingSpacesLength = getLeadingSpacesLength(line);
-		if (_.isUndefined(leadingSpacesLength)) {
-			return;
-		}
-		if (configSetting === 0) {
-			return;
-		}
-		if (leadingSpacesLength % configSetting !== 0) {
-			var error = new EditorConfigError([
-				'invalid indent size: %s, expected: %s',
-				leadingSpacesLength,
-				configSetting
-			]);
-			error.lineNumber = line.number;
-			error.columnNumber = 1;
-			error.rule = 'indent_size';
-			error.source = line.text;
-			return error;
-		}
-	}).filter(Boolean);
+	return [];
 }
 
-function getLeadingSpacesLength(line: linez.Line): number {
-	if (line.text[0] === '\t') {
-		return void(0);
-	}
-	var m = line.text.match(LEADING_SPACES_MATCHER);
-	return (m) ? m[0].length : 0;
+function fix(_settings: eclint.Settings, document: doc.Document) {
+	return document; // noop
 }
 
-function fix(_settings: eclint.Settings, doc: linez.Document) {
-	return doc; // noop
-}
-
-function infer(doc: linez.Document): number {
+function infer(document: doc.Document): number {
 	var scores = {};
+	var lastIndentSize;
+	var lastLineLeadingSpacesLength = 0;
 
-	function vote(indentSize: number) {
+	function vote(leadingSpacesLength: number) {
+		var indentSize = Math.abs(leadingSpacesLength - lastLineLeadingSpacesLength);
+		if (indentSize) {
+			lastIndentSize = indentSize;
+		} else if (lastIndentSize) {
+			indentSize = lastIndentSize;
+		} else {
+			return;
+		}
 		scores[indentSize] = scores[indentSize] || 0;
 		scores[indentSize]++;
 	}
 
-	var lastLineLeadingSpacesLength = 0;
-	doc.lines.forEach(line => {
-		var leadingSpacesLength = getLeadingSpacesLength(line);
-		if (_.isUndefined(leadingSpacesLength)) {
+	document.lines.forEach(line => {
+		if (!RE_LEADING_SPACES.test(line.prefix)) {
 			return;
 		}
-		vote(Math.abs(leadingSpacesLength - lastLineLeadingSpacesLength));
+		var leadingSpacesLength = line.prefix.length;
+		if (line.padSize) {
+			leadingSpacesLength -= line.padSize;
+		}
+		vote(leadingSpacesLength);
 		lastLineLeadingSpacesLength = leadingSpacesLength;
 	});
 

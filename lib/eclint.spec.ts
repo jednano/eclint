@@ -243,5 +243,37 @@ describe('eclint gulp plugin', () => {
 			}));
 		});
 
+		it('check documentation comments', (done) => {
+			var stream = eclint.check({
+				settings: {
+					indent_style: 'space',
+					indent_size: '2'
+				}
+			});
+
+			stream.on('data', (file) => {
+				console.log(file.editorconfig.errors);
+				done();
+			});
+
+			stream.on('error', done);
+
+			stream.write(new File({
+				path: path.join(__dirname, 'testcase.js'),
+				contents: new Buffer([
+					'  /**',
+					'   * indent 1',
+					'   */',
+					'/**',
+					' * indent 0',
+					' */',
+					'  /**',
+					'  * indent 1',
+					'  */',
+					''
+				].join('\n'))
+			}));
+		});
+
 	});
 });

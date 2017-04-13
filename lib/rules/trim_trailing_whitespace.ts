@@ -1,5 +1,5 @@
 import _ = require('lodash');
-import * as linez from 'linez';
+import * as doc from '../doc';
 
 import eclint = require('../eclint');
 import EditorConfigError =  require('../editor-config-error');
@@ -13,7 +13,7 @@ function resolve(settings: eclint.Settings) {
 	return void(0);
 }
 
-function check(settings: eclint.Settings, line: linez.Line) {
+function check(settings: eclint.Settings, line: doc.Line) {
 	var configSetting = resolve(settings);
 	if (configSetting && !infer(line)) {
 		var error = new EditorConfigError(['trailing whitespace found']);
@@ -25,7 +25,7 @@ function check(settings: eclint.Settings, line: linez.Line) {
 	}
 }
 
-function fix(settings: eclint.Settings, line: linez.Line) {
+function fix(settings: eclint.Settings, line: doc.Line) {
 	var configSetting = resolve(settings);
 	if (configSetting) {
 		line.text = line.text.replace(TRAILING_WHITESPACE, '');
@@ -33,7 +33,7 @@ function fix(settings: eclint.Settings, line: linez.Line) {
 	return line;
 }
 
-function infer(line: linez.Line) {
+function infer(line: doc.Line) {
 	if (!TRAILING_WHITESPACE.test(line.text)) {
 		return true;
 	}

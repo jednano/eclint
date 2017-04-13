@@ -34,7 +34,7 @@ describe('indent_style rule', () => {
 			var error = rule.check({ indent_style: 'tab' }, createLine(' foo'));
 			expect(error).to.be.ok;
 			expect(error.rule).to.equal('indent_style');
-			expect(error.message).to.be.equal('invalid indent style: found a leading space, expected: tab');
+			expect(error.message).to.be.equal('invalid indent style: space, expected: tab');
 			expect(error.lineNumber).to.equal(1);
 			expect(error.columnNumber).to.equal(1);
 		});
@@ -43,7 +43,7 @@ describe('indent_style rule', () => {
 			var error = rule.check({ indent_style: 'space' }, createLine('\tfoo'));
 			expect(error).to.be.ok;
 			expect(error.rule).to.equal('indent_style');
-			expect(error.message).to.be.equal('invalid indent style: found a leading tab, expected: space');
+			expect(error.message).to.be.equal('invalid indent style: tab, expected: space');
 			expect(error.lineNumber).to.equal(1);
 			expect(error.columnNumber).to.equal(1);
 		});
@@ -52,43 +52,43 @@ describe('indent_style rule', () => {
 			var error = rule.check({ indent_style: 'tab', indent_size: 2 }, createLine('\t  \tfoo'));
 			expect(error).to.be.ok;
 			expect(error.rule).to.equal('indent_style');
-			expect(error.message).to.be.equal('invalid indent style: found 1 soft tab(s)');
+			expect(error.message).to.be.equal('invalid indent style: mixed tabs with spaces');
 			expect(error.lineNumber).to.equal(1);
-			expect(error.columnNumber).to.equal(1);
+			expect(error.columnNumber).to.equal(2);
 		});
 
 		it('reports multiple invalid soft tabs', () => {
 			var error = rule.check({ indent_style: 'tab', indent_size: 2 }, createLine('\t  \t  \tfoo'));
 			expect(error).to.be.ok;
 			expect(error.rule).to.equal('indent_style');
-			expect(error.message).to.be.equal('invalid indent style: found 2 soft tab(s)');
+			expect(error.message).to.be.equal('invalid indent style: mixed tabs with spaces');
 			expect(error.lineNumber).to.equal(1);
-			expect(error.columnNumber).to.equal(1);
+			expect(error.columnNumber).to.equal(2);
 		});
 
 		it('reports one invalid hard tab', () => {
 			var error = rule.check({ indent_style: 'space', indent_size: 2 }, createLine('  \tfoo'));
 			expect(error).to.be.ok;
 			expect(error.rule).to.equal('indent_style');
-			expect(error.message).to.be.equal('invalid indent style: found 1 hard tab(s)');
+			expect(error.message).to.be.equal('invalid indent style: mixed tabs with spaces');
 			expect(error.lineNumber).to.equal(1);
-			expect(error.columnNumber).to.equal(1);
+			expect(error.columnNumber).to.equal(3);
 		});
 
 		it('reports multiple invalid hard tabs', () => {
 			var error = rule.check({ indent_style: 'space', indent_size: 2 }, createLine('  \t  \tfoo'));
 			expect(error).to.be.ok;
 			expect(error.rule).to.equal('indent_style');
-			expect(error.message).to.be.equal('invalid indent style: found 2 hard tab(s)');
+			expect(error.message).to.be.equal('invalid indent style: mixed tabs with spaces');
 			expect(error.lineNumber).to.equal(1);
-			expect(error.columnNumber).to.equal(1);
+			expect(error.columnNumber).to.equal(3);
 		});
 
 		it('reports mixed tabs with spaces, regardless of settings', () => {
 			var error = rule.check({}, createLine('  \tfoo'));
 			expect(error).to.be.ok;
 			expect(error.rule).to.equal('indent_style');
-			expect(error.message).to.be.equal('invalid indent style: found mixed tabs with spaces');
+			expect(error.message).to.be.equal('invalid indent style: mixed tabs with spaces');
 			expect(error.lineNumber).to.equal(1);
 			expect(error.columnNumber).to.equal(3);
 		});
@@ -135,7 +135,7 @@ describe('indent_style rule', () => {
 					},
 					createLine('  \t   foo \t \t')
 				);
-				expect(line.text).to.eq('\t\t\t foo \t \t');
+				expect(line.text).to.eq('\t\t\tfoo \t \t');
 				line = rule.fix(
 					{
 						indent_style: 'space',
@@ -143,7 +143,7 @@ describe('indent_style rule', () => {
 					},
 					createLine('  \t\t foo \t \t')
 				);
-				expect(line.text).to.eq('       foo \t \t');
+				expect(line.text).to.eq('      foo \t \t');
 			});
 
 			it('preserves alignment, if any', () => {
@@ -154,7 +154,7 @@ describe('indent_style rule', () => {
 					},
 					createLine('       foo')
 				);
-				expect(line.text).to.eq('\t   foo');
+				expect(line.text).to.eq('\t\tfoo');
 			});
 
 			it('remains unchanged if inferred style is consistent with config setting', () => {
@@ -201,7 +201,7 @@ describe('indent_style rule', () => {
 					},
 					createLine('\t\t      foo')
 				);
-				expect(line.text).to.eq('              foo');
+				expect(line.text).to.eq('            foo');
 			});
 
 			it('remains unchanged if inferred style is consistent with config setting', () => {

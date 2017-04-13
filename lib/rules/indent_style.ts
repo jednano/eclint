@@ -1,5 +1,5 @@
 import _ = require('lodash');
-import * as linez from 'linez';
+import * as doc from '../doc';
 
 import eclint = require('../eclint');
 import IndentSizeRule = require('./indent_size');
@@ -15,102 +15,99 @@ function resolve(settings: eclint.Settings) {
 	}
 }
 
-function check(settings: eclint.Settings, line: linez.Line) {
-	function createError(message: any[], columnNumber: number = 1) {
-		var error = new EditorConfigError(message);
+function check(settings: eclint.Settings, line: doc.Line) {
+	if (!line.prefix) {
+		return;
+	}
+
+	var indentStyle = resolve(settings);
+
+	if (indentStyle === 'tab' && line.isBlockComment && /^\t* +$/.test(line.prefix)) {
+		return;
+	}
+
+	function searchString(searchValue: string): number {
+		var index = line.prefix.indexOf(searchValue);
+		if (index < 0) {
+			return 0;
+		}
+		return index + searchValue.length;
+	}
+
+	var tabColumnNumber = searchString('\t');
+	var spaceColumnNumber = searchString(' ');
+	var errorMessage: string;
+	var errorColumnNumber: number;
+
+	if (tabColumnNumber && spaceColumnNumber) {
+		errorColumnNumber = Math.max(tabColumnNumber, spaceColumnNumber);
+		errorMessage = 'invalid indent style: mixed tabs with spaces';
+	} else {
+		if (!indentStyle) {
+			return;
+		} else if (indentStyle === 'space') {
+			errorColumnNumber = tabColumnNumber;
+			errorMessage = 'invalid indent style: tab, expected: space';
+		} else if (indentStyle === 'tab') {
+			errorColumnNumber = spaceColumnNumber;
+			errorMessage = 'invalid indent style: space, expected: tab';
+		}
+	}
+
+	if (errorColumnNumber) {
+		var error = new EditorConfigError([errorMessage]);
 		error.lineNumber = line.number;
-		error.columnNumber = columnNumber;
+		error.columnNumber = errorColumnNumber;
 		error.rule = 'indent_style';
 		error.source = line.text;
 		return error;
 	}
-
-	switch (resolve(settings)) {
-		case 'tab':
-			if (_.startsWith(line.text, ' ')) {
-				return createError(['invalid indent style: found a leading space, expected: tab']);
-			}
-			var softTabCount = identifyIndentation(line.text, settings).softTabCount;
-			if (softTabCount > 0) {
-				return createError(['invalid indent style: found %s soft tab(s)', softTabCount]);
-			}
-			break;
-		case 'space':
-			if (_.startsWith(line.text, '\t')) {
-				return createError(['invalid indent style: found a leading tab, expected: space']);
-			}
-			var hardTabCount = identifyIndentation(line.text, settings).hardTabCount;
-			if (hardTabCount > 0) {
-				return createError(['invalid indent style: found %s hard tab(s)', hardTabCount]);
-			}
-			break;
-	}
-	var leadingWhitespace = line.text.match(/^(?:\t| )+/);
-	if (!leadingWhitespace) {
-		return;
-	}
-	var mixedTabsWithSpaces = leadingWhitespace[0].match(/ \t/);
-	if (!mixedTabsWithSpaces) {
-		return;
-	}
-	return createError(['invalid indent style: found mixed tabs with spaces'], mixedTabsWithSpaces.index + 2);
 }
 
-function identifyIndentation(text: string, settings: eclint.Settings) {
-	var softTab = _.repeat(' ', IndentSizeRule.resolve(settings));
+function identifyIndentation(indentSize: number, line: doc.Line): number {
 
-	function countHardTabs(s: string): number {
-		var hardTabs = s.match(/\t/g);
-		return hardTabs ? hardTabs.length : 0;
+	var spaceCount = 0;
+	var hardTabCount = line.prefix.replace(/ /g, () => {
+		spaceCount++;
+		return '';
+	}).length;
+	var softTabCount = spaceCount / indentSize;
+	if (indentSize > 2 && softTabCount % 0.5) {
+		softTabCount = Math.round(softTabCount);
+	} else {
+		softTabCount = Math.floor(softTabCount);
 	}
 
-	function countSoftTabs(s: string): number {
-		if (!softTab.length) {
-			return 0;
+	return hardTabCount + softTabCount;
+}
+
+function fix(settings: eclint.Settings, line: doc.Line) {
+	var fixedIndentation;
+	if (line.isBlockComment) {
+		fixedIndentation = line.blockCommentStart.prefix + _.repeat(' ', line.padSize);
+	} else {
+		var indentStyle = resolve(settings);
+		var indentSize = IndentSizeRule.resolve(settings);
+
+		if (indentStyle && indentSize) {
+			var indentCount = identifyIndentation(indentSize, line);
+
+			if (indentStyle === 'space') {
+				fixedIndentation = _.repeat(' ', indentCount * indentSize);
+			} else if (indentStyle === 'tab') {
+				fixedIndentation = _.repeat('\t', indentCount);
+			}
 		}
-		var softTabs = s.match(new RegExp(softTab, 'g'));
-		return softTabs ? softTabs.length : 0;
 	}
 
-	var m = text.match(new RegExp('^(?:\t|' + softTab + ')+'));
-	var leadingIndentation = m ? m[0] : '';
-	return {
-		text: leadingIndentation,
-		hardTabCount: countHardTabs(leadingIndentation),
-		softTabCount: countSoftTabs(leadingIndentation)
-	};
-}
+	if (fixedIndentation) {
+		line.prefix = fixedIndentation;
+	}
 
-function fix(settings: eclint.Settings, line: linez.Line) {
-	var indentStyle = resolve(settings);
-	if (_.isUndefined(indentStyle)) {
-		return line;
-	}
-	var indentation = identifyIndentation(line.text, settings);
-	var softTab = _.repeat(' ', IndentSizeRule.resolve(settings));
-	var oneFixedIndent: string;
-	switch (indentStyle) {
-		case 'tab':
-			if (indentation.softTabCount === 0) {
-				return line;
-			}
-			oneFixedIndent = '\t';
-			break;
-		case 'space':
-			if (indentation.hardTabCount === 0) {
-				return line;
-			}
-			oneFixedIndent = softTab;
-			break;
-		default:
-			return line;
-	}
-	var fixedIndentation = _.repeat(oneFixedIndent, indentation.hardTabCount + indentation.softTabCount);
-	line.text = fixedIndentation + line.text.substr(indentation.text.length);
 	return line;
 }
 
-function infer(line: linez.Line) {
+function infer(line: doc.Line) {
 	return {
 		' ': 'space',
 		'\t': 'tab'

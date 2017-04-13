@@ -6,6 +6,9 @@ indent_style = tab
 trim_trailing_whitespace = true
 end_of_line = lf
 insert_final_newline = true
+block_comment = *
+block_comment_start = /**
+block_comment_end = */
 
 [{*.json,*.yml}]
 indent_style = space
