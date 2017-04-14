@@ -1,9 +1,6 @@
+import _ = require('lodash');
 import * as linez from 'linez';
 import eclint = require('./eclint');
-
-function startWith(line: Line, startString: string): boolean {
-	return line.string.slice(0, startString.length) === startString;
-}
 
 function updateDoc(doc: Document, settings?: eclint.Settings): Document {
 	doc.lines = doc.lines.map((rawLine: linez.Line) => {
@@ -23,16 +20,16 @@ function updateDoc(doc: Document, settings?: eclint.Settings): Document {
 
 	var docCommentLines: null|Line[];
 	doc.lines.forEach((line: Line) => {
-		if (startWith(line, settings.block_comment_start)) {
+		if (_.startsWith(line.string, settings.block_comment_start)) {
 			docCommentLines = [line];
-		} else if (startWith(line, settings.block_comment_end)) {
+		} else if (_.endsWith(line.string, settings.block_comment_end)) {
 			if (docCommentLines) {
 				var blockCommentStart = docCommentLines[0];
 				blockCommentStart.isBlockCommentStart = true;
 				line.isBlockCommentEnd = true;
 				docCommentLines.push(line);
 				docCommentLines.forEach(line => {
-					if (!settings.block_comment || startWith(line, settings.block_comment)) {
+					if (!settings.block_comment || _.startsWith(line.string, settings.block_comment)) {
 						line.isBlockComment = true;
 						line.padSize = padSize;
 						line.blockCommentStart = blockCommentStart;
@@ -57,6 +54,7 @@ export class Line implements linez.Line {
 	padSize: number = 0;
 	prefix: string;
 	string: string;
+	suffix: string;
 	offset: number;
 	number: number;
 	ending: string;
@@ -69,12 +67,19 @@ export class Line implements linez.Line {
 		}
 	}
 	set text(text: string) {
-		var textArray = text.match(/^([\t ]+)?(.*?)$/);
-		this.prefix = textArray[1] || '';
-		this.string = textArray[2] || '';
+		var textArray = text.match(/^([\t ]*)(.*?)([\t ]*)$/);
+		if (textArray[2]) {
+			this.prefix = textArray[1];
+			this.string = textArray[2];
+			this.suffix = textArray[3];
+		} else {
+			this.prefix = '';
+			this.string = '';
+			this.suffix = text;
+		}
 	}
 	get text() {
-		return this.prefix + this.string;
+		return this.prefix + this.string + this.suffix;
 	}
 }
 

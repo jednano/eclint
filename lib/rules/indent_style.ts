@@ -105,17 +105,15 @@ function fixLine(line: doc.Line, indentStyle: IndentStyle, tabWidth: number) {
 	var fixedIndentation;
 	if (line.isBlockComment) {
 		fixedIndentation = line.blockCommentStart.prefix + _.repeat(' ', line.padSize);
-	} else {
-		if (indentStyle !== IndentStyle.ignore && tabWidth) {
-			var indentCount = identifyIndentation(tabWidth, line);
-			switch (indentStyle) {
-				case IndentStyle.space:
-					fixedIndentation = _.repeat(' ', indentCount * tabWidth);
-					break;
-				case IndentStyle.tab:
-					fixedIndentation = _.repeat('\t', indentCount);
-					break;
-			}
+	} else if (indentStyle !== IndentStyle.ignore && tabWidth) {
+		var indentCount = identifyIndentation(tabWidth, line);
+		switch (indentStyle) {
+			case IndentStyle.space:
+				fixedIndentation = _.repeat(' ', indentCount * tabWidth);
+				break;
+			case IndentStyle.tab:
+				fixedIndentation = _.repeat('\t', indentCount);
+				break;
 		}
 	}
 
@@ -142,9 +140,8 @@ function infer(document: doc.Document): string {
 			return;
 		} else if (line.prefix[0] === '\t') {
 			tabCount++;
-		} else if (!line.isBlockComment) {
+		} else if (!line.isBlockComment || line.prefix.length > line.padSize) {
 			spaceCount++;
-
 		}
 	});
 	if (!spaceCount && !tabCount) {

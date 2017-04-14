@@ -2,7 +2,7 @@ import * as doc from '../doc';
 import eclint = require('../eclint');
 import EditorConfigError =  require('../editor-config-error');
 
-var RE_LEADING_SPACES = /^ +$/;
+var RE_LEADING_SPACES = /^ *$/;
 
 function getNumber(num: string | number, fallback?: Function) {
 	num = +num;
@@ -22,7 +22,7 @@ function resolve(settings: eclint.Settings): number {
 }
 
 function checkLine(line: doc.Line, indentSize: number): EditorConfigError {
-	if (!RE_LEADING_SPACES.test(line.prefix)) {
+	if (!line.prefix || !RE_LEADING_SPACES.test(line.prefix)) {
 		return;
 	}
 	var leadingSpacesLength = line.prefix.length;
@@ -68,25 +68,26 @@ function fix(_settings: eclint.Settings, document: doc.Document) {
 
 function infer(document: doc.Document): number {
 	var scores = {};
-	var lastLindentSize = 0;
+	var lastIndentSize = 0;
 	var lastLeadingSpacesLength = 0;
 
 	function vote(leadingSpacesLength: number) {
-		lastLindentSize = Math.abs(leadingSpacesLength - lastLeadingSpacesLength) || lastLindentSize;
+		if (leadingSpacesLength) {
+			lastIndentSize = Math.abs(leadingSpacesLength - lastLeadingSpacesLength) || lastIndentSize;
+			if (lastIndentSize > 1) {
+				scores[lastIndentSize] = scores[lastIndentSize] || 0;
+				scores[lastIndentSize]++;
+			}
+		} else {
+			lastIndentSize = 0;
+		}
 		lastLeadingSpacesLength = leadingSpacesLength;
-		scores[lastLindentSize] = scores[lastLindentSize] || 0;
-		scores[lastLindentSize]++;
 	}
 
 	document.lines.forEach(line => {
-		if (line.isBlockComment || !RE_LEADING_SPACES.test(line.prefix)) {
-			return;
+		if (!line.isBlockComment && RE_LEADING_SPACES.test(line.prefix)) {
+			vote(line.prefix.length);
 		}
-		var leadingSpacesLength = line.prefix.length;
-		if (line.padSize) {
-			leadingSpacesLength -= line.padSize;
-		}
-		vote(leadingSpacesLength);
 	});
 
 	var bestScore = 0;
