@@ -235,12 +235,31 @@ describe('indent_style rule', () => {
 	describe('infer command', () => {
 
 		it('infers space indent style', () => {
-			var indentStyle = rule.infer(doc.create('  foo'));
+			var indentStyle = rule.infer(doc.create([
+				'\tfoo',
+				'\tbar',
+				'  /*',
+				'   *',
+				'   */',
+			].join('\n'), {
+				block_comment_start: '/*',
+				block_comment: '*',
+				block_comment_end: '*/',
+			}));
 			expect(indentStyle).to.eq('space');
 		});
 
 		it('infers tab indent style', () => {
-			var indentStyle = rule.infer(doc.create('\tfoo'));
+			var indentStyle = rule.infer(doc.create([
+				'\tfoo',
+				'/*',
+				' *',
+				' */',
+			].join('\n'), {
+				block_comment_start: '/*',
+				block_comment: '*',
+				block_comment_end: '*/',
+			}));
 			expect(indentStyle).to.eq('tab');
 		});
 

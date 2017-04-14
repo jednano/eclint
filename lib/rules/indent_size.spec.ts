@@ -112,7 +112,7 @@ describe('indent_size rule', () => {
 
 	describe('infer command', () => {
 
-		_.range(0, 9).forEach(n => {
+		_.range(2, 9).forEach(n => {
 			it('infers ' + n + '-space setting', () => {
 				expect(rule.infer(doc.create(_.repeat(' ', n) + 'foo'))).to.eq(n);
 			});
@@ -126,7 +126,7 @@ describe('indent_size rule', () => {
 				'     * bar',
 				'     */',
 				'  bar',
-				'    bar',
+				'   bar',
 				'  foo',
 				'foo',
 				'    foo',
