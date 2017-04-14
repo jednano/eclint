@@ -93,15 +93,15 @@ module eclint {
 	}
 
 	export interface LineRule extends Rule {
-		check(settings: Settings, line: doc.Line|linez.Line): EditorConfigError;
-		fix(settings: Settings, line: doc.Line|linez.Line): doc.Line|linez.Line;
-		infer(line: doc.Line|linez.Line): any;
+		check(settings: Settings, line: doc.Line): EditorConfigError;
+		fix(settings: Settings, line: doc.Line): doc.Line;
+		infer(line: doc.Line): any;
 	}
 
 	export interface DocumentRule extends Rule {
-		check(settings: Settings, doc: doc.Document|linez.Document): EditorConfigError[];
-		fix(settings: Settings, doc: doc.Document|linez.Document): doc.Document|linez.Document;
-		infer(doc: doc.Document|linez.Document): any;
+		check(settings: Settings, doc: doc.Document): EditorConfigError[];
+		fix(settings: Settings, doc: doc.Document): doc.Document;
+		infer(doc: doc.Document): any;
 	}
 
 	export interface CommandOptions {

@@ -1,6 +1,6 @@
 import common = require('../test-common');
 import rule = require('./charset');
-import * as linez from 'linez';
+import * as doc from '../doc';
 
 var expect = common.expect;
 
@@ -9,7 +9,7 @@ describe('charset rule', () => {
 	describe('check command', () => {
 
 		it('reports out of range characters for latin1 setting',() => {
-			var errors = rule.check({ charset: 'latin1' }, linez('foo\u0080bar'));
+			var errors = rule.check({ charset: 'latin1' }, doc.create('foo\u0080bar'));
 			expect(errors).to.have.lengthOf(1);
 			expect(errors[0].rule).to.equal('charset');
 			expect(errors[0].message).to.equal('character out of latin1 range: "\u0080"');
@@ -18,13 +18,13 @@ describe('charset rule', () => {
 		});
 
 		it('remains silent on in-range characters for latin1 setting', () => {
-			var errors = rule.check({ charset: 'latin1' }, linez('foo\u007Fbar'));
+			var errors = rule.check({ charset: 'latin1' }, doc.create('foo\u007Fbar'));
 			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('reports invalid charsets', () => {
-			var doc = linez(new Buffer([0xef, 0xbb, 0xbf]));
-			var errors = rule.check({ charset: 'utf-8' }, doc);
+			var document = doc.create(new Buffer([0xef, 0xbb, 0xbf]));
+			var errors = rule.check({ charset: 'utf-8' }, document);
 			expect(errors).to.have.lengthOf(1);
 			expect(errors[0].rule).to.equal('charset');
 			expect(errors[0].message).to.equal('invalid charset: utf-8-bom, expected: utf-8');
@@ -33,38 +33,38 @@ describe('charset rule', () => {
 		});
 
 		it('validates utf-8-bom setting', () => {
-			var doc = linez(new Buffer([0xef, 0xbb, 0xbf]));
-			var errors = rule.check({ charset: 'utf-8-bom' }, doc);
+			var document = doc.create(new Buffer([0xef, 0xbb, 0xbf]));
+			var errors = rule.check({ charset: 'utf-8-bom' }, document);
 			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('validates utf-16le setting', () => {
-			var doc = linez(new Buffer([0xff, 0xfe]));
-			var errors = rule.check({ charset: 'utf-16le' }, doc);
+			var document = doc.create(new Buffer([0xff, 0xfe]));
+			var errors = rule.check({ charset: 'utf-16le' }, document);
 			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('validates utf-16be setting', () => {
-			var doc = linez(new Buffer([0xfe, 0xff]));
-			var errors = rule.check({ charset: 'utf-16be' }, doc);
+			var document = doc.create(new Buffer([0xfe, 0xff]));
+			var errors = rule.check({ charset: 'utf-16be' }, document);
 			expect(errors).to.have.lengthOf(0);
 		});
 
 		it.skip('validates utf-32le setting', () => {
-			var doc = linez(new Buffer([0xff, 0xfe, 0x00, 0x00]));
-			var errors = rule.check({ charset: 'utf-32le' }, doc);
+			var document = doc.create(new Buffer([0xff, 0xfe, 0x00, 0x00]));
+			var errors = rule.check({ charset: 'utf-32le' }, document);
 			expect(errors).to.have.lengthOf(0);
 		});
 
 		it.skip('validates utf-32be setting', () => {
-			var doc = linez(new Buffer([0x00, 0x00, 0xfe, 0xff]));
-			var errors = rule.check({ charset: 'utf-32be' }, doc);
+			var document = doc.create(new Buffer([0x00, 0x00, 0xfe, 0xff]));
+			var errors = rule.check({ charset: 'utf-32be' }, document);
 			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('reports an expected/missing charset', () => {
-			var doc = linez(new Buffer('foo', 'utf8'));
-			var errors = rule.check({ charset: 'utf-8-bom' }, doc);
+			var document = doc.create(new Buffer('foo', 'utf8'));
+			var errors = rule.check({ charset: 'utf-8-bom' }, document);
 			expect(errors).to.have.lengthOf(1);
 			expect(errors[0].rule).to.equal('charset');
 			expect(errors[0].message).to.equal('expected charset: utf-8-bom');
@@ -73,7 +73,7 @@ describe('charset rule', () => {
 		});
 
 		it('remains silent when an unsupported charset is set', () => {
-			var errors = rule.check({ charset: 'foo' }, linez(''));
+			var errors = rule.check({ charset: 'foo' }, doc.create(''));
 			expect(errors).to.have.lengthOf(0);
 		});
 
@@ -82,13 +82,13 @@ describe('charset rule', () => {
 	describe('fix command', () => {
 
 		it('converts utf-8-bom to utf-16be when utf-16be is setting',() => {
-			var doc = linez(Buffer.concat([
+			var document = doc.create(Buffer.concat([
 				new Buffer([0xef, 0xbb, 0xbf]),
 				new Buffer('foo', 'utf8')
 			]));
-			expect(doc.charset).to.equal('utf-8-bom');
-			doc = rule.fix({ charset: 'utf-16be' }, doc);
-			expect(doc.charset).to.equal('utf-16be');
+			expect(document.charset).to.equal('utf-8-bom');
+			document = rule.fix({ charset: 'utf-16be' }, document);
+			expect(document.charset).to.equal('utf-16be');
 		});
 
 	});
@@ -96,8 +96,8 @@ describe('charset rule', () => {
 	describe('infer command', () => {
 
 		it('infers utf-16be setting',() => {
-			var doc = linez(new Buffer([0xfe, 0xff]));
-			var inferred = rule.infer(doc);
+			var document = doc.create(new Buffer([0xfe, 0xff]));
+			var inferred = rule.infer(document);
 			expect(inferred).to.equal('utf-16be');
 		});
 
