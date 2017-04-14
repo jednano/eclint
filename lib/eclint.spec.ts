@@ -73,6 +73,44 @@ describe('eclint gulp plugin', () => {
 			});
 		});
 
+		it('fix block comment', (done) => {
+			var stream = eclint.fix();
+
+			stream.on('data', (file) => {
+				expect(file.contents.toString()).to.be.equal([
+					'\t/**',
+					'\t * indent 1',
+					'\t */',
+					'/*',
+					' * indent 0',
+					' */',
+					'\t/**',
+					'\t * indent 1',
+					'\t */',
+					''
+				].join('\n'));
+				done();
+			});
+
+			stream.on('error', done);
+
+			stream.write(new File({
+				path: path.join(__dirname, 'testcase.js'),
+				contents: new Buffer([
+					'  /**',
+					'    * indent 1',
+					'  */',
+					'/*',
+					' * indent 0',
+					' */',
+					'  /**',
+					'  * indent 1',
+					'  */',
+					''
+				].join('\n'))
+			}));
+		});
+
 	});
 
 	describe('check file', () => {
@@ -128,6 +166,40 @@ describe('eclint gulp plugin', () => {
 			stream.write(new File({
 				path: path.join(__dirname, 'testcase.js'),
 				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a])
+			}));
+		});
+
+		it('check block comment', (done) => {
+			var stream = eclint.check();
+
+			stream.on('data', (file) => {
+				expect(file.editorconfig.errors).to.have.lengthOf(2);
+				expect(file.editorconfig.errors[0].lineNumber).to.equal(1);
+				expect(file.editorconfig.errors[0].columnNumber).to.equal(1);
+				expect(file.editorconfig.errors[0].rule).to.equal('indent_style');
+
+				expect(file.editorconfig.errors[1].lineNumber).to.equal(7);
+				expect(file.editorconfig.errors[1].columnNumber).to.equal(1);
+				expect(file.editorconfig.errors[1].rule).to.equal('indent_style');
+				done();
+			});
+
+			stream.on('error', done);
+
+			stream.write(new File({
+				path: path.join(__dirname, 'testcase.js'),
+				contents: new Buffer([
+					'  /**',
+					'    * indent 1',
+					'  */',
+					'/*',
+					' * indent 0',
+					' */',
+					'  /**',
+					'  * indent 1',
+					'  */',
+					''
+				].join('\n'))
 			}));
 		});
 
@@ -240,38 +312,6 @@ describe('eclint gulp plugin', () => {
 			stream.write(new File({
 				path: path.join(__dirname, 'testcase.js'),
 				contents: new Buffer('testcase\n')
-			}));
-		});
-
-		it('check documentation comments', (done) => {
-			var stream = eclint.check({
-				settings: {
-					indent_style: 'space',
-					indent_size: '2'
-				}
-			});
-
-			stream.on('data', (file) => {
-				console.log(file.editorconfig.errors);
-				done();
-			});
-
-			stream.on('error', done);
-
-			stream.write(new File({
-				path: path.join(__dirname, 'testcase.js'),
-				contents: new Buffer([
-					'  /**',
-					'   * indent 1',
-					'   */',
-					'/**',
-					' * indent 0',
-					' */',
-					'  /**',
-					'  * indent 1',
-					'  */',
-					''
-				].join('\n'))
 			}));
 		});
 

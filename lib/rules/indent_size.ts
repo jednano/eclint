@@ -5,11 +5,7 @@ import EditorConfigError =  require('../editor-config-error');
 var RE_LEADING_SPACES = /^ +$/;
 
 function getNumber(num: string | number, fallback?: Function) {
-	if (typeof num === 'number') {
-		return num;
-	}
-
-	num = parseInt(num, undefined);
+	num = +num;
 
 	if (isNaN(num)) {
 		return fallback && fallback();
@@ -25,7 +21,7 @@ function resolve(settings: eclint.Settings): number {
 	return getNumber(result, getNumber.bind(this, settings.tab_width));
 }
 
-function checkSpaces(line: doc.Line, indentSize: number): EditorConfigError {
+function checkLine(line: doc.Line, indentSize: number): EditorConfigError {
 	if (!RE_LEADING_SPACES.test(line.prefix)) {
 		return;
 	}
@@ -60,7 +56,7 @@ function check(settings: eclint.Settings, document: doc.Document): EditorConfigE
 	var indentSize = resolve(settings);
 	if (indentSize) {
 		return document.lines.map(line => {
-			return checkSpaces(line, indentSize);
+			return checkLine(line, indentSize);
 		}).filter(Boolean);
 	}
 	return [];
@@ -72,24 +68,18 @@ function fix(_settings: eclint.Settings, document: doc.Document) {
 
 function infer(document: doc.Document): number {
 	var scores = {};
-	var lastIndentSize;
-	var lastLineLeadingSpacesLength = 0;
+	var lastLindentSize = 0;
+	var lastLeadingSpacesLength = 0;
 
 	function vote(leadingSpacesLength: number) {
-		var indentSize = Math.abs(leadingSpacesLength - lastLineLeadingSpacesLength);
-		if (indentSize) {
-			lastIndentSize = indentSize;
-		} else if (lastIndentSize) {
-			indentSize = lastIndentSize;
-		} else {
-			return;
-		}
-		scores[indentSize] = scores[indentSize] || 0;
-		scores[indentSize]++;
+		lastLindentSize = Math.abs(leadingSpacesLength - lastLeadingSpacesLength) || lastLindentSize;
+		lastLeadingSpacesLength = leadingSpacesLength;
+		scores[lastLindentSize] = scores[lastLindentSize] || 0;
+		scores[lastLindentSize]++;
 	}
 
 	document.lines.forEach(line => {
-		if (!RE_LEADING_SPACES.test(line.prefix)) {
+		if (line.isBlockComment || !RE_LEADING_SPACES.test(line.prefix)) {
 			return;
 		}
 		var leadingSpacesLength = line.prefix.length;
@@ -97,18 +87,18 @@ function infer(document: doc.Document): number {
 			leadingSpacesLength -= line.padSize;
 		}
 		vote(leadingSpacesLength);
-		lastLineLeadingSpacesLength = leadingSpacesLength;
 	});
 
 	var bestScore = 0;
 	var result = 0;
-	Object.keys(scores).forEach(indentSize => {
+
+	for (var indentSize in scores) {
 		var score = scores[indentSize];
 		if (score > bestScore) {
 			bestScore = score;
 			result = +indentSize;
 		}
-	});
+	}
 
 	return result;
 }

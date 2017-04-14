@@ -1,11 +1,10 @@
-import _ = require('lodash');
 import * as doc from '../doc';
 
 import eclint = require('../eclint');
 import EditorConfigError =  require('../editor-config-error');
 
 function resolve(settings: eclint.Settings) {
-	return _.isNumber(settings.max_line_length) ? settings.max_line_length : void(0);
+	return settings.max_line_length > 0 ? settings.max_line_length : void(0);
 }
 
 function check(settings: eclint.Settings, line: doc.Line) {

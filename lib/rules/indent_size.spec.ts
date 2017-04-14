@@ -122,8 +122,6 @@ describe('indent_size rule', () => {
 			expect(rule.infer(doc.create([
 				'foo',
 				'bar',
-				'foo',
-				'bar',
 				'    /**',
 				'     * bar',
 				'     */',
@@ -132,6 +130,9 @@ describe('indent_size rule', () => {
 				'  foo',
 				'foo',
 				'    foo',
+				'bar',
+				'bar',
+				'bar',
 			].join('\n'), {
 				block_comment_start: '/**',
 				block_comment: '*',

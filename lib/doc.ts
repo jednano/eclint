@@ -1,17 +1,13 @@
 import * as linez from 'linez';
 import eclint = require('./eclint');
 
-function isBlockComment(line: Line, blockComment: string) {
-	if (blockComment) {
-		return line.string.slice(0, blockComment.length) === blockComment;
-	} else {
-		return line;
-	}
+function startWith(line: Line, startString: string): boolean {
+	return line.string.slice(0, startString.length) === startString;
 }
 
-function updateDoc(doc: Document, settings?: eclint.Settings) {
+function updateDoc(doc: Document, settings?: eclint.Settings): Document {
 	doc.lines = doc.lines.map((rawLine: linez.Line) => {
-		return new Line(rawLine);
+		return new Line(rawLine, doc);
 	});
 
 	if (!settings || !settings.block_comment_start || !settings.block_comment_end) {
@@ -21,23 +17,24 @@ function updateDoc(doc: Document, settings?: eclint.Settings) {
 	var padSize: number;
 	if (settings.block_comment) {
 		padSize = Math.max(0, settings.block_comment_start.indexOf(settings.block_comment));
+	} else {
+		padSize = 0;
 	}
 
 	var docCommentLines: null|Line[];
 	doc.lines.forEach((line: Line) => {
-		var string = line.string.trim();
-		if (settings.block_comment_start === string) {
+		if (startWith(line, settings.block_comment_start)) {
 			docCommentLines = [line];
-		} else if (settings.block_comment_end === string) {
+		} else if (startWith(line, settings.block_comment_end)) {
 			if (docCommentLines) {
 				var blockCommentStart = docCommentLines[0];
 				blockCommentStart.isBlockCommentStart = true;
 				line.isBlockCommentEnd = true;
 				docCommentLines.push(line);
 				docCommentLines.forEach(line => {
-					if (isBlockComment(line, settings.block_comment)) {
+					if (!settings.block_comment || startWith(line, settings.block_comment)) {
 						line.isBlockComment = true;
-						line.padSize = padSize || 0;
+						line.padSize = padSize;
 						line.blockCommentStart = blockCommentStart;
 					}
 				});
@@ -55,16 +52,20 @@ export class Line implements linez.Line {
 	isBlockComment?: boolean = false;
 	isBlockCommentEnd: boolean = false;
 	isBlockCommentStart: boolean = false;
-	blockCommentStart?: Line;
+	blockCommentStart?: Line = null;
+	doc: Document;
 	padSize: number = 0;
 	prefix: string;
 	string: string;
 	offset: number;
 	number: number;
 	ending: string;
-	constructor(line: linez.Line) {
+	constructor(line: linez.Line, doc?: Document) {
 		for (var prop in line) {
 			this[prop] = line[prop];
+		}
+		if (doc) {
+			this.doc = doc;
 		}
 	}
 	set text(text: string) {
