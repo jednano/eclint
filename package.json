@@ -62,7 +62,7 @@
   "dependencies": {
     "binaryextensions": "^2.0.0",
     "editorconfig": "^0.13.2",
-    "file-type": "^4.1.0",
+    "file-type": "^4.2.0",
     "gitlike-cli": "^0.1.0",
     "gulp-filter": "^5.0.0",
     "gulp-gitignore": "^0.1.0",
