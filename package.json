@@ -31,10 +31,10 @@
     "tslint": "tslint --project tsconfig.json"
   },
   "nyc": {
-    "lines": 96.78,
-    "statements": 96.8,
-    "functions": 97.75,
-    "branches": 93.36,
+    "lines": 97,
+    "statements": 97,
+    "functions": 98,
+    "branches": 96,
     "include": [
       "dist/**/*.js"
     ],

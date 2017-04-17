@@ -85,7 +85,7 @@ function infer(document: doc.Document): number {
 	}
 
 	document.lines.forEach(line => {
-		if (!line.isBlockComment && RE_LEADING_SPACES.test(line.prefix)) {
+		if (!line.isBlockComment && line.string && RE_LEADING_SPACES.test(line.prefix)) {
 			vote(line.prefix.length);
 		}
 	});

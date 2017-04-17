@@ -2,8 +2,6 @@ import common = require('../test-common');
 import rule = require('./insert_final_newline');
 import * as doc from '../doc';
 
-var = common;
-
 var expect = common.expect;
 
 describe('insert_final_newline rule', () => {
@@ -14,7 +12,7 @@ describe('insert_final_newline rule', () => {
 			var errors;
 			errors = rule.check({ insert_final_newline: true }, doc.create([
 				'foo',
-				'bar'
+				'bar',
 				''
 			].join('\n')));
 			expect(errors).to.be.have.lengthOf(0);
@@ -120,10 +118,12 @@ describe('insert_final_newline rule', () => {
 		});
 
 		it('adds a line to an empty file', () => {
+			var document = doc.create('');
+			document.lines = [];
 			var fixedDoc = rule.fix({
 				insert_final_newline: true,
 				end_of_line: 'lf'
-			}, doc.create(''));
+			}, document);
 			expect(fixedDoc.toString()).to.deep.equal('\n');
 		});
 

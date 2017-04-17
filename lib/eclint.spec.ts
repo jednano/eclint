@@ -205,6 +205,33 @@ describe('eclint gulp plugin', () => {
 
 	});
 
+	describe('infer file', () => {
+		it('README.md', (done) => {
+			var stream = eclint.infer();
+			stream.on('data', (file) => {
+				var config = JSON.parse(file.contents);
+				expect(config.indent_style).to.be.equal('tab');
+				expect(config.indent_size).to.be.equal(2);
+				expect(config.trim_trailing_whitespace).to.be.equal(true);
+				expect(config.end_of_line).to.be.equal('lf');
+				done();
+			});
+			vfs.src('README.md').pipe(stream);
+		});
+		it('package.json', (done) => {
+			var stream = eclint.infer();
+			stream.on('data', (file) => {
+				var config = JSON.parse(file.contents);
+				expect(config.indent_style).to.be.equal('space');
+				expect(config.indent_size).to.be.equal(2);
+				expect(config.trim_trailing_whitespace).to.be.equal(true);
+				expect(config.end_of_line).to.be.equal('lf');
+				done();
+			});
+			vfs.src('package.json').pipe(stream);
+		});
+	});
+
 	describe('charset rule', () => {
 
 		it('invalid charset: utf-8-bom, expected: utf-8', (done) => {
