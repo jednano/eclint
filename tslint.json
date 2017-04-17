@@ -3,7 +3,6 @@
     "class-name": true,
     "curly": true,
     "eofline": true,
-    "forin": true,
     "label-position": true,
     "max-line-length": [true, 120],
     "no-arg": true,

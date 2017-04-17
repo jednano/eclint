@@ -1,5 +1,5 @@
 import _ = require('lodash');
-import * as linez from 'linez';
+import * as doc from '../doc';
 import eclint = require('../eclint');
 import EditorConfigError =  require('../editor-config-error');
 
@@ -15,11 +15,11 @@ function resolve(settings: eclint.Settings) {
 	return settings.charset;
 }
 
-function check(settings: eclint.Settings, doc: linez.Document) {
+function check(settings: eclint.Settings, document: doc.Document) {
 	function creatErrorArray(message: any[]) {
 		var error = new EditorConfigError(message);
 		var source = '';
-		doc.lines.some(function(line) {
+		document.lines.some(function(line) {
 			if (/\S/.test(line.text)) {
 				source += line.text;
 				return true;
@@ -32,7 +32,7 @@ function check(settings: eclint.Settings, doc: linez.Document) {
 		error.rule = 'charset';
 		return [error];
 	}
-	var inferredSetting = infer(doc);
+	var inferredSetting = infer(document);
 	var configSetting = resolve(settings);
 	if (inferredSetting) {
 		if (inferredSetting !== settings.charset) {
@@ -41,7 +41,7 @@ function check(settings: eclint.Settings, doc: linez.Document) {
 		return [];
 	}
 	if (configSetting === 'latin1') {
-		var errors = doc.lines.map(checkLatin1TextRange);
+		var errors = document.lines.map(checkLatin1TextRange);
 		return [].concat.apply([], errors);
 	}
 	if (_.includes(Object.keys(boms), configSetting)) {
@@ -50,16 +50,16 @@ function check(settings: eclint.Settings, doc: linez.Document) {
 	return [];
 }
 
-function fix(settings: eclint.Settings, doc: linez.Document) {
-	doc.charset = resolve(settings);
-	return doc;
+function fix(settings: eclint.Settings, document: doc.Document) {
+	document.charset = resolve(settings);
+	return document;
 }
 
-function infer(doc: linez.Document): string {
-	return doc.charset;
+function infer(document: doc.Document): string {
+	return document.charset;
 }
 
-function checkLatin1TextRange(line: linez.Line) {
+function checkLatin1TextRange(line: doc.Line) {
 	return [].slice.call(line.text, 0).map(function(character: string, i: number) {
 		if (character.charCodeAt(0) >= 0x80) {
 			var error = new EditorConfigError(['character out of latin1 range: %s', JSON.stringify(character)]);

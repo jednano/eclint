@@ -5,9 +5,9 @@ const i18n = require('y18n')({
 }).__;
 
 class EditorConfigError extends Error {
-	fileName = '<anonymous>';
-	lineNumber = 1;
-	columnNumber = 1;
+	fileName? = '<anonymous>';
+	lineNumber? = 1;
+	columnNumber? = 1;
 	message = '';
 	rule = '';
 	source = '';
@@ -21,7 +21,7 @@ class EditorConfigError extends Error {
 	constructor(message: any[]) {
 		super();
 		this.message = i18n(...message);
-	};
+	}
 }
 
 export = EditorConfigError;

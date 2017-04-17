@@ -31,10 +31,10 @@
     "tslint": "tslint --project tsconfig.json"
   },
   "nyc": {
-    "lines": 96.78,
-    "statements": 96.8,
-    "functions": 97.75,
-    "branches": 93.36,
+    "lines": 97,
+    "statements": 97,
+    "functions": 98,
+    "branches": 96,
     "include": [
       "dist/**/*.js"
     ],
@@ -62,12 +62,12 @@
   "dependencies": {
     "binaryextensions": "^2.0.0",
     "editorconfig": "^0.13.2",
-    "file-type": "^4.1.0",
+    "file-type": "^4.2.0",
     "gitlike-cli": "^0.1.0",
     "gulp-filter": "^5.0.0",
     "gulp-gitignore": "^0.1.0",
     "gulp-reporter": "^1.8.0",
-    "gulp-tap": "^0.1.3",
+    "gulp-tap": "^0.4.2",
     "gulp-util": "^3.0.8",
     "linez": "^4.1.4",
     "lodash": "^4.17.4",
@@ -77,10 +77,10 @@
     "y18n": "^3.2.1"
   },
   "devDependencies": {
-    "@types/chai": "^3.4.35",
+    "@types/chai": "^3.5.0",
     "@types/mocha": "^2.2.40",
     "@types/node": "^7.0.8",
-    "@types/sinon": "^1.16.36",
+    "@types/sinon": "^2.1.2",
     "@types/sinon-chai": "^2.7.27",
     "@types/vinyl": "^2.0.0",
     "@types/vinyl-fs": "^2.4.4",
@@ -92,7 +92,7 @@
     "sinon": "^2.1.0",
     "sinon-chai": "^2.9.0",
     "ts-node": "^3.0.2",
-    "tslint": "^4.5.1",
+    "tslint": "^5.1.0",
     "typescript": "^2.2.1"
   },
   "directories": {

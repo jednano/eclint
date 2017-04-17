@@ -11,6 +11,8 @@ describe('max_line_length rule', () => {
 		it('validates max_line_length setting',() => {
 			var fooLine = createLine('foo', { number: 1 });
 			var error;
+			error = rule.check({}, fooLine);
+			expect(error).to.be.undefined;
 			error = rule.check({ max_line_length: 3 }, fooLine);
 			expect(error).to.be.undefined;
 			error = rule.check({ max_line_length: 2 }, fooLine);

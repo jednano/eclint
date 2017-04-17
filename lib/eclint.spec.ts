@@ -73,6 +73,44 @@ describe('eclint gulp plugin', () => {
 			});
 		});
 
+		it('fix block comment', (done) => {
+			var stream = eclint.fix();
+
+			stream.on('data', (file) => {
+				expect(file.contents.toString()).to.be.equal([
+					'\t/**',
+					'\t * indent 1',
+					'\t */',
+					'/*',
+					' * indent 0',
+					' */',
+					'\t/**',
+					'\t * indent 1',
+					'\t */',
+					''
+				].join('\n'));
+				done();
+			});
+
+			stream.on('error', done);
+
+			stream.write(new File({
+				path: path.join(__dirname, 'testcase.js'),
+				contents: new Buffer([
+					'  /**',
+					'    * indent 1',
+					'  */',
+					'/*',
+					' * indent 0',
+					' */',
+					'  /**',
+					'  * indent 1',
+					'  */',
+					''
+				].join('\n'))
+			}));
+		});
+
 	});
 
 	describe('check file', () => {
@@ -131,6 +169,67 @@ describe('eclint gulp plugin', () => {
 			}));
 		});
 
+		it('check block comment', (done) => {
+			var stream = eclint.check();
+
+			stream.on('data', (file) => {
+				expect(file.editorconfig.errors).to.have.lengthOf(2);
+				expect(file.editorconfig.errors[0].lineNumber).to.equal(1);
+				expect(file.editorconfig.errors[0].columnNumber).to.equal(1);
+				expect(file.editorconfig.errors[0].rule).to.equal('indent_style');
+
+				expect(file.editorconfig.errors[1].lineNumber).to.equal(7);
+				expect(file.editorconfig.errors[1].columnNumber).to.equal(1);
+				expect(file.editorconfig.errors[1].rule).to.equal('indent_style');
+				done();
+			});
+
+			stream.on('error', done);
+
+			stream.write(new File({
+				path: path.join(__dirname, 'testcase.js'),
+				contents: new Buffer([
+					'  /**',
+					'    * indent 1',
+					'  */',
+					'/*',
+					' * indent 0',
+					' */',
+					'  /**',
+					'  * indent 1',
+					'  */',
+					''
+				].join('\n'))
+			}));
+		});
+
+	});
+
+	describe('infer file', () => {
+		it('README.md', (done) => {
+			var stream = eclint.infer();
+			stream.on('data', (file) => {
+				var config = JSON.parse(file.contents);
+				expect(config.indent_style).to.be.equal('tab');
+				expect(config.indent_size).to.be.equal(2);
+				expect(config.trim_trailing_whitespace).to.be.equal(true);
+				expect(config.end_of_line).to.be.equal('lf');
+				done();
+			});
+			vfs.src('README.md').pipe(stream);
+		});
+		it('package.json', (done) => {
+			var stream = eclint.infer();
+			stream.on('data', (file) => {
+				var config = JSON.parse(file.contents);
+				expect(config.indent_style).to.be.equal('space');
+				expect(config.indent_size).to.be.equal(2);
+				expect(config.trim_trailing_whitespace).to.be.equal(true);
+				expect(config.end_of_line).to.be.equal('lf');
+				done();
+			});
+			vfs.src('package.json').pipe(stream);
+		});
 	});
 
 	describe('charset rule', () => {

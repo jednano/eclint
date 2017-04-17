@@ -1,9 +1,6 @@
-import * as linez from 'linez';
 import common = require('../test-common');
 import rule = require('./insert_final_newline');
-
-var createLine = common.createLine;
-var Doc = linez.Document;
+import * as doc from '../doc';
 
 var expect = common.expect;
 
@@ -13,15 +10,16 @@ describe('insert_final_newline rule', () => {
 
 		it('reports expected final newline character', () => {
 			var errors;
-			errors = rule.check({ insert_final_newline: true }, new Doc([
-				createLine('foo', { ending: '\n' }),
-				createLine('bar', { ending: '\n' })
-			]));
+			errors = rule.check({ insert_final_newline: true }, doc.create([
+				'foo',
+				'bar',
+				''
+			].join('\n')));
 			expect(errors).to.be.have.lengthOf(0);
-			errors = rule.check({ insert_final_newline: true }, new Doc([
-				createLine('foo', { ending: '\n' }),
-				createLine('bar')
-			]));
+			errors = rule.check({ insert_final_newline: true }, doc.create([
+				'foo',
+				'bar'
+			].join('\n')));
 			expect(errors).to.be.have.lengthOf(1);
 			expect(errors[0].rule).to.equal('insert_final_newline');
 			expect(errors[0].message).to.be.equal('expected final newline');
@@ -31,15 +29,16 @@ describe('insert_final_newline rule', () => {
 
 		it('reports unexpected final newline character', () => {
 			var errors;
-			errors = rule.check({ insert_final_newline: false }, new Doc([
-				createLine('foo', { ending: '\n' }),
-				createLine('bar')
-			]));
+			errors = rule.check({ insert_final_newline: false }, doc.create([
+				'foo',
+				'bar'
+			].join('\n')));
 			expect(errors).to.be.have.lengthOf(0);
-			errors = rule.check({ insert_final_newline: false }, new Doc([
-				createLine('foo', { ending: '\n' }),
-				createLine('bar', { ending: '\n' })
-			]));
+			errors = rule.check({ insert_final_newline: false }, doc.create([
+				'foo',
+				'bar',
+				''
+			].join('\n')));
 			expect(errors).to.be.have.lengthOf(1);
 			expect(errors[0].rule).to.equal('insert_final_newline');
 			expect(errors[0].message).to.be.equal('unexpected final newline');
@@ -49,15 +48,16 @@ describe('insert_final_newline rule', () => {
 
 		it('remains silent when setting is undefined', () => {
 			var errors;
-			errors = rule.check({}, new Doc([
-				createLine('foo', { ending: '\n' }),
-				createLine('bar')
-			]));
+			errors = rule.check({}, doc.create([
+				'foo',
+				'bar'
+			].join('\n')));
 			expect(errors).to.be.have.lengthOf(0);
-			errors = rule.check({}, new Doc([
-				createLine('foo', { ending: '\n' }),
-				createLine('bar', { ending: '\n' })
-			]));
+			errors = rule.check({}, doc.create([
+				'foo',
+				'bar',
+				''
+			].join('\n')));
 			expect(errors).to.be.have.lengthOf(0);
 		});
 
@@ -66,66 +66,65 @@ describe('insert_final_newline rule', () => {
 	describe('fix command', () => {
 
 		it('inserts a final newline when setting is true', () => {
-			var doc = rule.fix(
+			var document = rule.fix(
 				{
 					insert_final_newline: true
 				},
-				new Doc([
-					createLine('foo')
-				])
+				doc.create('foo')
 			);
-			expect(doc.lines[0].ending).to.eq('\n');
+			expect(document.lines[0].ending).to.eq('\n');
 		});
 
 		it('removes all final newlines when setting is false', () => {
-			var doc = rule.fix(
+			var document = rule.fix(
 				{
 					insert_final_newline: false
 				},
-				new Doc([
-					createLine('foo', { ending: '\n' }),
-					createLine('', { ending: '\n' }),
-					createLine('', { ending: '\n' }),
-					createLine('', { ending: '\n' })
-				])
+				doc.create([
+					'foo',
+					'',
+					'',
+					'',
+					'',
+				].join('\n'))
 			);
-			expect(doc.lines.length).to.eq(1);
-			expect(doc.lines[0].ending).to.be.empty;
+			expect(document.lines.length).to.eq(1);
+			expect(document.lines[0].ending).to.be.empty;
 		});
 
 		it('does nothing when setting is undefined', () => {
 			[
-				new Doc([
-					createLine('foo')
-				]),
-				new Doc([
-					createLine('foo', { ending: '\n' }),
-					createLine('', { ending: '\n' }),
-					createLine('', { ending: '\n' }),
-					createLine('', { ending: '\n' })
-				])
-			].forEach(doc => {
-				var fixedDoc = rule.fix({}, doc);
-				expect(fixedDoc).to.deep.equal(doc);
+				doc.create('foo'),
+				doc.create([
+					'foo',
+					'',
+					'',
+					'',
+					'',
+				].join('\n'))
+			].forEach(document => {
+				var fixedDoc = rule.fix({}, document);
+				expect(fixedDoc).to.deep.equal(document);
 			});
 		});
 
 		it('does nothing when line already exists',() => {
 			var lines = [
-				createLine('foo', { ending: '\n' })
-			];
-			var fixedDoc = rule.fix({ insert_final_newline: true }, new Doc(lines));
-			expect(fixedDoc.lines).to.deep.equal(lines);
+				'foo',
+				''
+			].join('\n');
+			var fixedDoc = rule.fix({ insert_final_newline: true }, doc.create(lines));
+			expect(fixedDoc.toString()).to.deep.equal(lines);
 		});
 
 		it('adds a line to an empty file', () => {
+			var document = doc.create('');
+			document.lines = [];
 			var fixedDoc = rule.fix({
 				insert_final_newline: true,
 				end_of_line: 'lf'
-			}, new Doc());
-			expect(fixedDoc.lines).to.deep.equal([
-				createLine('', { number: 1, ending: '\n' })
-			]);
+			}, document);
+			expect(fixedDoc.toString()).to.deep.equal('\n');
 		});
 
 	});
@@ -133,24 +132,23 @@ describe('insert_final_newline rule', () => {
 	describe('infer command',() => {
 
 		it('infers insert_final_newline = true',() => {
-			var insertFinalNewline = rule.infer(new Doc([
-				createLine('foo', { ending: '\n' }),
-				createLine('bar', { ending: '\n' })
-			]));
+			var insertFinalNewline = rule.infer(doc.create([
+				'foo',
+				'bar',
+				'',
+			].join('\n')));
 			expect(insertFinalNewline).to.be.true;
-			insertFinalNewline = rule.infer(new Doc([
-				createLine('', { ending: '\n' })
-			]));
+			insertFinalNewline = rule.infer(doc.create('\n'));
 			expect(insertFinalNewline).to.be.true;
 		});
 
 		it('infers insert_final_newline = false',() => {
-			var insertFinalNewline = rule.infer(new Doc([
-				createLine('foo', { ending: '\n' }),
-				createLine('bar')
-			]));
+			var insertFinalNewline = rule.infer(doc.create([
+				'foo',
+				'bar',
+			].join('\n')));
 			expect(insertFinalNewline).to.be.false;
-			insertFinalNewline = rule.infer(new Doc());
+			insertFinalNewline = rule.infer(doc.create(''));
 			expect(insertFinalNewline).to.be.false;
 		});
 

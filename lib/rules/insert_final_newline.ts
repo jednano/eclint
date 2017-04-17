@@ -1,5 +1,5 @@
 var _ = require('lodash');
-import * as linez from 'linez';
+import * as doc from '../doc';
 
 import eclint = require('../eclint');
 import EditorConfigError =  require('../editor-config-error');
@@ -17,9 +17,9 @@ function resolve(settings: eclint.Settings) {
 	return void(0);
 }
 
-function check(settings: eclint.Settings, doc: linez.Document) {
+function check(settings: eclint.Settings, document: doc.Document) {
 	var configSetting = resolve(settings);
-	var inferredSetting = infer(doc);
+	var inferredSetting = infer(document);
 	if (configSetting == null || inferredSetting === configSetting) {
 		return [];
 	}
@@ -31,48 +31,48 @@ function check(settings: eclint.Settings, doc: linez.Document) {
 	}
 
 	var error = new EditorConfigError([message]);
-	error.lineNumber = doc.lines.length;
-	var lastLine: linez.Line = doc.lines[doc.lines.length - 1];
+	error.lineNumber = document.lines.length;
+	var lastLine: doc.Line = document.lines[document.lines.length - 1];
 	error.columnNumber = lastLine.text.length + lastLine.ending.length;
 	error.rule = 'insert_final_newline';
 	error.source = lastLine.text + lastLine.ending;
 	return [error];
 }
 
-function fix(settings: eclint.Settings, doc: linez.Document) {
-	var lastLine: linez.Line;
+function fix(settings: eclint.Settings, document: doc.Document) {
+	var lastLine: doc.Line;
 	var configSetting = resolve(settings);
-	if (configSetting && !infer(doc)) {
-		lastLine = doc.lines[doc.lines.length - 1];
+	if (configSetting && !infer(document)) {
+		lastLine = document.lines[document.lines.length - 1];
 		var endOfLineSetting = settings.end_of_line || 'lf';
 		if (lastLine) {
 			lastLine.ending = newlines[endOfLineSetting];
 		} else {
-			doc.lines.push({
+			document.lines.push(new doc.Line({
 				number: 1,
 				text: '',
 				ending: newlines[endOfLineSetting],
 				offset: 0
-			});
+			}));
 		}
-		return doc;
+		return document;
 	}
 	if (!configSetting) {
-		while (infer(doc)) {
-			lastLine = doc.lines[doc.lines.length - 1];
+		while (infer(document)) {
+			lastLine = document.lines[document.lines.length - 1];
 			if (lastLine.text) {
 				lastLine.ending = '';
 				break;
 			}
-			doc.lines.pop();
+			document.lines.pop();
 		}
-		return doc;
+		return document;
 	}
-	return doc;
+	return document;
 }
 
-function infer(doc: linez.Document) {
-	var lastLine = doc.lines[doc.lines.length - 1];
+function infer(document: doc.Document) {
+	var lastLine = document.lines[document.lines.length - 1];
 	if (lastLine && lastLine.ending) {
 		return true;
 	}

@@ -1,4 +1,4 @@
-import * as linez from 'linez';
+import * as doc from '../doc';
 import eclint = require('../eclint');
 import EditorConfigError =  require('../editor-config-error');
 
@@ -24,7 +24,7 @@ function resolve(settings: eclint.Settings) {
 	}
 }
 
-function check(settings: eclint.Settings, line: linez.Line) {
+function check(settings: eclint.Settings, line: doc.Line) {
 	var configSetting = resolve(settings);
 	if (!configSetting) {
 		return;
@@ -47,7 +47,7 @@ function check(settings: eclint.Settings, line: linez.Line) {
 	}
 }
 
-function fix(settings: eclint.Settings, line: linez.Line) {
+function fix(settings: eclint.Settings, line: doc.Line) {
 	var configSetting = resolve(settings);
 	if (line.ending && configSetting) {
 		line.ending = newlines[configSetting];
@@ -55,7 +55,7 @@ function fix(settings: eclint.Settings, line: linez.Line) {
 	return line;
 }
 
-function infer(line: linez.Line): string {
+function infer(line: doc.Line): string {
 	return newlines[line.ending];
 }
 

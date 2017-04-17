@@ -6,6 +6,7 @@ import through = require('through2');
 var editorconfig = require('editorconfig');
 
 import * as linez from 'linez';
+import * as doc from './doc';
 import File = require('vinyl');
 import EditorConfigError =  require('./editor-config-error');
 
@@ -34,41 +35,45 @@ module eclint {
 
 	export interface Settings {
 		/**
-		* Set to latin1, utf-8, utf-8-bom, utf-16be or utf-16le to control the
-		* character set.
-		*/
+		 * Set to latin1, utf-8, utf-8-bom, utf-16be or utf-16le to control the
+		 * character set.
+		 */
 		charset?: string;
 		/**
-		* Set to tab or space to use hard tabs or soft tabs respectively.
-		*/
+		 * Set to tab or space to use hard tabs or soft tabs respectively.
+		 */
 		indent_style?: string;
 		/**
-		* The number of columns used for each indentation level and the width
-		* of soft tabs (when supported). When set to tab, the value of
-		* tab_width (if specified) will be used.
-		*/
+		 * The number of columns used for each indentation level and the width
+		 * of soft tabs (when supported). When set to tab, the value of
+		 * tab_width (if specified) will be used.
+		 */
 		indent_size?: number|string;
 		/**
-		* Number of columns used to represent a tab character. This defaults
-		* to the value of indent_size and doesn't usually need to be specified.
-		*/
+		 * Number of columns used to represent a tab character. This defaults
+		 * to the value of indent_size and doesn't usually need to be specified.
+		 */
 		tab_width?: number;
 		/**
-		* Removes any whitespace characters preceding newline characters.
-		*/
+		 * Removes any whitespace characters preceding newline characters.
+		 */
 		trim_trailing_whitespace?: boolean;
 		/**
-		* Set to lf, cr, or crlf to control how line breaks are represented.
-		*/
+		 * Set to lf, cr, or crlf to control how line breaks are represented.
+		 */
 		end_of_line?: string;
 		/**
-		* Ensures files ends with a newline.
-		*/
+		 * Ensures files ends with a newline.
+		 */
 		insert_final_newline?: boolean;
 		/**
-		* Enforces the maximum number of columns you can have in a line.
-		*/
+		 * Enforces the maximum number of columns you can have in a line.
+		 */
 		max_line_length?: number;
+		block_comment?: string;
+		line_comment?: string;
+		block_comment_start?: string;
+		block_comment_end?: string;
 	}
 
 	export interface EditorConfigLintFile extends File {
@@ -88,15 +93,15 @@ module eclint {
 	}
 
 	export interface LineRule extends Rule {
-		check(settings: Settings, line: linez.Line): EditorConfigError;
-		fix(settings: Settings, line: linez.Line): linez.Line;
-		infer(line: linez.Line): any;
+		check(settings: Settings, line: doc.Line): EditorConfigError;
+		fix(settings: Settings, line: doc.Line): doc.Line;
+		infer(line: doc.Line): any;
 	}
 
 	export interface DocumentRule extends Rule {
-		check(settings: Settings, doc: linez.Document): EditorConfigError[];
-		fix(settings: Settings, doc: linez.Document): linez.Document;
-		infer(doc: linez.Document): any;
+		check(settings: Settings, doc: doc.Document): EditorConfigError[];
+		fix(settings: Settings, doc: doc.Document): doc.Document;
+		infer(doc: doc.Document): any;
 	}
 
 	export interface CommandOptions {
@@ -127,11 +132,22 @@ module eclint {
 		'trim_trailing_whitespace',
 		'end_of_line',
 		'insert_final_newline',
-		'max_line_length'
+		'max_line_length',
+		`block_comment`,
+		'line_comment',
+		'block_comment_start',
+		'block_comment_end',
 	];
 
 	var rules: any = {};
-	_.without(ruleNames, 'tab_width').forEach(name => {
+	_.without(
+		ruleNames,
+		'tab_width',
+		`block_comment`,
+		'line_comment',
+		'block_comment_start',
+		'block_comment_end'
+	).forEach(name => {
 		rules[name] = require('./rules/' + name);
 	});
 
@@ -175,7 +191,7 @@ module eclint {
 					var errors: EditorConfigError[] = [];
 
 					var settings = getSettings(fileSettings, commandSettings);
-					var doc = linez(file.contents);
+					var document = doc.create(file.contents, settings);
 
 					function addError(error?: EditorConfigError) {
 						if (error) {
@@ -191,10 +207,10 @@ module eclint {
 						}
 						try {
 							if (rule.type === 'DocumentRule') {
-								(<DocumentRule>rule).check(settings, doc).forEach(addError);
+								(<DocumentRule>rule).check(settings, document).forEach(addError);
 							} else {
 								var check = (<LineRule>rule).check;
-								doc.lines.forEach(line => {
+								document.lines.forEach(line => {
 									addError(check(settings, line));
 								});
 							}
@@ -241,7 +257,7 @@ module eclint {
 				.then((fileSettings: Settings) => {
 
 					var settings = getSettings(fileSettings, commandSettings);
-					var doc = linez(file.contents);
+					var document = doc.create(file.contents, settings);
 
 					Object.keys(settings).forEach(setting => {
 						var rule: DocumentRule|LineRule = rules[setting];
@@ -250,10 +266,10 @@ module eclint {
 						}
 						try {
 							if (rule.type === 'DocumentRule') {
-								(<DocumentRule>rule).fix(settings, doc);
+								(<DocumentRule>rule).fix(settings, document);
 							} else {
 								var fix = (<LineRule>rule).fix;
-								doc.lines.forEach(line => {
+								document.lines.forEach(line => {
 									fix(settings, line);
 								});
 							}
@@ -262,7 +278,7 @@ module eclint {
 						}
 					});
 
-					file.contents = doc.toBuffer();
+					file.contents = document.toBuffer();
 
 					updateResult(file, {
 						fixed: true,
@@ -280,16 +296,16 @@ module eclint {
 
 	export interface InferOptions {
 		/**
-		* Shows the tallied score for each setting.
-		*/
+		 * Shows the tallied score for each setting.
+		 */
 		score?: boolean;
 		/**
-		* Exports file as ini file type.
-		*/
+		 * Exports file as ini file type.
+		 */
 		ini?: boolean;
 		/**
-		* Adds root = true to the top of your ini file, if any.
-		*/
+		 * Adds root = true to the top of your ini file, if any.
+		 */
 		root?: boolean;
 	}
 
@@ -334,7 +350,7 @@ module eclint {
 				setting[value]++;
 			}
 
-			var doc = linez(file.contents);
+			var document = doc.create(file.contents);
 			Object.keys(rules).forEach(key => {
 				if (key === 'max_line_length') {
 					settings.max_line_length = 0;
@@ -345,18 +361,18 @@ module eclint {
 				var rule: DocumentRule|LineRule = rules[key];
 				try {
 					if (rule.type === 'DocumentRule') {
-						incrementSetting(setting, (<DocumentRule>rule).infer(doc));
+						incrementSetting(setting, (<DocumentRule>rule).infer(document));
 					} else {
 						var infer = (<LineRule>rule).infer;
 						if (key === 'max_line_length') {
-							doc.lines.forEach(line => {
+							document.lines.forEach(line => {
 								var inferredSetting = infer(line);
 								if (inferredSetting > settings.max_line_length) {
 									settings.max_line_length = inferredSetting;
 								}
 							});
 						} else {
-							doc.lines.forEach(line => {
+							document.lines.forEach(line => {
 								incrementSetting(setting, infer(line));
 							});
 						}

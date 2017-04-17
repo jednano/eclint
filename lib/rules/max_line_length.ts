@@ -1,14 +1,13 @@
-import _ = require('lodash');
-import * as linez from 'linez';
+import * as doc from '../doc';
 
 import eclint = require('../eclint');
 import EditorConfigError =  require('../editor-config-error');
 
 function resolve(settings: eclint.Settings) {
-	return _.isNumber(settings.max_line_length) ? settings.max_line_length : void(0);
+	return settings.max_line_length > 0 ? settings.max_line_length : void(0);
 }
 
-function check(settings: eclint.Settings, line: linez.Line) {
+function check(settings: eclint.Settings, line: doc.Line) {
 	var inferredSetting = infer(line);
 	var configSetting = resolve(settings);
 	if (inferredSetting > settings.max_line_length) {
@@ -25,11 +24,11 @@ function check(settings: eclint.Settings, line: linez.Line) {
 	}
 }
 
-function fix(_settings: eclint.Settings, line: linez.Line) {
+function fix(_settings: eclint.Settings, line: doc.Line) {
 	return line; // noop
 }
 
-function infer(line: linez.Line) {
+function infer(line: doc.Line) {
 	return line.text.length;
 }
 
