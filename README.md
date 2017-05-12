@@ -449,6 +449,28 @@ Unsupported.
 
 Scans an entire document for line length and infers the greatest line length detected, rounded up to the nearest 10 (e.g., 72 becomes 80).
 
+### block_comment_start
+
+Defines the start of block comments
+
+### block_comment
+
+Defines the start of line in block comments
+
+### block_comment_end
+
+Defines the end of block comments
+
+## Support for doc comments
+
+When you use doc comments, eclint might report a error with your indentation style. At this Case, you need to defines the style of the doc comments you are using in `.editorconfig`:
+```
+[*]
+# C-style doc comments
+block_comment_start = /*
+block_comment = *
+block_comment_end = */
+```
 
 ## API
 

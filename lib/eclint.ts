@@ -71,7 +71,6 @@ module eclint {
 		 */
 		max_line_length?: number;
 		block_comment?: string;
-		line_comment?: string;
 		block_comment_start?: string;
 		block_comment_end?: string;
 	}
@@ -134,7 +133,6 @@ module eclint {
 		'insert_final_newline',
 		'max_line_length',
 		`block_comment`,
-		'line_comment',
 		'block_comment_start',
 		'block_comment_end',
 	];
@@ -144,7 +142,6 @@ module eclint {
 		ruleNames,
 		'tab_width',
 		`block_comment`,
-		'line_comment',
 		'block_comment_start',
 		'block_comment_end'
 	).forEach(name => {

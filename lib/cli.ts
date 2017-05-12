@@ -34,6 +34,9 @@ function addSettings(cmd): void {
 	cmd.option('-e, --end_of_line <newline>',    'Set to lf, cr, crlf');
 	cmd.option('-n, --insert_final_newline',     'Ensures files ends with a newline');
 	cmd.option('-m, --max_line_length <n>',      'Set to a whole number');
+	cmd.option('--block_comment_start <string>', 'Block comments start with');
+	cmd.option('--block_comment <string>',       'Lines in block comment start with');
+	cmd.option('--block_comment_end <string>',   'Block comments end with');
 }
 
 function excludeBinaryFile(file: File) {
