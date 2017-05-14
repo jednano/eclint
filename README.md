@@ -463,7 +463,7 @@ Defines the end of block comments
 
 ## Support for doc comments
 
-When you use doc comments, eclint might report a error with your indentation style. At this Case, you need to defines the style of the doc comments you are using in `.editorconfig`:
+When you use doc comments, eclint might report a error with your indentation style. At this case, you need to defines the style of the doc comments you are using in `.editorconfig`:
 ```
 [*]
 # C-style doc comments
