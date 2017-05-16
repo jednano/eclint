@@ -12,7 +12,6 @@ const pkg = require('../package');
 const reporter = require('gulp-reporter');
 const filter = require('gulp-filter');
 const fileType = require('file-type');
-const binaryexts = require('binaryextensions');
 
 cli.on('error', err => {
 	console.error('\n  ' + gutil.colors.red(err.toString()));
@@ -40,8 +39,7 @@ function addSettings(cmd): void {
 }
 
 function excludeBinaryFile(file: File) {
-	const type = file && file.isBuffer() && fileType(file.contents);
-	return !(type && type.ext && binaryexts.indexOf(type.ext) >= 1);
+	return !(file && file.isBuffer() && fileType(file.contents));
 }
 
 interface CheckOptions extends eclint.Settings {
