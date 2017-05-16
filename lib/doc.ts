@@ -67,8 +67,8 @@ export class Line implements linez.Line {
 		}
 	}
 	set text(text: string) {
-		var textArray = text.match(/^([\t ]*)(.*?)([\t ]*)$/);
-		if (textArray[2]) {
+		var textArray = /^([\t ]*)(.*?)([\t ]*)$/.exec(text);
+		if (textArray && textArray[2]) {
 			this.prefix = textArray[1];
 			this.string = textArray[2];
 			this.suffix = textArray[3];

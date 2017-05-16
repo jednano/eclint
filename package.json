@@ -60,7 +60,6 @@
   "author": "EditorConfig Team",
   "license": "MIT",
   "dependencies": {
-    "binaryextensions": "^2.0.0",
     "editorconfig": "^0.13.2",
     "file-type": "^4.3.0",
     "gitlike-cli": "^0.1.0",
