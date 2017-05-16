@@ -85,7 +85,7 @@
     "@types/vinyl-fs": "^2.4.5",
     "chai": "^3.5.0",
     "event-stream": "^3.3.4",
-    "mocha": "^3.3.0",
+    "mocha": "^3.4.1",
     "nyc": "^10.3.2",
     "rimraf": "^2.6.1",
     "sinon": "^2.2.0",
