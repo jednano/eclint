@@ -10,8 +10,6 @@
     "target": "es5"
   },
   "include": [
-    "node_modules/@types/node/index.d.ts",
-    "node_modules/@types/mocha/index.d.ts",
     "lib/**/*.ts"
   ]
 }
