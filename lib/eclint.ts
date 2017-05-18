@@ -9,6 +9,7 @@ import * as linez from 'linez';
 import * as doc from './doc';
 import File = require('vinyl');
 import EditorConfigError =  require('./editor-config-error');
+import stream = require('stream');
 
 var PluginError = gutil.PluginError;
 
@@ -167,7 +168,7 @@ module eclint {
 		reporter?: (file: EditorConfigLintFile, error: EditorConfigError) => void;
 	}
 
-	export function check(options?: CheckCommandOptions) {
+	export function check(options?: CheckCommandOptions): stream.Transform {
 
 		options = options || {};
 		var commandSettings = options.settings || {};
@@ -234,7 +235,7 @@ module eclint {
 		});
 	}
 
-	export function fix(options?: CommandOptions) {
+	export function fix(options?: CommandOptions): stream.Transform {
 
 		options = options || {};
 		var commandSettings = options.settings || {};
@@ -322,7 +323,7 @@ module eclint {
 		max_line_length?: number;
 	}
 
-	export function infer(options?: InferOptions) {
+	export function infer(options?: InferOptions): stream.Transform {
 		options = options || {};
 
 		if (options.score && options.ini) {

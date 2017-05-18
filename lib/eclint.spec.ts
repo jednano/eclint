@@ -76,7 +76,7 @@ describe('eclint gulp plugin', () => {
 		it('fix block comment', (done) => {
 			var stream = eclint.fix();
 
-			stream.on('data', (file) => {
+			stream.on('data', (file: File) => {
 				expect(file.contents.toString()).to.be.equal([
 					'\t/**',
 					'\t * indent 1',
@@ -172,7 +172,7 @@ describe('eclint gulp plugin', () => {
 		it('check block comment', (done) => {
 			var stream = eclint.check();
 
-			stream.on('data', (file) => {
+			stream.on('data', (file: File) => {
 				expect(file.editorconfig.errors).to.have.lengthOf(2);
 				expect(file.editorconfig.errors[0].lineNumber).to.equal(1);
 				expect(file.editorconfig.errors[0].columnNumber).to.equal(1);
@@ -208,8 +208,8 @@ describe('eclint gulp plugin', () => {
 	describe('infer file', () => {
 		it('README.md', (done) => {
 			var stream = eclint.infer();
-			stream.on('data', (file) => {
-				var config = JSON.parse(file.contents);
+			stream.on('data', (file: File) => {
+				var config = JSON.parse(String(file.contents));
 				expect(config.indent_style).to.be.equal('tab');
 				expect(config.indent_size).to.be.equal(2);
 				expect(config.trim_trailing_whitespace).to.be.equal(true);
@@ -220,8 +220,8 @@ describe('eclint gulp plugin', () => {
 		});
 		it('package.json', (done) => {
 			var stream = eclint.infer();
-			stream.on('data', (file) => {
-				var config = JSON.parse(file.contents);
+			stream.on('data', (file: File) => {
+				var config = JSON.parse(String(file.contents));
 				expect(config.indent_style).to.be.equal('space');
 				expect(config.indent_size).to.be.equal(2);
 				expect(config.trim_trailing_whitespace).to.be.equal(true);
@@ -295,7 +295,7 @@ describe('eclint gulp plugin', () => {
 		it('expects final newline', (done) => {
 			var stream = eclint.check();
 
-			stream.on('data', (file) => {
+			stream.on('data', (file: eclint.EditorConfigLintFile) => {
 				expect(file.editorconfig.errors).to.have.lengthOf(1);
 				var error = file.editorconfig.errors[0];
 				expect(error.lineNumber).to.equal(1);
@@ -322,7 +322,7 @@ describe('eclint gulp plugin', () => {
 				}
 			});
 
-			stream.on('data', (file) => {
+			stream.on('data', (file: eclint.EditorConfigLintFile) => {
 				expect(file.editorconfig.errors).to.have.lengthOf(1);
 				var error = file.editorconfig.errors[0];
 				expect(error.lineNumber).to.equal(1);
