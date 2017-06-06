@@ -501,27 +501,16 @@ The [check](#check), [fix](#fix) and [infer](#infer) API commands are all [Gulp]
 ```js
 var gulp = require('gulp');
 var eclint = require('eclint');
+var reporter = require('gulp-reporter');
 var path = require('path');
 
 gulp.task('check', function() {
-	var hasErrors = false;
-	var stream = gulp.src([
+	return gulp.src([
 			'*',
 			'lib/**/*.js'
 		])
-		.pipe(eclint.check({
-			reporter: function(file, message) {
-				hasErrors = true;
-				var relativePath = path.relative('.', file.path);
-				console.error(relativePath + ':', message);
-			}
-		}));
-	stream.on('finish', function() {
-		if (hasErrors) {
-			process.exit(1);
-		}
-	});
-	return stream;
+		.pipe(eclint.check())
+		.pipe(reporter());
 });
 
 gulp.task('fix', function() {
