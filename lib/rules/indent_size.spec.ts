@@ -94,6 +94,13 @@ describe('indent_size rule', () => {
 			errors = rule.check({ indent_size: 8 }, doc.create('        foo'));
 			expect(errors).to.have.lengthOf(0);
 		});
+		
+		it('remains silent when a line is ignored', () => {
+			rule.check(context, { indent_size: 4, ignore: /^ foo/ }, new Doc([
+				createLine(' foo')
+			]));
+			expect(reporter).to.not.have.been.called;
+		});
 
 	});
 
