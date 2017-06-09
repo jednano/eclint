@@ -154,7 +154,7 @@ function pickSettings(yargs: yargs.Argv): eclint.CommandOptions {
 }
 
 function check(yargs) {
-	handler(yargs)
+	return handler(yargs)
 		.pipe(eclint.check(pickSettings(yargs)))
 		.pipe(reporter({
 			console: console.error,
@@ -181,7 +181,7 @@ function fix(yargs) {
 }
 
 function infer(yargs) {
-	handler(yargs)
+	return handler(yargs)
 		.pipe(eclint.infer(yargs))
 		.pipe(tap(function (file) {
 			console.log(file.contents + '');
@@ -217,6 +217,9 @@ var cli = yargs
 	.demandCommand(1, 1, 'CommandError: Missing required sub-command.')
 	.help()
 	.version(pkg.version)
+	.locale({
+		directory: path.relative(__dirname, '../locales')
+	})
 	.argv;
 
 module.exports = cli;
