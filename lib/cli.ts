@@ -7,13 +7,21 @@ import yargs = require('yargs');
 import reporter = require('gulp-reporter');
 import filter = require('gulp-filter');
 import fileType = require('file-type');
+import path = require('path');
+import stream = require('stream');
+
 const pkg = require('../package.json');
 
-function excludeBinaryFile(file) {
+interface Argv extends yargs.Argv {
+	files: string[];
+	dest?: string;
+}
+
+function excludeBinaryFile(file: eclint.EditorConfigLintFile) {
 	return !(file && file.isBuffer() && fileType(file.contents));
 }
 
-function builder(yargs) {
+function builder(yargs: yargs.Argv): yargs.Argv {
 	return yargs.option('indent_style', {
 		alias: 'i',
 		describe: 'Indentation Style',
@@ -91,7 +99,7 @@ function builder(yargs) {
 		});
 }
 
-function inferBuilder(yargs) {
+function inferBuilder(yargs: yargs.Argv): yargs.Argv {
 	return yargs
 		.option('score', {
 			alias: 's',
@@ -110,7 +118,7 @@ function inferBuilder(yargs) {
 		});
 }
 
-function handler(yargs) {
+function handler(yargs: Argv): stream.Transform {
 	var files = yargs.files.length ? yargs.files : [
 		'**/*',
 		// # Repository
@@ -153,7 +161,7 @@ function pickSettings(yargs: yargs.Argv): eclint.CommandOptions {
 	};
 }
 
-function check(yargs) {
+function check(yargs: Argv) {
 	return handler(yargs)
 		.pipe(eclint.check(pickSettings(yargs)))
 		.pipe(reporter({
@@ -168,7 +176,7 @@ function check(yargs) {
 		});
 }
 
-function fix(yargs) {
+function fix(yargs: Argv) {
 	var stream = handler(yargs)
 		.pipe(eclint.fix(pickSettings(yargs)));
 
@@ -180,15 +188,15 @@ function fix(yargs) {
 	}));
 }
 
-function infer(yargs) {
+function infer(yargs: Argv) {
 	return handler(yargs)
-		.pipe(eclint.infer(yargs))
+		.pipe(eclint.infer(<eclint.InferOptions>yargs))
 		.pipe(tap(function (file) {
 			console.log(file.contents + '');
 		}));
 }
 
-var cli = yargs
+yargs
 	.usage('Usage: eclint.js [options] <command> [<files>...]')
 	.command({
 		command: 'check [<files>...]',
@@ -217,9 +225,5 @@ var cli = yargs
 	.demandCommand(1, 1, 'CommandError: Missing required sub-command.')
 	.help()
 	.version(pkg.version)
-	.locale({
-		directory: path.relative(__dirname, '../locales')
-	})
+	.locale(path.relative(__dirname, '../locales'))
 	.argv;
-
-module.exports = cli;

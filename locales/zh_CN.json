@@ -10,5 +10,6 @@
   "expected final newline": "文件结尾期望换行",
   "unexpected final newline": "文件结尾不许换行",
   "invalid line length: %s, exceeds: %s": "错误的行长度：%s，超出了：%s",
-  "trailing whitespace found": "行尾禁用空白"
+  "trailing whitespace found": "行尾禁用空白",
+  "CommandError: Missing required sub-command.": "CommandError: 缺少所需的子命令。"
 }
