@@ -27,13 +27,11 @@ function builder(yargs) {
 		.option('indent_size', {
 			alias: 's',
 			describe: 'Indentation Size (in single-spaced characters)',
-			default: undefined,
 			type: 'number'
 		})
 		.option('tab_width', {
 			alias: 't',
 			describe: 'Width of a single tabstop character',
-			default: undefined,
 			type: 'number'
 		})
 		.option('end_of_line', {
@@ -148,8 +146,8 @@ function handler(yargs) {
 	return stream;
 }
 
-function pickSettings (yargs: yargs.Argv): eclint.CommandOptions {
-	const settings = _.pickBy(_.pick(yargs, eclint.ruleNames))
+function pickSettings(yargs: yargs.Argv): eclint.CommandOptions {
+	const settings = _.pickBy(_.pick(yargs, eclint.ruleNames));
 	return {
 		settings: <eclint.Settings>settings
 	};
