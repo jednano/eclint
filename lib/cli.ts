@@ -1,159 +1,224 @@
 import _ = require('lodash');
-const tap = require('gulp-tap');
-import File = require('vinyl');
+import tap = require('gulp-tap');
 import vfs = require('vinyl-fs');
 import gitignore = require('gulp-gitignore');
-import gutil = require('gulp-util');
-
 import eclint = require('./eclint');
+import yargs = require('yargs');
+import reporter = require('gulp-reporter');
+import filter = require('gulp-filter');
+import fileType = require('file-type');
+const pkg = require('../package.json');
 
-const cli = require('gitlike-cli');
-const pkg = require('../package');
-const reporter = require('gulp-reporter');
-const filter = require('gulp-filter');
-const fileType = require('file-type');
-
-cli.on('error', err => {
-	console.error('\n  ' + gutil.colors.red(err.toString()));
-	err.command.outputUsage();
-	err.command.outputCommands();
-	err.command.outputOptions();
-	process.exit(1);
-});
-
-cli.version(pkg.version);
-cli.description(pkg.description);
-
-function addSettings(cmd): void {
-	cmd.option('-c, --charset <charset>',        'Set to latin1, utf-8, utf-8-bom (see docs)');
-	cmd.option('-i, --indent_style <style>',     'Set to tab or space');
-	cmd.option('-s, --indent_size <n>',          'Set to a whole number or tab');
-	cmd.option('-t, --tab_width <n>',            'Columns used to represent a tab character');
-	cmd.option('-w, --trim_trailing_whitespace', 'Trims any trailing whitespace');
-	cmd.option('-e, --end_of_line <newline>',    'Set to lf, cr, crlf');
-	cmd.option('-n, --insert_final_newline',     'Ensures files ends with a newline');
-	cmd.option('-m, --max_line_length <n>',      'Set to a whole number');
-	cmd.option('--block_comment_start <string>', 'Block comments start with');
-	cmd.option('--block_comment <string>',       'Lines in block comment start with');
-	cmd.option('--block_comment_end <string>',   'Block comments end with');
-}
-
-function excludeBinaryFile(file: File) {
+function excludeBinaryFile(file) {
 	return !(file && file.isBuffer() && fileType(file.contents));
 }
 
-interface CheckOptions extends eclint.Settings {
-	reporter?: (file: File, message: string) => void;
+function builder(yargs) {
+	return yargs.option('indent_style', {
+		alias: 'i',
+		describe: 'Indentation Style',
+		requiresArg: false,
+		choices: [
+			'tab',
+			'space',
+			undefined
+		]
+	})
+		.option('indent_size', {
+			alias: 's',
+			describe: 'Indentation Size (in single-spaced characters)',
+			default: undefined,
+			type: 'number'
+		})
+		.option('tab_width', {
+			alias: 't',
+			describe: 'Width of a single tabstop character',
+			default: undefined,
+			type: 'number'
+		})
+		.option('end_of_line', {
+			alias: 'e',
+			describe: 'Line ending file format (Unix, DOS, Mac)',
+			choices: [
+				'lf',
+				'crlf',
+				'cr',
+				undefined
+			]
+		})
+		.option('charset', {
+			alias: 'c',
+			describe: 'File character encoding',
+			choices: [
+				'latin1',
+				'utf-8',
+				'utf-8-bom',
+				'utf-16le',
+				'utf-16be',
+				undefined
+			]
+		})
+		.option('trim_trailing_whitespace', {
+			alias: 'w',
+			describe: 'Denotes whether whitespace is allowed at the end of lines',
+			default: undefined,
+			type: 'boolean'
+		})
+		.option('insert_final_newline', {
+			alias: 'n',
+			describe: 'Denotes whether file should end with a newline',
+			default: undefined,
+			type: 'boolean'
+		})
+		.option('max_line_length', {
+			alias: 'm',
+			describe: 'Set to a whole number',
+			default: undefined,
+			type: 'number'
+		})
+		.option('block_comment_start', {
+			describe: 'Block comments start with',
+			default: undefined,
+			type: 'string'
+		})
+		.option('block_comment', {
+			describe: 'Lines in block comment start with',
+			default: undefined,
+			type: 'string'
+		})
+		.option('block_comment_end', {
+			describe: 'Block comments end with',
+			default: undefined,
+			type: 'string'
+		});
 }
 
-function handleNegativeGlobs(files?: string[]): string[] {
-	if (!files) {
-		return [
-			'**/*',
+function inferBuilder(yargs) {
+	return yargs
+		.option('score', {
+			alias: 's',
+			describe: 'Shows the tallied score for each setting',
+			type: 'boolean'
+		})
+		.option('ini', {
+			alias: 'i',
+			describe: 'Exports file as ini file type',
+			type: 'boolean'
+		})
+		.option('root', {
+			alias: 'r',
+			describe: 'Adds root = true to your ini file, if any',
+			type: 'boolean'
+		});
+}
 
-			// # Repository
-			// Git
-			'!.git/**/*',
-			// Subversion
-			'!.svn/**/*',
-			// Mercurial
-			'!.hg/**/*',
-
-			// # Dependency directories
-			'!node_modules/**/*',
-			'!bower_components/**/*',
-
-			// # macOS
-			// Stores custom folder attributes
-			'!**/.DS_Store',
-			// Stores additional file resources
-			'!**/.AppleDouble',
-			// Contains the absolute path to the app to be used
-			'!**/.LSOverride',
-			// Resource fork
-			'!**/__MACOSX/**/*',
-
-			// # Windows
-			// Image file cache
-			'!**/Thumbs.db',
-			// Folder config file
-			'!**/ehthumbs.db',
-		];
+function handler(yargs) {
+	var files = yargs.files.length ? yargs.files : [
+		'**/*',
+		// # Repository
+		// Git
+		'!.git/**/*',
+		// Subversion
+		'!.svn/**/*',
+		// Mercurial
+		'!.hg/**/*',
+		// # Dependency directories
+		'!node_modules/**/*',
+		'!bower_components/**/*',
+		// # macOS
+		// Stores custom folder attributes
+		'!**/.DS_Store',
+		// Stores additional file resources
+		'!**/.AppleDouble',
+		// Contains the absolute path to the app to be used
+		'!**/.LSOverride',
+		// Resource fork
+		'!**/__MACOSX/**/*',
+		// # Windows
+		// Image file cache
+		'!**/Thumbs.db',
+		// Folder config file
+		'!**/ehthumbs.db',
+	];
+	var stream = vfs.src(files)
+		.pipe(filter(excludeBinaryFile));
+	if (!yargs.files.length) {
+		stream = stream.pipe(gitignore());
 	}
-	return files.filter(file => (
-		typeof file === 'string'
-	)).map(glob => (
-		glob.replace(/^\[!\]/, '!')
-	));
+	return stream;
 }
 
-const vfsOptions = {
-	base: process.cwd(),
-	dot: true,
-	stripBOM: false
-};
+function pickSettings (yargs: yargs.Argv): eclint.CommandOptions {
+	const settings = _.pickBy(_.pick(yargs, eclint.ruleNames))
+	return {
+		settings: <eclint.Settings>settings
+	};
+}
 
-const check = cli.command('check [<files>...]');
-check.description('Validate that file(s) adhere to .editorconfig settings');
-addSettings(check);
-check.action((args: any, options: CheckOptions) => {
-	const stream = vfs.src(handleNegativeGlobs(args.files), vfsOptions)
-		.pipe(filter(excludeBinaryFile))
-		.pipe(args.files ? gutil.noop() : gitignore())
-		.pipe(eclint.check({
-			settings: _.pickBy(_.pick(options, eclint.ruleNames)),
-		})).pipe(reporter({
+function check(yargs) {
+	handler(yargs)
+		.pipe(eclint.check(pickSettings(yargs)))
+		.pipe(reporter({
 			console: console.error,
 			filter: null,
 		}))
-		.on('error', (error) => {
+		.on('error', function (error) {
 			if (error.plugin !== 'gulp-reporter') {
 				console.error(error);
 			}
-			process.exit(1);
+			process.exitCode = 1;
 		});
-	(<any>stream).resume();
-});
-
-interface FixOptions extends eclint.Settings {
-	/**
-	 * Destination folder to pipe source files.
-	 */
-	dest?: string;
 }
 
-const fix = cli.command('fix [<files>...]');
-fix.description('Fix formatting errors that disobey .editorconfig settings');
-addSettings(fix);
-fix.option('-d, --dest <folder>', 'Destination folder to pipe source files');
-fix.action((args: any, options: FixOptions) => {
-	const stream = vfs.src(handleNegativeGlobs(args.files), vfsOptions)
-		.pipe(filter(excludeBinaryFile))
-		.pipe(args.files ? gutil.noop() : gitignore())
-		.pipe(eclint.fix({
-			settings: _.pickBy(_.pick(options, eclint.ruleNames))
-		}));
-	if (options.dest) {
-		return stream.pipe(vfs.dest(options.dest));
+function fix(yargs) {
+	var stream = handler(yargs)
+		.pipe(eclint.fix(pickSettings(yargs)));
+
+	if (yargs.dest) {
+		return stream.pipe(vfs.dest(yargs.dest));
 	}
-	return stream.pipe((<any>vfs.dest)((file: File) => {
+	return stream.pipe(vfs.dest(function (file) {
 		return file.base;
 	}));
-});
+}
 
-const infer = cli.command('infer [<files>...]');
-infer.description('Infer .editorconfig settings from one or more files');
-infer.option('-s, --score', 'Shows the tallied score for each setting');
-infer.option('-i, --ini',   'Exports file as ini file type');
-infer.option('-r, --root',  'Adds root = true to your ini file, if any');
-infer.action((args: any, options: eclint.InferOptions) => {
-	return vfs.src(handleNegativeGlobs(args.files), vfsOptions)
-		.pipe(filter(excludeBinaryFile))
-		.pipe(args.files ? gutil.noop() : gitignore())
-		.pipe(eclint.infer(options))
-		.pipe(tap((file: File) => {
+function infer(yargs) {
+	handler(yargs)
+		.pipe(eclint.infer(yargs))
+		.pipe(tap(function (file) {
 			console.log(file.contents + '');
 		}));
-});
+}
 
-export = cli;
+var cli = yargs
+	.usage('Usage: eclint.js [options] <command> [<files>...]')
+	.command({
+		command: 'check [<files>...]',
+		describe: 'Validate that file(s) adhere to .editorconfig settings',
+		builder: builder,
+		handler: check
+	})
+	.command({
+		command: 'fix   [<files>...]',
+		describe: 'Fix formatting errors that disobey .editorconfig settings',
+		builder: function (yargs) {
+			return (builder(yargs).option('dest', {
+				alias: 'd',
+				describe: 'Destination folder to pipe source files',
+				type: 'string'
+			}));
+		},
+		handler: fix
+	})
+	.command({
+		command: 'infer [<files>...]',
+		describe: 'Infer .editorconfig settings from one or more files',
+		builder: inferBuilder,
+		handler: infer
+	})
+	.demandCommand(1, 1, 'CommandError: Missing required sub-command.')
+	.help()
+	.version(pkg.version)
+	.argv;
+
+module.exports = cli;
