@@ -47,7 +47,10 @@ interface CheckOptions extends eclint.Settings {
 }
 
 function handleNegativeGlobs(files?: string[]): string[] {
-	if (!files) {
+	files = (files || []).filter(file => (
+		typeof file === 'string'
+	));
+	if (files.length === 0) {
 		return [
 			'**/*',
 
@@ -80,9 +83,7 @@ function handleNegativeGlobs(files?: string[]): string[] {
 			'!**/ehthumbs.db',
 		];
 	}
-	return files.filter(file => (
-		typeof file === 'string'
-	)).map(glob => (
+	return files.map(glob => (
 		glob.replace(/^\[!\]/, '!')
 	));
 }
