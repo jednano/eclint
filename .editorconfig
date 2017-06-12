@@ -15,7 +15,7 @@ indent_style = space
 indent_size = 2
 
 [README.md]
-indent_style = ignore
+indent_style = space
 indent_size = 2
 
 [{*.json}]
