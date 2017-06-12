@@ -210,7 +210,7 @@ describe('eclint gulp plugin', () => {
 			var stream = eclint.infer();
 			stream.on('data', (file: File) => {
 				var config = JSON.parse(String(file.contents));
-				expect(config.indent_style).to.be.equal('tab');
+				expect(config.indent_style).to.be.equal('space');
 				expect(config.indent_size).to.be.equal(2);
 				expect(config.trim_trailing_whitespace).to.be.equal(true);
 				expect(config.end_of_line).to.be.equal('lf');
