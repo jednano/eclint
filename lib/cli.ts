@@ -7,7 +7,7 @@ import yargs = require('yargs');
 import reporter = require('gulp-reporter');
 import filter = require('gulp-filter');
 import fileType = require('file-type');
-import stream = require('stream');
+import Stream = require('stream');
 import i18n = require('./i18n');
 
 const pkg = require('../package.json');
@@ -118,8 +118,9 @@ function inferBuilder(yargs: yargs.Argv): yargs.Argv {
 		});
 }
 
-function handler(yargs: Argv): stream.Transform {
-	var files = yargs.files.length ? yargs.files : [
+function handler(yargs: Argv): Stream.Transform {
+	const hasFile = yargs.files && yargs.files.length;
+	const files = hasFile ? yargs.files : [
 		'**/*',
 		// # Repository
 		// Git
@@ -146,9 +147,9 @@ function handler(yargs: Argv): stream.Transform {
 		// Folder config file
 		'!**/ehthumbs.db',
 	];
-	var stream = vfs.src(files)
+	let stream = vfs.src(files)
 		.pipe(filter(excludeBinaryFile));
-	if (!yargs.files.length) {
+	if (!hasFile) {
 		stream = stream.pipe(gitignore());
 	}
 	return stream;
@@ -161,7 +162,7 @@ function pickSettings(yargs: yargs.Argv): eclint.CommandOptions {
 	};
 }
 
-function check(yargs: Argv) {
+function check(yargs: Argv): Stream.Transform {
 	return handler(yargs)
 		.pipe(eclint.check(pickSettings(yargs)))
 		.pipe(reporter({
@@ -177,8 +178,8 @@ function check(yargs: Argv) {
 		});
 }
 
-function fix(yargs: Argv) {
-	var stream = handler(yargs)
+function fix(yargs: Argv): Stream {
+	let stream = handler(yargs)
 		.pipe(eclint.fix(pickSettings(yargs)));
 
 	if (yargs.dest) {
@@ -189,36 +190,36 @@ function fix(yargs: Argv) {
 	}));
 }
 
-function infer(yargs: Argv) {
+function infer(yargs: Argv): Stream {
 	return handler(yargs)
-		.pipe(eclint.infer(<eclint.InferOptions>yargs))
-		.pipe(tap(function (file) {
+		.pipe(eclint.infer(<eclint.InferOptions>_.pickBy(yargs)))
+		.pipe(tap(file => {
 			console.log(file.contents + '');
 		}));
 }
 
 yargs
-	.usage(i18n('Usage: $0 [options] <command> [<files>...]'))
+	.usage(i18n('Usage: $0 <command> [files...] [options]'))
 	.command({
-		command: 'check [<files>...]',
+		command: 'check [files...]',
 		describe: i18n('Validate that file(s) adhere to .editorconfig settings'),
 		builder: builder,
 		handler: check
 	})
 	.command({
-		command: 'fix   [<files>...]',
+		command: 'fix   [files...]',
 		describe: i18n('Fix formatting errors that disobey .editorconfig settings'),
-		builder: function (yargs) {
-			return (builder(yargs).option('dest', {
+		builder: yargs => (
+			builder(yargs).option('dest', {
 				alias: 'd',
 				describe: i18n('Destination folder to pipe source files'),
 				type: 'string'
-			}));
-		},
+			})
+		),
 		handler: fix
 	})
 	.command({
-		command: 'infer [<files>...]',
+		command: 'infer [files...]',
 		describe: i18n('Infer .editorconfig settings from one or more files'),
 		builder: inferBuilder,
 		handler: infer

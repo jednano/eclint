@@ -1,11 +1,7 @@
-# ECLint
-
-[![Build Status](https://travis-ci.org/jedmao/eclint.svg?branch=master)](https://travis-ci.org/jedmao/eclint)
+# ECLint [![Build Status](https://travis-ci.org/jedmao/eclint.svg?branch=master)](https://travis-ci.org/jedmao/eclint)
 [![npm version](https://badge.fury.io/js/eclint.svg)](http://badge.fury.io/js/eclint)
 [![codecov](https://codecov.io/gh/jedmao/eclint/branch/master/graph/badge.svg)](https://codecov.io/gh/jedmao/eclint)
-[![npm license](http://img.shields.io/npm/l/eclint.svg?style=flat-square)](https://www.npmjs.org/package/eclint)
-
-[![npm](https://nodei.co/npm/eclint.svg?downloads=true)](https://nodei.co/npm/eclint/)
+[![npm license](http://img.shields.io/npm/l/eclint.svg?style=flat-square)](https://www.npmjs.org/package/eclint) [![npm](https://nodei.co/npm/eclint.svg?downloads=true)](https://nodei.co/npm/eclint/)
 
 
 ## Introduction
@@ -42,25 +38,20 @@ $ npm install [-g] eclint
 
 The command-line interface (CLI) for this project uses [gitlike-cli](https://www.npmjs.com/package/gitlike-cli) to parse the `eclint` command, along with its [check](#check), [fix](#fix) and [infer](#infer) sub-commands. Internally, the command is sent to the [API](#api) to do its magic.
 
-Running just `eclint` will provide the following help information:
+Running `eclint --help` will provide the following help information:
 
 ```bash
-$ eclint
+$ eclint --help
+Usage: eclint <command> [files...] [options]
 
-  CommandError: Missing required sub-command.
+Commands:
+  check [files...]  Validate that file(s) adhere to .editorconfig settings
+  fix   [files...]  Fix formatting errors that disobey .editorconfig settings
+  infer [files...]  Infer .editorconfig settings from one or more files
 
-  Usage: eclint.js [options] <command> [null]
-
-  Commands:
-
-    check  Validate that file(s) adhere to .editorconfig settings
-    fix    Fix formatting errors that disobey .editorconfig settings
-    infer  Infer .editorconfig settings from one or more files
-
-  Options:
-
-    -h, --help     output help information
-    -v, --version  output version information
+Options:
+  --help     Show help                                                 [boolean]
+  --version  Show version number                                       [boolean]
 ```
 
 
@@ -69,23 +60,23 @@ $ eclint
 The `eclint check` sub-command allows you to validate that files adhere to their respective EditorConfig settings. Running `eclint check --help` will provide you the following help information:
 
 ```bash
-$ eclint check
+$ eclint check --help
+eclint check [files...]
 
-  Validate that file(s) adhere to .editorconfig settings
-
-  Usage: check [options] [<files>...]
-
-  Options:
-
-    -h, --help                      output help information
-    -c, --charset <charset>         Set to latin1, utf-8, utf-8-bom (see docs)
-    -i, --indent_style <style>      Set to tab or space
-    -s, --indent_size <n>           Set to a whole number or tab
-    -t, --tab_width <n>             Columns used to represent a tab character
-    -w, --trim_trailing_whitespace  Trims any trailing whitespace
-    -e, --end_of_line <newline>     Set to lf, cr, crlf
-    -n, --insert_final_newline      Ensures files ends with a newline
-    -m, --max_line_length <n>       Set to a whole number
+Options:
+  --help                          Show help                                                             [boolean]
+  --version                       Show version number                                                   [boolean]
+  --indent_style, -i              Indentation Style                                                     [choices: "tab", "space", undefined]
+  --indent_size, -s               Indentation Size (in single-spaced characters)                        [number]
+  --tab_width, -t                 Width of a single tabstop character                                   [number]
+  --end_of_line, -e               Line ending file format (Unix, DOS, Mac)                              [choices: "lf", "crlf", "cr", undefined]
+  --charset, -c                   File character encoding                                               [choices: "latin1", "utf-8", "utf-8-bom", "utf-16le", "utf-16be", undefined]
+  --trim_trailing_whitespace, -w  Denotes whether whitespace is allowed at the end of lines             [boolean]
+  --insert_final_newline, -n      Denotes whether file should end with a newline                        [boolean]
+  --max_line_length, -m           Forces hard line wrapping after the amount of characters specified    [number]
+  --block_comment_start           Block comments start with                                             [string]
+  --block_comment                 Lines in block comment start with                                     [string]
+  --block_comment_end             Block comments end with                                               [string]
 ```
 
 Running this sub-command without any `[options]` will use each file's EditorConfig settings as the validation settings. In fact, you don't even need to pass-in any CLI `[options]` for this sub-command to work, but doing so will allow you to override the `.editorconfig` file settings in cases where you want more fine-grain control over the outcome.
@@ -129,24 +120,24 @@ Now should be a great time to segue into the [fix sub-command](#fix).
 The `eclint fix` sub-command allows you to fix files that don't adhere to their respective EditorConfig settings. Running `eclint fix --help` will provide you the following help information:
 
 ```bash
-$ eclint fix
+$ eclint fix --help
+eclint fix   [files...]
 
-  Fix formatting errors that disobey .editorconfig settings
-
-  Usage: fix [options] [<files>...]
-
-  Options:
-
-    -h, --help                      output help information
-    -c, --charset <charset>         Set to latin1, utf-8, utf-8-bom (see docs)
-    -i, --indent_style <style>      Set to tab or space
-    -s, --indent_size <n>           Set to a whole number or tab
-    -t, --tab_width <n>             Columns used to represent a tab character
-    -w, --trim_trailing_whitespace  Trims any trailing whitespace
-    -e, --end_of_line <newline>     Set to lf, cr, crlf
-    -n, --insert_final_newline      Ensures files ends with a newline
-    -m, --max_line_length <n>       Set to a whole number
-    -d, --dest <folder>             Destination folder to pipe source files
+Options:
+  --help                          Show help                                                             [boolean]
+  --version                       Show version number                                                   [boolean]
+  --indent_style, -i              Indentation Style                                                     [choices: "tab", "space", undefined]
+  --indent_size, -s               Indentation Size (in single-spaced characters)                        [number]
+  --tab_width, -t                 Width of a single tabstop character                                   [number]
+  --end_of_line, -e               Line ending file format (Unix, DOS, Mac)                              [choices: "lf", "crlf", "cr", undefined]
+  --charset, -c                   File character encoding                                               [choices: "latin1", "utf-8", "utf-8-bom", "utf-16le", "utf-16be", undefined]
+  --trim_trailing_whitespace, -w  Denotes whether whitespace is allowed at the end of lines             [boolean]
+  --insert_final_newline, -n      Denotes whether file should end with a newline                        [boolean]
+  --max_line_length, -m           Forces hard line wrapping after the amount of characters specified    [number]
+  --block_comment_start           Block comments start with                                             [string]
+  --block_comment                 Lines in block comment start with                                     [string]
+  --block_comment_end             Block comments end with                                               [string]
+  --dest, -d                      Destination folder to pipe source files                               [string]
 ```
 
 You might notice this sub-command looks very similar to the [check sub-command](#check). It works essentially the same way; except, instead of validating files, it enforces the settings on each file by altering their contents. I'll let you read the [check sub-command](#check) so I don't have to repeat myself.
@@ -159,18 +150,15 @@ One key difference you'll notice is an additional `-d, --dest <folder>` option. 
 The `eclint infer` sub-command allows you to infer what the EditorConfig settings **_should_** be for all files you specify. Running `eclint infer --help` will provide you the following help information:
 
 ```bash
-$ eclint infer
+$ eclint infer --help
+eclint infer [files...]
 
-  Infer .editorconfig settings from one or more files
-
-  Usage: infer [options] [<files>...]
-
-  Options:
-
-    -h, --help   output help information
-    -s, --score  Shows the tallied score for each setting
-    -i, --ini    Exports file as ini file type
-    -r, --root   Adds root = true to your ini file, if any
+Options:
+  --help       Show help                                               [boolean]
+  --version    Show version number                                     [boolean]
+  --score, -s  Shows the tallied score for each setting                [boolean]
+  --ini, -i    Exports file as ini file type                           [boolean]
+  --root, -r   Adds root = true to your ini file, if any               [boolean]
 ```
 
 This sub-command generates a report that reveals whatever trends you have growing in your project. That is, if it's more common to see 2-space indentation, the inferred setting would be `indent_size = 2`.
@@ -374,7 +362,7 @@ Supported settings:
 
 Reports the following errors:
 
-- `line <n>: trailing whitespace found`
+- `line <n>: unexpected trailing whitespace`
 
 ##### fix
 

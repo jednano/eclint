@@ -1,10 +1,12 @@
 {
+  "Adds root = true to your ini file, if any": "将 root = true 添加到 ini 文档",
   "Block comments end with": "块注释结束于",
   "Block comments start with": "块注释开始于",
   "CommandError: Missing required sub-command.": "命令错误: 缺少必须的子命令。",
   "Denotes whether file should end with a newline": "指示文件是否应以换行符结尾",
   "Denotes whether whitespace is allowed at the end of lines": "指示行尾是否允许空白",
   "Destination folder to pipe source files": "用于管道源文件的目标文件夹",
+  "Exports file as ini file type": "将文件导出为 ini 文件类型",
   "File character encoding": "文件字符编码",
   "Fix formatting errors that disobey .editorconfig settings": "修复违反 .editorconfig 设置的格式错误",
   "Forces hard line wrapping after the amount of characters specified": "超出指定的字符量后强制换行",
@@ -13,7 +15,8 @@
   "Infer .editorconfig settings from one or more files": "从文件中推断 .editorconfig 设置",
   "Line ending file format (Unix, DOS, Mac)": "换行符风格 (unix、dos、mac)",
   "Lines in block comment start with": "块注释中的行开始于",
-  "Usage: $0 [options] <command> [<files>...]": "用例: eclint.js [选项] <命令> [<files>...]",
+  "Shows the tallied score for each setting": "显示每个设置的统计分数",
+  "Usage: $0 <command> [files...] [options]": "用例: $0 <命令> [files...] [选项]",
   "Validate that file(s) adhere to .editorconfig settings": "验证文件是否遵循 .editorconfig 设置",
   "Width of a single tabstop character": "单个tab字符的宽度",
   "character out of latin1 range: %s": "超出latin1编码范围的字符：%s",
@@ -27,5 +30,5 @@
   "invalid line length: %s, exceeds: %s": "无效的行长度：%s，超出了：%s",
   "invalid newline: %s, expected: %s": "无效的缩进尺寸：%s，预期：%s",
   "unexpected final newline": "非预期的文件结尾换行",
-  "unexpected whitespace found": "非预期的空白字符"
+  "unexpected trailing whitespace": "非预期的行尾空白"
 }

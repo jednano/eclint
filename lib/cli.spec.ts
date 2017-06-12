@@ -53,7 +53,23 @@ describe('eclint cli', function() {
 			eclint(['infer', 'node_modules/.bin/_mocha'], done);
 		});
 		it('All Files', (done) => {
-			eclint(['infer'], done);
+			eclint(['infer'], (error, stdout, stderr) => {
+				if (error) {
+					done(error);
+				} else {
+					expect(JSON.parse(stdout)).to.deep.equal({
+						'charset': '',
+						'indent_style': 'tab',
+						'indent_size': 0,
+						'trim_trailing_whitespace': true,
+						'end_of_line': 'lf',
+						'insert_final_newline': true,
+						'max_line_length': 80
+					});
+					expect(stderr).not.to.be.ok;
+					done();
+				}
+			});
 		});
 	});
 	describe('fix', function() {
