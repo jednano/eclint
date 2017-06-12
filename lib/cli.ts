@@ -7,8 +7,8 @@ import yargs = require('yargs');
 import reporter = require('gulp-reporter');
 import filter = require('gulp-filter');
 import fileType = require('file-type');
-import path = require('path');
 import stream = require('stream');
+import i18n = require('./i18n');
 
 const pkg = require('../package.json');
 
@@ -24,7 +24,7 @@ function excludeBinaryFile(file: eclint.EditorConfigLintFile) {
 function builder(yargs: yargs.Argv): yargs.Argv {
 	return yargs.option('indent_style', {
 		alias: 'i',
-		describe: 'Indentation Style',
+		describe: i18n('Indentation Style'),
 		requiresArg: false,
 		choices: [
 			'tab',
@@ -34,17 +34,17 @@ function builder(yargs: yargs.Argv): yargs.Argv {
 	})
 		.option('indent_size', {
 			alias: 's',
-			describe: 'Indentation Size (in single-spaced characters)',
+			describe: i18n('Indentation Size (in single-spaced characters)'),
 			type: 'number'
 		})
 		.option('tab_width', {
 			alias: 't',
-			describe: 'Width of a single tabstop character',
+			describe: i18n('Width of a single tabstop character'),
 			type: 'number'
 		})
 		.option('end_of_line', {
 			alias: 'e',
-			describe: 'Line ending file format (Unix, DOS, Mac)',
+			describe: i18n('Line ending file format (Unix, DOS, Mac)'),
 			choices: [
 				'lf',
 				'crlf',
@@ -54,7 +54,7 @@ function builder(yargs: yargs.Argv): yargs.Argv {
 		})
 		.option('charset', {
 			alias: 'c',
-			describe: 'File character encoding',
+			describe: i18n('File character encoding'),
 			choices: [
 				'latin1',
 				'utf-8',
@@ -66,34 +66,34 @@ function builder(yargs: yargs.Argv): yargs.Argv {
 		})
 		.option('trim_trailing_whitespace', {
 			alias: 'w',
-			describe: 'Denotes whether whitespace is allowed at the end of lines',
+			describe: i18n('Denotes whether whitespace is allowed at the end of lines'),
 			default: undefined,
 			type: 'boolean'
 		})
 		.option('insert_final_newline', {
 			alias: 'n',
-			describe: 'Denotes whether file should end with a newline',
+			describe: i18n('Denotes whether file should end with a newline'),
 			default: undefined,
 			type: 'boolean'
 		})
 		.option('max_line_length', {
 			alias: 'm',
-			describe: 'Set to a whole number',
+			describe: i18n('Forces hard line wrapping after the amount of characters specified'),
 			default: undefined,
 			type: 'number'
 		})
 		.option('block_comment_start', {
-			describe: 'Block comments start with',
+			describe: i18n('Block comments start with'),
 			default: undefined,
 			type: 'string'
 		})
 		.option('block_comment', {
-			describe: 'Lines in block comment start with',
+			describe: i18n('Lines in block comment start with'),
 			default: undefined,
 			type: 'string'
 		})
 		.option('block_comment_end', {
-			describe: 'Block comments end with',
+			describe: i18n('Block comments end with'),
 			default: undefined,
 			type: 'string'
 		});
@@ -103,17 +103,17 @@ function inferBuilder(yargs: yargs.Argv): yargs.Argv {
 	return yargs
 		.option('score', {
 			alias: 's',
-			describe: 'Shows the tallied score for each setting',
+			describe: i18n('Shows the tallied score for each setting'),
 			type: 'boolean'
 		})
 		.option('ini', {
 			alias: 'i',
-			describe: 'Exports file as ini file type',
+			describe: i18n('Exports file as ini file type'),
 			type: 'boolean'
 		})
 		.option('root', {
 			alias: 'r',
-			describe: 'Adds root = true to your ini file, if any',
+			describe: i18n('Adds root = true to your ini file, if any'),
 			type: 'boolean'
 		});
 }
@@ -198,20 +198,20 @@ function infer(yargs: Argv) {
 }
 
 yargs
-	.usage('Usage: eclint.js [options] <command> [<files>...]')
+	.usage(i18n('Usage: $0 [options] <command> [<files>...]'))
 	.command({
 		command: 'check [<files>...]',
-		describe: 'Validate that file(s) adhere to .editorconfig settings',
+		describe: i18n('Validate that file(s) adhere to .editorconfig settings'),
 		builder: builder,
 		handler: check
 	})
 	.command({
 		command: 'fix   [<files>...]',
-		describe: 'Fix formatting errors that disobey .editorconfig settings',
+		describe: i18n('Fix formatting errors that disobey .editorconfig settings'),
 		builder: function (yargs) {
 			return (builder(yargs).option('dest', {
 				alias: 'd',
-				describe: 'Destination folder to pipe source files',
+				describe: i18n('Destination folder to pipe source files'),
 				type: 'string'
 			}));
 		},
@@ -219,12 +219,11 @@ yargs
 	})
 	.command({
 		command: 'infer [<files>...]',
-		describe: 'Infer .editorconfig settings from one or more files',
+		describe: i18n('Infer .editorconfig settings from one or more files'),
 		builder: inferBuilder,
 		handler: infer
 	})
-	.demandCommand(1, 1, 'CommandError: Missing required sub-command.')
+	.demandCommand(1, 1, i18n('CommandError: Missing required sub-command.'))
 	.help()
 	.version(pkg.version)
-	.locale(path.relative(__dirname, '../locales'))
 	.argv;
