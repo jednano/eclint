@@ -1,7 +1,11 @@
-# ECLint [![Build Status](https://travis-ci.org/jedmao/eclint.svg?branch=master)](https://travis-ci.org/jedmao/eclint)
+# ECLint
+
+[![Build Status](https://travis-ci.org/jedmao/eclint.svg?branch=master)](https://travis-ci.org/jedmao/eclint)
 [![npm version](https://badge.fury.io/js/eclint.svg)](http://badge.fury.io/js/eclint)
 [![codecov](https://codecov.io/gh/jedmao/eclint/branch/master/graph/badge.svg)](https://codecov.io/gh/jedmao/eclint)
-[![npm license](http://img.shields.io/npm/l/eclint.svg?style=flat-square)](https://www.npmjs.org/package/eclint) [![npm](https://nodei.co/npm/eclint.svg?downloads=true)](https://nodei.co/npm/eclint/)
+[![npm license](http://img.shields.io/npm/l/eclint.svg?style=flat-square)](https://www.npmjs.org/package/eclint)
+
+[![npm](https://nodei.co/npm/eclint.svg?downloads=true)](https://nodei.co/npm/eclint/)
 
 
 ## Introduction
@@ -22,14 +26,14 @@ $ npm install [-g] eclint
 
 - [Command-Line Interface (CLI)](#cli)
 - [Check](#check), [fix](#fix) or [infer](#infer) the following EditorConfig rules across one or more files:
-	- [charset](#charset)
-	- [indent_style](#indent_style)
-	- [indent_size](#indent_size)
-	- [tab_width](#tab_width)
-	- [trim_trailing_whitespace](#trim_trailing_whitespace)
-	- [end_of_line](#end_of_line)
-	- [insert_final_newline](#insert_final_newline)
-	- [max_line_length (unofficial)](#max_line_length-unofficial)
+  - [charset](#charset)
+  - [indent_style](#indent_style)
+  - [indent_size](#indent_size)
+  - [tab_width](#tab_width)
+  - [trim_trailing_whitespace](#trim_trailing_whitespace)
+  - [end_of_line](#end_of_line)
+  - [insert_final_newline](#insert_final_newline)
+  - [max_line_length (unofficial)](#max_line_length-unofficial)
 - [TypeScript/JavaScript API](#api)
 - [Gulp plugin](#gulp-plugin)
 
@@ -107,14 +111,14 @@ Now should be a great time to segue into the [fix sub-command](#fix).
 ## Fix
 
 <table>
-	<tr>
-		<td width="99">
-			<img src="https://github.com/jedmao/eclint/blob/master/images/warning.png?raw=true" alt="Warning, Stop!" width="72" height="65">
-		</td>
-		<td>
-			<strong style="display:table-cell">Warning! Fixing your files will change their contents. Ensure that your files are under version control and that you have committed your changes before attempting to fix any issues with them. You can also run the check command to know which files will change before you fix them.</strong>
-		</td>
-	</tr>
+  <tr>
+    <td width="99">
+      <img src="https://github.com/jedmao/eclint/blob/master/images/warning.png?raw=true" alt="Warning, Stop!" width="72" height="65">
+    </td>
+    <td>
+      <strong style="display:table-cell">Warning! Fixing your files will change their contents. Ensure that your files are under version control and that you have committed your changes before attempting to fix any issues with them. You can also run the check command to know which files will change before you fix them.</strong>
+    </td>
+  </tr>
 </table>
 
 The `eclint fix` sub-command allows you to fix files that don't adhere to their respective EditorConfig settings. Running `eclint fix --help` will provide you the following help information:
@@ -173,11 +177,11 @@ Outputs:
 
 ```json
 {
-	"indent_style": "tab",
-	"trim_trailing_whitespace": true,
-	"end_of_line": "lf",
-	"insert_final_newline": true,
-	"max_line_length": 90
+  "indent_style": "tab",
+  "trim_trailing_whitespace": true,
+  "end_of_line": "lf",
+  "insert_final_newline": true,
+  "max_line_length": 90
 }
 ```
 
@@ -191,27 +195,27 @@ Outputs:
 
 ```json
 {
-	"charset": {
-		"": 1
-	},
-	"indent_style": {
-		"undefined": 21,
-		"tab": 13
-	},
-	"indent_size": {
-		"0": 21,
-		"tab":13
-	},
-	"trim_trailing_whitespace": {
-		"true": 34
-	},
-	"end_of_line": {
-		"lf": 34
-	},
-	"insert_final_newline": {
-		"true": 1
-	},
-	"max_line_length": 86
+  "charset": {
+    "": 1
+  },
+  "indent_style": {
+    "undefined": 21,
+    "tab": 13
+  },
+  "indent_size": {
+    "0": 21,
+    "tab":13
+  },
+  "trim_trailing_whitespace": {
+    "true": 34
+  },
+  "end_of_line": {
+    "lf": 34
+  },
+  "insert_final_newline": {
+    "true": 1
+  },
+  "max_line_length": 86
 }
 ```
 
@@ -493,36 +497,36 @@ var reporter = require('gulp-reporter');
 var path = require('path');
 
 gulp.task('check', function() {
-	return gulp.src([
-			'*',
-			'lib/**/*.js'
-		])
-		.pipe(eclint.check())
-		.pipe(reporter());
+  return gulp.src([
+      '*',
+      'lib/**/*.js'
+    ])
+    .pipe(eclint.check())
+    .pipe(reporter());
 });
 
 gulp.task('fix', function() {
-	return gulp.src([
-			'*',
-			'lib/**/*.js'
-		],
-		{
-			base: './'
-		})
-		.pipe(eclint.fix())
-		.pipe(gulp.dest('.'));
+  return gulp.src([
+      '*',
+      'lib/**/*.js'
+    ],
+    {
+      base: './'
+    })
+    .pipe(eclint.fix())
+    .pipe(gulp.dest('.'));
 });
 
 gulp.task('infer', function() {
-	return gulp.src([
-			'*',
-			'lib/**/*.js'
-		])
-		.pipe(eclint.infer({
-			ini: true,
-			root: true
-		}))
-		.pipe(gulp.dest('.editorconfig'));
+  return gulp.src([
+      '*',
+      'lib/**/*.js'
+    ])
+    .pipe(eclint.infer({
+      ini: true,
+      root: true
+    }))
+    .pipe(gulp.dest('.editorconfig'));
 });
 ```
 
