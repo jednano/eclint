@@ -61,7 +61,7 @@
   "license": "MIT",
   "dependencies": {
     "editorconfig": "^0.13.2",
-    "file-type": "^5.1.0",
+    "file-type": "^5.1.1",
     "gulp-filter": "^5.0.0",
     "gulp-gitignore": "^0.1.0",
     "gulp-reporter": "^1.9.0",
@@ -91,8 +91,8 @@
     "mocha": "^3.4.2",
     "nyc": "^11.0.2",
     "rimraf": "^2.6.1",
-    "sinon": "^2.3.2",
-    "sinon-chai": "^2.10.0",
+    "sinon": "^2.3.4",
+    "sinon-chai": "^2.11.0",
     "ts-node": "^3.0.6",
     "tslint": "^5.4.3",
     "typescript": "^2.3.4"

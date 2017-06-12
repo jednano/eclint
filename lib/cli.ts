@@ -169,6 +169,7 @@ function check(yargs: Argv) {
 			filter: null,
 		}))
 		.on('error', function (error) {
+			/* istanbul ignore if */
 			if (error.plugin !== 'gulp-reporter') {
 				console.error(error);
 			}
