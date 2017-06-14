@@ -14,7 +14,7 @@ function resolve(settings: eclint.Settings) {
 function check(settings: eclint.Settings, line: doc.Line) {
 	var configSetting = resolve(settings);
 	if (configSetting && !infer(line)) {
-		var error = new EditorConfigError(['trailing whitespace found']);
+		var error = new EditorConfigError(['unexpected trailing whitespace']);
 		error.lineNumber = line.number;
 		error.columnNumber = line.prefix.length + line.string.length + 1;
 		error.rule = 'trim_trailing_whitespace';

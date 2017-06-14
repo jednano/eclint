@@ -1,7 +1,6 @@
 import common = require('./test-common');
 const os = require('os');
 const execFile = require('child_process').execFile;
-const fork = require('child_process').fork;
 const cliPath = require.resolve('../bin/eclint');
 const expect = common.expect;
 
@@ -10,7 +9,7 @@ describe('eclint cli', function() {
 		args.unshift(cliPath);
 		return execFile(process.execPath, args, callback);
 	}
-	this.timeout(8000);
+	this.timeout(80000);
 	it('Missing sub-command', (done) => {
 		eclint([], (error: Error) => {
 			expect(error.message).to.be.match(/\bCommandError\b/);
@@ -20,12 +19,7 @@ describe('eclint cli', function() {
 	});
 	describe('check', () => {
 		it('All Files', (done) => {
-			let error;
-			return fork(cliPath, ['check']).on('error', e => {
-				error = e;
-			}).on('close', () => {
-				done(error);
-			});
+			eclint(['check'], done);
 		});
 		it('README.md', (done) => {
 			eclint(['check', 'README.md'], done);
@@ -59,11 +53,22 @@ describe('eclint cli', function() {
 			eclint(['infer', 'node_modules/.bin/_mocha'], done);
 		});
 		it('All Files', (done) => {
-			let error;
-			return fork(cliPath, ['infer']).on('error', e => {
-				error = e;
-			}).on('close', () => {
-				done(error);
+			eclint(['infer'], (error, stdout, stderr) => {
+				if (error) {
+					done(error);
+				} else {
+					expect(JSON.parse(stdout)).to.deep.equal({
+						'charset': '',
+						'indent_style': 'tab',
+						'indent_size': 0,
+						'trim_trailing_whitespace': true,
+						'end_of_line': 'lf',
+						'insert_final_newline': true,
+						'max_line_length': 80
+					});
+					expect(stderr).not.to.be.ok;
+					done();
+				}
 			});
 		});
 	});
@@ -72,23 +77,12 @@ describe('eclint cli', function() {
 			eclint(['fix', 'README.md'], done);
 		});
 		it('All Files', (done) => {
-			let error;
-			return fork(cliPath, ['fix']).on('error', e => {
-				error = e;
-			}).on('close', () => {
-				done(error);
-			});
+			eclint(['fix'], done);
 		});
 		if (os.tmpdir) {
-			it('All Files', (done) => {
-				let error;
-				return fork(cliPath, ['fix', '--dest', os.tmpdir()]).on('error', e => {
-					error = e;
-				}).on('close', () => {
-					done(error);
-				});
+			it('All Files with `--dest`', (done) => {
+				eclint(['fix', '--dest', os.tmpdir()], done);
 			});
-
 		}
 	});
 });

@@ -1,8 +1,5 @@
 import os = require('os');
-import path = require('path');
-const i18n = require('y18n')({
-	directory: path.relative(__dirname, '../locales')
-}).__;
+import i18n = require('./i18n');
 
 class EditorConfigError extends Error {
 	fileName? = '<anonymous>';
