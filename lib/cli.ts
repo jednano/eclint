@@ -175,7 +175,7 @@ function check(yargs: Argv): Stream.Transform {
 				console.error(error);
 			}
 			process.exitCode = 1;
-		});
+		}).resume();
 }
 
 function fix(yargs: Argv): Stream {
