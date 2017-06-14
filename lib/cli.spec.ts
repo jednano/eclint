@@ -1,5 +1,7 @@
 import common = require('./test-common');
-const os = require('os');
+import path = require('path');
+import os = require('os');
+import fs = require('fs');
 const execFile = require('child_process').execFile;
 const cliPath = require.resolve('../bin/eclint');
 const expect = common.expect;
@@ -76,13 +78,25 @@ describe('eclint cli', function() {
 		it('README.md', (done) => {
 			eclint(['fix', 'README.md'], done);
 		});
+		if (os.tmpdir) {
+			it('All Files with `--dest`', (done) => {
+				var tmpDir = path.join(os.tmpdir(), 'eclint');
+				fs.unlink(tmpDir, () => {
+					eclint(['fix', '--dest', tmpDir], (error) => {
+						if (error) {
+							done(error);
+						} else {
+							fs.stat(path.join(tmpDir, 'README.md'), (error, stat) => {
+								expect(stat).to.be.ok;
+								done(error);
+							});
+						}
+					});
+				});
+			});
+		}
 		it('All Files', (done) => {
 			eclint(['fix'], done);
 		});
-		if (os.tmpdir) {
-			it('All Files with `--dest`', (done) => {
-				eclint(['fix', '--dest', os.tmpdir()], done);
-			});
-		}
 	});
 });

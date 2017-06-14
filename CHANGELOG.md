@@ -6,7 +6,7 @@
 - Upgraded: dependencies.
 
 ## 2.1.0
-- Bug fix: not skip all kind of binary file. (e.g. "*.exe") #65 
+- Bug fix: not skip all kind of binary file. (e.g. "*.exe") #65
 - Support locales in message of rule. #60
 - Support for doc comments. #62
 - Update algorithm for indentation. #62
