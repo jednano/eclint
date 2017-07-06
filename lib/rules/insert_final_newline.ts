@@ -42,6 +42,14 @@ function check(settings: eclint.Settings, document: doc.Document) {
 function fix(settings: eclint.Settings, document: doc.Document) {
 	var lastLine: doc.Line;
 	var configSetting = resolve(settings);
+	while (infer(document)) {
+		lastLine = document.lines[document.lines.length - 1];
+		if (lastLine.text) {
+			lastLine.ending = '';
+			break;
+		}
+		document.lines.pop();
+	}
 	if (configSetting && !infer(document)) {
 		lastLine = document.lines[document.lines.length - 1];
 		var endOfLineSetting = settings.end_of_line || 'lf';
@@ -57,17 +65,7 @@ function fix(settings: eclint.Settings, document: doc.Document) {
 		}
 		return document;
 	}
-	if (!configSetting) {
-		while (infer(document)) {
-			lastLine = document.lines[document.lines.length - 1];
-			if (lastLine.text) {
-				lastLine.ending = '';
-				break;
-			}
-			document.lines.pop();
-		}
-		return document;
-	}
+
 	return document;
 }
 
