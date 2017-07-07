@@ -41,29 +41,27 @@ function check(settings: eclint.Settings, document: doc.Document) {
 
 function fix(settings: eclint.Settings, document: doc.Document) {
 	var lastLine: doc.Line;
+	var ending: string;
 	var configSetting = resolve(settings);
-	while (infer(document)) {
-		lastLine = document.lines[document.lines.length - 1];
-		if (lastLine.text) {
-			lastLine.ending = '';
-			break;
-		}
+	if (configSetting) {
+		var endOfLineSetting = settings.end_of_line || 'lf';
+		ending = newlines[endOfLineSetting];
+	} else {
+		ending = '';
+	}
+	while ((lastLine = document.lines[document.lines.length - 1]) && !lastLine.text) {
 		document.lines.pop();
 	}
-	if (configSetting && !infer(document)) {
-		lastLine = document.lines[document.lines.length - 1];
-		var endOfLineSetting = settings.end_of_line || 'lf';
-		if (lastLine) {
-			lastLine.ending = newlines[endOfLineSetting];
-		} else {
-			document.lines.push(new doc.Line({
-				number: 1,
-				text: '',
-				ending: newlines[endOfLineSetting],
-				offset: 0
-			}));
-		}
-		return document;
+	if (lastLine) {
+		lastLine.ending = ending;
+	} else {
+		lastLine = new doc.Line({
+			number: 1,
+			text: '',
+			ending: ending,
+			offset: 0
+		});
+		document.lines.push(lastLine);
 	}
 
 	return document;
