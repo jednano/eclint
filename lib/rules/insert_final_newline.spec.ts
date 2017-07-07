@@ -127,6 +127,23 @@ describe('insert_final_newline rule', () => {
 			expect(fixedDoc.toString()).to.deep.equal('\n');
 		});
 
+		it('removes more than one', () => {
+			var document = rule.fix(
+				{
+					insert_final_newline: true
+				},
+				doc.create([
+					'foo',
+					'',
+					'',
+					'',
+					'',
+				].join('\n'))
+			);
+			expect(document.lines.length).to.eq(1);
+			expect(document.lines[0].ending).to.be.not.empty;
+		});
+
 	});
 
 	describe('infer command',() => {
