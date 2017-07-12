@@ -1,15 +1,19 @@
+## 2.3.0
+- Added: Removes empty final new lines where there is more than one [#77](https://github.com/jedmao/eclint/pull/77)
+- Upgraded: dependencies. [#78](https://github.com/jedmao/eclint/pull/78)
+
 ## 2.2.0
-- Replace `gitlike-cli` with `yargs` for CLI #73
-- Added: locales for CLI #73
-- Fixed: i18n not work. #73
-- Upgraded: gulp usecase. #70
+- Replace `gitlike-cli` with `yargs` for CLI [#73](https://github.com/jedmao/eclint/pull/73)
+- Added: locales for CLI [#73](https://github.com/jedmao/eclint/pull/73)
+- Fixed: i18n not work. [#73](https://github.com/jedmao/eclint/pull/73)
+- Upgraded: gulp usecase. [#70](https://github.com/jedmao/eclint/pull/70)
 - Upgraded: dependencies.
 
 ## 2.1.0
-- Bug fix: not skip all kind of binary file. (e.g. "*.exe") #65
-- Support locales in message of rule. #60
-- Support for doc comments. #62
-- Update algorithm for indentation. #62
+- Bug fix: not skip all kind of binary file. (e.g. "*.exe") [#65](https://github.com/jedmao/eclint/pull/65)
+- Support locales in message of rule. [#60](https://github.com/jedmao/eclint/pull/60)
+- Support for doc comments. [#62](https://github.com/jedmao/eclint/pull/62)
+- Update algorithm for indentation. [#62](https://github.com/jedmao/eclint/pull/62)
 - Update dependencies.
 
 ## 2.0.1
