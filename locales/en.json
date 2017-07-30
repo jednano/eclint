@@ -30,5 +30,6 @@
   "invalid line length: %s, exceeds: %s": "invalid line length: %s, exceeds: %s",
   "invalid newline: %s, expected: %s": "invalid newline: %s, expected: %s",
   "unexpected final newline": "unexpected final newline",
-  "unexpected trailing whitespace": "unexpected trailing whitespace"
+  "unexpected trailing whitespace": "unexpected trailing whitespace",
+  "Usage: $0 <command> [files,dirs...] [options]": "Usage: $0 <command> [files,dirs...] [options]"
 }

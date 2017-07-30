@@ -23,6 +23,9 @@ describe('eclint cli', function() {
 		it('All Files', (done) => {
 			eclint(['check'], done);
 		});
+		it('Directories', (done) => {
+			eclint(['check', 'locales'], done);
+		});
 		it('README.md', (done) => {
 			eclint(['check', 'README.md'], done);
 		});

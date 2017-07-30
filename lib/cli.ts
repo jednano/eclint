@@ -9,6 +9,7 @@ import filter = require('gulp-filter');
 import fileType = require('file-type');
 import Stream = require('stream');
 import i18n = require('./i18n');
+import fs = require('fs');
 
 const pkg = require('../package.json');
 
@@ -120,7 +121,7 @@ function inferBuilder(yargs: yargs.Argv): yargs.Argv {
 
 function handler(yargs: Argv): Stream.Transform {
 	const hasFile = yargs.files && yargs.files.length;
-	const files = hasFile ? yargs.files : [
+	let files = hasFile ? yargs.files : [
 		'**/*',
 		// # Repository
 		// Git
@@ -147,6 +148,22 @@ function handler(yargs: Argv): Stream.Transform {
 		// Folder config file
 		'!**/ehthumbs.db',
 	];
+
+	// check for directories and add append '**/*' to them to scan them recursively
+	files = files.map(function (file) {
+		let stat;
+		try {
+			stat = fs.statSync(file);
+		} catch (e) {
+			return file;
+		}
+
+		if (stat && stat.isDirectory()) {
+			return file + '**/*';
+		}
+		return file;
+	});
+
 	let stream = vfs.src(files)
 		.pipe(filter(excludeBinaryFile));
 	if (!hasFile) {
@@ -199,7 +216,7 @@ function infer(yargs: Argv): Stream {
 }
 
 yargs
-	.usage(i18n('Usage: $0 <command> [files...] [options]'))
+	.usage(i18n('Usage: $0 <command> [files,dirs...] [options]'))
 	.command({
 		command: 'check [files...]',
 		describe: i18n('Validate that file(s) adhere to .editorconfig settings'),
