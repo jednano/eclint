@@ -206,7 +206,8 @@ describe('indent_style rule', () => {
 					doc.create([
 						'/* block',
 						'comment */',
-						'/*',
+						'/*  block',
+						'comment */',
 						'/*',
 						'block',
 						'comment',
@@ -220,7 +221,8 @@ describe('indent_style rule', () => {
 				expect(document.toString()).to.eq([
 					'/* block',
 					'   comment */',
-					'/*',
+					'/*  block',
+					'    comment */',
 					'/*',
 					'   block',
 					'   comment',
