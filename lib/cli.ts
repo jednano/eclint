@@ -183,7 +183,6 @@ function check(yargs: Argv): Stream.Transform {
 			console: console.error,
 			filter: null,
 		}))
-		.on('data', console.log)
 		.on('error', function (error) {
 			/* istanbul ignore if */
 			if (error.plugin !== 'gulp-reporter') {
