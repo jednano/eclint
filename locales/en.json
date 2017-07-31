@@ -16,7 +16,7 @@
   "Line ending file format (Unix, DOS, Mac)": "Line ending file format (Unix, DOS, Mac)",
   "Lines in block comment start with": "Lines in block comment start with",
   "Shows the tallied score for each setting": "Shows the tallied score for each setting",
-  "Usage: $0 <command> [files...] [options]": "Usage: $0 <command> [files...] [options]",
+  "Usage: $0 <command> [files,dirs...] [options]": "Usage: $0 <command> [files,dirs...] [options]",
   "Validate that file(s) adhere to .editorconfig settings": "Validate that file(s) adhere to .editorconfig settings",
   "Width of a single tabstop character": "Width of a single tabstop character",
   "character out of latin1 range: %s": "character out of latin1 range: %s",
@@ -30,6 +30,5 @@
   "invalid line length: %s, exceeds: %s": "invalid line length: %s, exceeds: %s",
   "invalid newline: %s, expected: %s": "invalid newline: %s, expected: %s",
   "unexpected final newline": "unexpected final newline",
-  "unexpected trailing whitespace": "unexpected trailing whitespace",
-  "Usage: $0 <command> [files,dirs...] [options]": "Usage: $0 <command> [files,dirs...] [options]"
+  "unexpected trailing whitespace": "unexpected trailing whitespace"
 }
