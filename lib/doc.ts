@@ -11,11 +11,17 @@ function updateDoc(doc: Document, settings?: eclint.Settings): Document {
 		return doc;
 	}
 
-	var padSize: number;
-	if (settings.block_comment) {
-		padSize = Math.max(0, settings.block_comment_start.indexOf(settings.block_comment));
-	} else {
-		padSize = 0;
+	var block_comment = settings.block_comment;
+
+	if (!block_comment &&
+		settings.block_comment_start[settings.block_comment_start.length - 1] === settings.block_comment_end[0]
+	) {
+		block_comment = settings.block_comment_end[0];
+	}
+
+	var padSize = 0;
+	if (block_comment) {
+		padSize = Math.max(0, settings.block_comment_start.indexOf(block_comment));
 	}
 
 	var docCommentLines: null|Line[];
@@ -26,14 +32,19 @@ function updateDoc(doc: Document, settings?: eclint.Settings): Document {
 			if (docCommentLines) {
 				var blockCommentStart = docCommentLines[0];
 				blockCommentStart.isBlockCommentStart = true;
+				var currPadSize = /^\S+\s*/.exec(blockCommentStart.string)[0].length;
 				line.isBlockCommentEnd = true;
 				docCommentLines.push(line);
-				docCommentLines.forEach(line => {
-					if (!settings.block_comment || _.startsWith(line.string, settings.block_comment)) {
-						line.isBlockComment = true;
+				docCommentLines.forEach((line, i) => {
+					if (block_comment && _.startsWith(line.string, block_comment)) {
 						line.padSize = padSize;
-						line.blockCommentStart = blockCommentStart;
+					} else if (i) {
+						line.padSize = currPadSize;
+					} else {
+						return;
 					}
+					line.isBlockComment = true;
+					line.blockCommentStart = blockCommentStart;
 				});
 			}
 			docCommentLines = null;

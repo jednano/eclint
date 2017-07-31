@@ -17,7 +17,7 @@
   "main": "dist/eclint.js",
   "types": "dist/eclint.d.ts",
   "scripts": {
-    "clean": "rimraf coverage dist *.log *.TMP",
+    "clean": "rimraf coverage dist *.log **/*.TMP",
     "codecov": "codecov -f coverage/lcov.info",
     "compile": "tsc",
     "compile:watch": "tsc --watch",

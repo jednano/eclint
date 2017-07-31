@@ -100,6 +100,32 @@ describe('indent_style rule', () => {
 			expect(errors).to.have.lengthOf(0);
 		});
 
+		it('valid block commit', () => {
+			var config = {
+				indent_style: 'tab',
+				block_comment_start: '/*',
+				block_comment_end: '*/',
+			};
+			var errors = rule.check(config, doc.create([
+				'\t/* block',
+				'\t   comment */',
+			].join('\n'), config));
+			expect(errors).to.have.lengthOf(0);
+		});
+
+		it('valid document commit', () => {
+			var config = {
+				indent_style: 'tab',
+				block_comment_start: '/*',
+				block_comment_end: '*/',
+			};
+			var errors = rule.check(config, doc.create([
+				'\t/*',
+				'\t * comment',
+				'\t */',
+			].join('\n'), config));
+			expect(errors).to.have.lengthOf(0);
+		});
 	});
 
 	describe('fix command', () => {
@@ -167,6 +193,33 @@ describe('indent_style rule', () => {
 					doc.create('\tfoo')
 				);
 				expect(document.toString()).to.eq('\tfoo');
+			});
+
+			it('block comments', () => {
+				var config = {
+					indent_style: 'tab',
+					block_comment_start: '/*',
+					block_comment_end: '*/',
+				};
+				var document = rule.fix(
+					config,
+					doc.create([
+						'/* block',
+						'comment */',
+						'/*',
+						'* document',
+						'* comment',
+						'*/',
+					].join('\n'), config)
+				);
+				expect(document.toString()).to.eq([
+					'/* block',
+					'   comment */',
+					'/*',
+					' * document',
+					' * comment',
+					' */',
+				].join('\n'));
 			});
 
 		});
