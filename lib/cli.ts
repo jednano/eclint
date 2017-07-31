@@ -9,6 +9,7 @@ import filter = require('gulp-filter');
 import fileType = require('file-type');
 import Stream = require('stream');
 import i18n = require('./i18n');
+import path = require('path');
 import fs = require('fs');
 
 const pkg = require('../package.json');
@@ -121,7 +122,19 @@ function inferBuilder(yargs: yargs.Argv): yargs.Argv {
 
 function handler(yargs: Argv): Stream.Transform {
 	const hasFile = yargs.files && yargs.files.length;
-	let files = hasFile ? yargs.files : [
+	const files = hasFile ? yargs.files.map(file => {
+		let stat;
+		try {
+			stat = fs.statSync(file);
+		} catch (e) {
+			return file;
+		}
+
+		if (stat && stat.isDirectory()) {
+			return path.join(file, '**/*');
+		}
+		return file;
+	}) : [
 		'**/*',
 		// # Repository
 		// Git
@@ -148,22 +161,6 @@ function handler(yargs: Argv): Stream.Transform {
 		// Folder config file
 		'!**/ehthumbs.db',
 	];
-
-	// check for directories and add append '**/*' to them to scan them recursively
-	files = files.map(function (file) {
-		let stat;
-		try {
-			stat = fs.statSync(file);
-		} catch (e) {
-			return file;
-		}
-
-		if (stat && stat.isDirectory()) {
-			return file + '**/*';
-		}
-		return file;
-	});
-
 	let stream = vfs.src(files)
 		.pipe(filter(excludeBinaryFile));
 	if (!hasFile) {
@@ -186,6 +183,7 @@ function check(yargs: Argv): Stream.Transform {
 			console: console.error,
 			filter: null,
 		}))
+		.on('data', console.log)
 		.on('error', function (error) {
 			/* istanbul ignore if */
 			if (error.plugin !== 'gulp-reporter') {
