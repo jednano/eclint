@@ -101,4 +101,19 @@ describe('eclint doc', function() {
 		expect(lines[2]).haveOwnProperty('isBlockComment').and.to.be.not.ok;
 		expect(lines[2]).haveOwnProperty('isBlockCommentEnd').and.to.be.not.ok;
 	});
+
+	it('config without block_comment', () => {
+		var lines = doc.create([
+			'<!--[if IE]>',
+			'You are useing IE.',
+			'<![endif]-->',
+		].join('\n'), {
+			block_comment_start: '<!--[if IE]>',
+			block_comment_end: '<![endif]-->',
+		}).lines;
+		expect(lines[0]).haveOwnProperty('isBlockCommentStart').and.to.be.ok;
+		expect(lines[1]).haveOwnProperty('isBlockComment').and.to.be.ok;
+		expect(lines[1]).haveOwnProperty('padSize').and.to.be.equal('<!--[if IE]>'.length);
+		expect(lines[2]).haveOwnProperty('isBlockCommentEnd').and.to.be.ok;
+	});
 });
