@@ -33,7 +33,8 @@ function updateDoc(doc: Document, settings?: eclint.Settings): Document {
 				var blockCommentStart = docCommentLines[0];
 				blockCommentStart.isBlockCommentStart = true;
 				var commentStartWidth = settings.block_comment_start.length;
-				var currPadSize = /^\s*/.exec(blockCommentStart.string.slice(commentStartWidth))[0].length + commentStartWidth;
+				var currPadSize = /^\s*/.exec(blockCommentStart.string.slice(commentStartWidth))[0].length || 1;
+				currPadSize += commentStartWidth;
 				line.isBlockCommentEnd = true;
 				docCommentLines.push(line);
 				docCommentLines.forEach((line, i) => {
