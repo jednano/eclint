@@ -16,7 +16,7 @@
   "Line ending file format (Unix, DOS, Mac)": "換行符風格 (unix、dos、mac)",
   "Lines in block comment start with": "塊註釋中的行開始於",
   "Shows the tallied score for each setting": "顯示每個設定的統計分數",
-  "Usage: $0 <command> [files...] [options]": "用例: $0 <命令> [files,dirs...] [選項]",
+  "Usage: $0 <command> [globs...] [<options>]": "用例: $0 <命令> [globs...] [選項]",
   "Validate that file(s) adhere to .editorconfig settings": "驗證檔案是否遵循 .editorconfig 設定",
   "Width of a single tabstop character": "單個tab字元的寬度",
   "character out of latin1 range: %s": "超出latin1編碼範圍的字元：%s",

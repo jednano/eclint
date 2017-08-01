@@ -15,7 +15,7 @@ import fs = require('fs');
 const pkg = require('../package.json');
 
 interface Argv extends yargs.Argv {
-	files: string[];
+	globs: string[];
 	dest?: string;
 }
 
@@ -121,21 +121,26 @@ function inferBuilder(yargs: yargs.Argv): yargs.Argv {
 }
 
 function handler(yargs: Argv): Stream.Transform {
-	const hasFile = yargs.files && yargs.files.length;
-	const files = hasFile ? yargs.files.map(file => {
-		let stat;
-		try {
-			stat = fs.statSync(file);
-		} catch (e) {
-			return file;
-		}
+	let globs = yargs.globs;
+	if (globs && globs.length) {
+		globs = globs.map(file => {
+			let stat;
+			try {
+				stat = fs.statSync(file);
+			} catch (e) {
+				return file;
+			}
 
-		if (stat && stat.isDirectory()) {
-			return path.join(file, '**/*');
-		}
-		return file;
-	}) : [
-		'**/*',
+			if (stat && stat.isDirectory()) {
+				return path.join(file, '**/*');
+			}
+			return file;
+		});
+	} else {
+		globs = ['**/*'];
+	}
+
+	globs = globs.concat([
 		// # Repository
 		// Git
 		'!.git/**/*',
@@ -160,13 +165,10 @@ function handler(yargs: Argv): Stream.Transform {
 		'!**/Thumbs.db',
 		// Folder config file
 		'!**/ehthumbs.db',
-	];
-	let stream = vfs.src(files)
-		.pipe(filter(excludeBinaryFile));
-	if (!hasFile) {
-		stream = stream.pipe(gitignore());
-	}
-	return stream;
+	]);
+	return vfs.src(globs)
+		.pipe(filter(excludeBinaryFile))
+		.pipe(gitignore());
 }
 
 function pickSettings(yargs: yargs.Argv): eclint.CommandOptions {
@@ -213,15 +215,15 @@ function infer(yargs: Argv): Stream {
 }
 
 yargs
-	.usage(i18n('Usage: $0 <command> [files,dirs...] [options]'))
+	.usage(i18n('Usage: $0 <command> [globs...] [<options>]'))
 	.command({
-		command: 'check [files...]',
+		command: 'check [globs...] [<options>]',
 		describe: i18n('Validate that file(s) adhere to .editorconfig settings'),
 		builder: builder,
 		handler: check
 	})
 	.command({
-		command: 'fix   [files...]',
+		command: 'fix   [globs...] [<options>]',
 		describe: i18n('Fix formatting errors that disobey .editorconfig settings'),
 		builder: yargs => (
 			builder(yargs).option('dest', {
@@ -233,7 +235,7 @@ yargs
 		handler: fix
 	})
 	.command({
-		command: 'infer [files...]',
+		command: 'infer [globs...] [<options>]',
 		describe: i18n('Infer .editorconfig settings from one or more files'),
 		builder: inferBuilder,
 		handler: infer
