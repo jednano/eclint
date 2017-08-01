@@ -203,6 +203,43 @@ describe('eclint gulp plugin', () => {
 			}));
 		});
 
+		it('check non doc block comment', (done) => {
+			var stream = eclint.check({
+				settings: {
+					indent_style: 'space',
+					indent_size: 2,
+					block_comment_start: '/*',
+					block_comment_end: '*/',
+				}
+			});
+
+			stream.on('data', (file: File) => {
+				expect(file.editorconfig.errors).to.have.lengthOf(0);
+				done();
+			});
+
+			stream.on('error', done);
+
+			stream.write(new File({
+				path: path.join(__dirname, 'testcase.js'),
+				contents: new Buffer([
+					'function() {',
+					'  /* block',
+					'     comment */',
+					'  function() {',
+					'    /* block',
+					'       comment */',
+					'    function() {',
+					'      /* block',
+					'         comment */',
+					'    }',
+					'  }',
+					'}',
+					''
+				].join('\n'))
+			}));
+		});
+
 	});
 
 	describe('infer file', () => {

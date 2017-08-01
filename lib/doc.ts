@@ -37,13 +37,13 @@ function updateDoc(doc: Document, settings?: eclint.Settings): Document {
 				currPadSize += commentStartWidth;
 				line.isBlockCommentEnd = true;
 				docCommentLines.push(line);
-				docCommentLines.forEach((line, i) => {
+				docCommentLines.forEach(line => {
 					if (block_comment && _.startsWith(line.string, block_comment)) {
 						line.padSize = padSize;
-					} else if (i) {
-						line.padSize = currPadSize;
-					} else {
+					} else if (line.isBlockCommentStart) {
 						return;
+					} else {
+						line.padSize = currPadSize;
 					}
 					line.isBlockComment = true;
 					line.blockCommentStart = blockCommentStart;
