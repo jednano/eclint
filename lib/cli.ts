@@ -6,14 +6,17 @@ import eclint = require('./eclint');
 import yargs = require('yargs');
 import reporter = require('gulp-reporter');
 import filter = require('gulp-filter');
+import minimatch = require('minimatch');
 import fileType = require('file-type');
 import Stream = require('stream');
 import i18n = require('./i18n');
+import path = require('path');
+import fs = require('fs');
 
 const pkg = require('../package.json');
 
 interface Argv extends yargs.Argv {
-	files: string[];
+	globs: string[];
 	dest?: string;
 	stream?: Stream;
 }
@@ -120,9 +123,7 @@ function inferBuilder(yargs: yargs.Argv): yargs.Argv {
 }
 
 function handler(yargs: Argv): Stream.Transform {
-	const hasFile = yargs.files && yargs.files.length;
-	const files = hasFile ? yargs.files : [
-		'**/*',
+	let ignore = [
 		// # Repository
 		// Git
 		'!.git/**/*',
@@ -148,12 +149,38 @@ function handler(yargs: Argv): Stream.Transform {
 		// Folder config file
 		'!**/ehthumbs.db',
 	];
-	let stream = vfs.src(files)
-		.pipe(filter(excludeBinaryFile));
-	if (!hasFile) {
-		stream = stream.pipe(gitignore());
+	let globs = yargs.globs;
+	if (globs && globs.length) {
+		globs = globs.map(file => {
+			let stat;
+			try {
+				stat = fs.statSync(file);
+			} catch (e) {
+				//
+			}
+
+			if (stat) {
+				if (stat.isDirectory()) {
+					return path.join(file, '**/*');
+				} else {
+					ignore = ignore.filter(glob => (
+						!minimatch(file, glob.slice(1), {
+							dot: true,
+						})
+					));
+				}
+			}
+			return file;
+		});
+	} else {
+		globs = ['**/*'];
 	}
-	return stream;
+
+	globs = globs.concat(ignore);
+	yargs.globs = globs;
+	return vfs.src(globs)
+		.pipe(filter(excludeBinaryFile))
+		.pipe(gitignore());
 }
 
 function pickSettings(yargs: yargs.Argv): eclint.CommandOptions {
@@ -193,15 +220,15 @@ function infer(yargs: Argv): Stream {
 }
 
 export = argv => yargs(argv)
-	.usage(i18n('Usage: $0 <command> [files...] [options]'))
+	.usage(i18n('Usage: $0 <command> [globs...] [<options>]'))
 	.command({
-		command: 'check [files...]',
+		command: 'check [globs...]',
 		describe: i18n('Validate that file(s) adhere to .editorconfig settings'),
 		builder: builder,
 		handler: check
 	})
 	.command({
-		command: 'fix   [files...]',
+		command: 'fix   [globs...]',
 		describe: i18n('Fix formatting errors that disobey .editorconfig settings'),
 		builder: yargs => (
 			builder(yargs).option('dest', {
@@ -213,7 +240,7 @@ export = argv => yargs(argv)
 		handler: fix
 	})
 	.command({
-		command: 'infer [files...]',
+		command: 'infer [globs...]',
 		describe: i18n('Infer .editorconfig settings from one or more files'),
 		builder: inferBuilder,
 		handler: infer

@@ -60,6 +60,11 @@ describe('eclint cli', function() {
 				expect(files).to.have.length.above(10);
 			});
 		});
+		it('Directories', () => {
+			return eclint(['check', 'locales']).then(files => {
+				expect(files).to.have.length.above(2);
+			});
+		});
 		it('README.md', () => {
 			return eclint(['check', 'README.md']).then(files => {
 				expect(files).to.have.lengthOf(1);
