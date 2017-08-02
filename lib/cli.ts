@@ -1,17 +1,29 @@
 import _ = require('lodash');
 import tap = require('gulp-tap');
 import vfs = require('vinyl-fs');
-import gitignore = require('gulp-gitignore');
 import eclint = require('./eclint');
 import yargs = require('yargs');
 import reporter = require('gulp-reporter');
 import filter = require('gulp-filter');
+import gutil = require('gulp-util');
 import minimatch = require('minimatch');
 import fileType = require('file-type');
 import Stream = require('stream');
 import i18n = require('./i18n');
 import path = require('path');
 import fs = require('fs');
+
+/*
+ * bugfix for thomas-lebeau/gulp-gitignore#2
+ */
+function gitignore(...args): Stream {
+	const stream = require('gulp-gitignore')(...args);
+	if (stream instanceof Stream) {
+		return stream;
+	} else {
+		return gutil.noop();
+	}
+}
 
 const pkg = require('../package.json');
 
