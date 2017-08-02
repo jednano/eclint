@@ -1,102 +1,157 @@
 import common = require('./test-common');
+import sinon = require('sinon');
 import path = require('path');
 import os = require('os');
-import fs = require('fs');
-const execFile = require('child_process').execFile;
-const cliPath = require.resolve('../bin/eclint');
+import fs = require('fs-extra');
+import gutil = require('gulp-util');
+import proxyquire = require('proxyquire');
+import getStream = require('get-stream');
 const expect = common.expect;
 
-describe('eclint cli', function() {
-	function eclint(args: string[], callback?: any) {
-		args.unshift(cliPath);
-		return execFile(process.execPath, args, callback);
+function eclint(args) {
+	const argv = proxyquire('./cli', {
+		'gulp-tap': (callback) => {
+			log = sinon.stub(console, 'log');
+			callback({
+				contents: 'test: console.mock',
+			});
+			expect(log.lastCall.args).to.be.deep.equal(['test: console.mock']);
+			log.restore();
+			return gutil.noop();
+		},
+		'gulp-reporter': gutil.noop,
+	})(args);
+	// const argv = require('./cli')(args);
+	if (argv.stream) {
+		argv.then = (...args) => getStream.array(argv.stream).then(...args);
 	}
-	this.timeout(80000);
-	it('Missing sub-command', (done) => {
-		eclint([], (error: Error) => {
-			expect(error.message).to.be.match(/\bCommandError\b/);
-			expect(error.message).to.be.match(/\bMissing required sub-command\b/);
-			done();
-		});
+	return argv;
+}
+
+let exit;
+let log;
+describe('eclint cli', function() {
+	this.timeout(6000);
+	beforeEach(function () {
+		exit = sinon.stub(process, 'exit');
+		process.exitCode = 0;
 	});
+
+	afterEach(function () {
+		process.exitCode = 0;
+		exit.restore();
+		if (log) {
+			log.restore();
+		}
+	});
+
+	it('Missing sub-command', () => {
+		log = sinon.stub(console, 'error');
+		const yargs = eclint([]);
+		expect(log.lastCall.args).to.have.lengthOf(1);
+		sinon.assert.calledWith(log, 'CommandError: Missing required sub-command.');
+		expect(yargs.stream).to.be.not.ok;
+		log.restore();
+	});
+
 	describe('check', () => {
-		it('All Files', (done) => {
-			eclint(['check'], done);
+		it('All Files', () => {
+			return eclint(['check']).then(files => {
+				expect(files).to.have.length.above(10);
+			});
 		});
-		it('README.md', (done) => {
-			eclint(['check', 'README.md'], done);
+		it('Directories', () => {
+			return eclint(['check', 'locales']).then(files => {
+				expect(files).to.have.length.above(2);
+			});
 		});
-		it('images/*', (done) => {
-			eclint(['check', 'images/*'], done);
+		it('README.md', () => {
+			return eclint(['check', 'README.md']).then(files => {
+				expect(files).to.have.lengthOf(1);
+			});
 		});
-		it('node_modules/.bin/_mocha', (done) => {
-			eclint(['check', 'node_modules/.bin/_mocha'], (error: Error) => {
-				expect(error.message).to.be.match(/\(EditorConfig indent_style\b/);
-				done();
+		it('images/*', () => {
+			return eclint(['check', 'images/**/*']).then(files => {
+				expect(files).have.lengthOf(0);
+			});
+		});
+		it('node_modules/.bin/_mocha', () => {
+			return eclint(['check', 'node_modules/.bin/_mocha']).then(files => {
+				expect(files).have.lengthOf(1);
+				expect(files[0]).haveOwnProperty('editorconfig').haveOwnProperty('errors').to.have.length.above(1);
+			});
+		});
+		it('not_exist.*', () => {
+			const result = eclint(['check', 'not_exist.*']);
+			let errListener = result.stream.listeners('error');
+			errListener = errListener[errListener.length - 1];
+			log = sinon.stub(console, 'error');
+			errListener(new Error('test: console.mock'));
+			expect(log.lastCall.args).to.have.lengthOf(1);
+			expect(log.lastCall.args[0]).to.be.match(/Error: test: console\.mock/);
+			log.reset();
+			errListener(new gutil.PluginError('gulp-reporter', 'test: console.mock'));
+			expect(log.lastCall).to.be.null;
+			log.restore();
+			process.exitCode = 0;
+			return result.then(files => {
+				expect(files).have.lengthOf(0);
 			});
 		});
 	});
 	describe('infer', function() {
-		it('lib/**/*', (done) => {
-			eclint(['infer', '--ini', 'lib/**/*'], (error, stdout, stderr) => {
-				if (error) {
-					done(error);
-				} else {
-					expect(stdout).to.be.match(/\bindent_style = tab\b/);
-					expect(stderr).not.to.be.ok;
-					done();
-				}
+
+		it('lib/**/*', () => {
+			return eclint(['infer', '--ini', 'lib/**/*']).then(files => {
+				expect(files).have.lengthOf(1);
+				expect(files[0].contents.toString()).to.be.match(/\bindent_style = tab\b/);
 			});
 		});
-		it('README.md', (done) => {
-			eclint(['infer', 'README.md'], done);
+		it('README.md', () => {
+			return eclint(['infer', 'README.md']).then(files => {
+				expect(files).have.lengthOf(1);
+				const result = JSON.parse(files[0].contents);
+				expect(result).haveOwnProperty('end_of_line').and.equal('lf');
+				expect(result).haveOwnProperty('insert_final_newline').and.to.be.ok;
+			});
 		});
-		it('node_modules/.bin/_mocha', (done) => {
-			eclint(['infer', 'node_modules/.bin/_mocha'], done);
-		});
-		it('All Files', (done) => {
-			eclint(['infer'], (error, stdout, stderr) => {
-				if (error) {
-					done(error);
-				} else {
-					expect(JSON.parse(stdout)).to.deep.equal({
-						'charset': '',
-						'indent_style': 'tab',
-						'indent_size': 0,
-						'trim_trailing_whitespace': true,
-						'end_of_line': 'lf',
-						'insert_final_newline': true,
-						'max_line_length': 80
-					});
-					expect(stderr).not.to.be.ok;
-					done();
-				}
+		it('All Files', () => {
+			return eclint(['infer']).then(files => {
+				expect(files).have.lengthOf(1);
+				const result = JSON.parse(files[0].contents);
+				expect(result).to.deep.equal({
+					'charset': '',
+					'indent_style': 'tab',
+					'indent_size': 0,
+					'trim_trailing_whitespace': true,
+					'end_of_line': 'lf',
+					'insert_final_newline': true,
+					'max_line_length': 80
+				});
 			});
 		});
 	});
 	describe('fix', function() {
-		it('README.md', (done) => {
-			eclint(['fix', 'README.md'], done);
+		it('README.md', () => {
+			eclint(['fix', 'README.md']).then(files => {
+				expect(files).to.have.lengthOf(1);
+			});
 		});
-		if (os.tmpdir) {
-			it('All Files with `--dest`', (done) => {
-				var tmpDir = path.join(os.tmpdir(), 'eclint');
-				fs.unlink(tmpDir, () => {
-					eclint(['fix', '--dest', tmpDir], (error) => {
-						if (error) {
-							done(error);
-						} else {
-							fs.stat(path.join(tmpDir, 'README.md'), (error, stat) => {
-								expect(stat).to.be.ok;
-								done(error);
-							});
-						}
-					});
+		if (os.tmpdir && fs.mkdtemp) {
+			it('All Files with `--dest`', () => {
+				return fs.mkdtemp(path.join(os.tmpdir(), 'eclint-')).then(tmpDir => {
+					expect(tmpDir).to.be.ok.and.be.a('string');
+					return eclint(['fix', '--dest', tmpDir]);
+				}).then(files => {
+					expect(files).to.have.length.above(10);
 				});
 			});
 		}
-		it('All Files', (done) => {
-			eclint(['fix'], done);
+		it('All Files', () => {
+			eclint(['fix']).then(files => {
+				expect(files).to.have.length.above(10);
+			});
 		});
 	});
+
 });

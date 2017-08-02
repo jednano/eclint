@@ -6,15 +6,19 @@ import eclint = require('./eclint');
 import yargs = require('yargs');
 import reporter = require('gulp-reporter');
 import filter = require('gulp-filter');
+import minimatch = require('minimatch');
 import fileType = require('file-type');
 import Stream = require('stream');
 import i18n = require('./i18n');
+import path = require('path');
+import fs = require('fs');
 
 const pkg = require('../package.json');
 
 interface Argv extends yargs.Argv {
-	files: string[];
+	globs: string[];
 	dest?: string;
+	stream?: Stream;
 }
 
 function excludeBinaryFile(file: eclint.EditorConfigLintFile) {
@@ -119,9 +123,7 @@ function inferBuilder(yargs: yargs.Argv): yargs.Argv {
 }
 
 function handler(yargs: Argv): Stream.Transform {
-	const hasFile = yargs.files && yargs.files.length;
-	const files = hasFile ? yargs.files : [
-		'**/*',
+	let ignore = [
 		// # Repository
 		// Git
 		'!.git/**/*',
@@ -147,12 +149,38 @@ function handler(yargs: Argv): Stream.Transform {
 		// Folder config file
 		'!**/ehthumbs.db',
 	];
-	let stream = vfs.src(files)
-		.pipe(filter(excludeBinaryFile));
-	if (!hasFile) {
-		stream = stream.pipe(gitignore());
+	let globs = yargs.globs;
+	if (globs && globs.length) {
+		globs = globs.map(file => {
+			let stat;
+			try {
+				stat = fs.statSync(file);
+			} catch (e) {
+				//
+			}
+
+			if (stat) {
+				if (stat.isDirectory()) {
+					return path.join(file, '**/*');
+				} else {
+					ignore = ignore.filter(glob => (
+						!minimatch(file, glob.slice(1), {
+							dot: true,
+						})
+					));
+				}
+			}
+			return file;
+		});
+	} else {
+		globs = ['**/*'];
 	}
-	return stream;
+
+	globs = globs.concat(ignore);
+	yargs.globs = globs;
+	return vfs.src(globs)
+		.pipe(filter(excludeBinaryFile))
+		.pipe(gitignore());
 }
 
 function pickSettings(yargs: yargs.Argv): eclint.CommandOptions {
@@ -163,51 +191,44 @@ function pickSettings(yargs: yargs.Argv): eclint.CommandOptions {
 }
 
 function check(yargs: Argv): Stream.Transform {
-	return handler(yargs)
+	return yargs.stream = handler(yargs)
 		.pipe(eclint.check(pickSettings(yargs)))
 		.pipe(reporter({
 			console: console.error,
 			filter: null,
 		}))
-		.on('error', function (error) {
-			/* istanbul ignore if */
+		.on('error', error => {
 			if (error.plugin !== 'gulp-reporter') {
 				console.error(error);
 			}
-			process.exitCode = 1;
+			process.exitCode = -1;
 		}).resume();
 }
 
 function fix(yargs: Argv): Stream {
-	let stream = handler(yargs)
-		.pipe(eclint.fix(pickSettings(yargs)));
-
-	if (yargs.dest) {
-		return stream.pipe(vfs.dest(yargs.dest));
-	}
-	return stream.pipe(vfs.dest(function (file) {
-		return file.base;
-	}));
+	return yargs.stream = handler(yargs)
+		.pipe(eclint.fix(pickSettings(yargs)))
+		.pipe(yargs.dest ? vfs.dest(yargs.dest) : vfs.dest(file => file.base));
 }
 
 function infer(yargs: Argv): Stream {
-	return handler(yargs)
+	return yargs.stream = handler(yargs)
 		.pipe(eclint.infer(<eclint.InferOptions>_.pickBy(yargs)))
 		.pipe(tap(file => {
 			console.log(file.contents + '');
 		}));
 }
 
-yargs
-	.usage(i18n('Usage: $0 <command> [files...] [options]'))
+export = argv => yargs(argv)
+	.usage(i18n('Usage: $0 <command> [globs...] [<options>]'))
 	.command({
-		command: 'check [files...]',
+		command: 'check [globs...]',
 		describe: i18n('Validate that file(s) adhere to .editorconfig settings'),
 		builder: builder,
 		handler: check
 	})
 	.command({
-		command: 'fix   [files...]',
+		command: 'fix   [globs...]',
 		describe: i18n('Fix formatting errors that disobey .editorconfig settings'),
 		builder: yargs => (
 			builder(yargs).option('dest', {
@@ -219,7 +240,7 @@ yargs
 		handler: fix
 	})
 	.command({
-		command: 'infer [files...]',
+		command: 'infer [globs...]',
 		describe: i18n('Infer .editorconfig settings from one or more files'),
 		builder: inferBuilder,
 		handler: infer
