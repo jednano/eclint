@@ -16,8 +16,8 @@ import fs = require('fs');
 /*
  * bugfix for thomas-lebeau/gulp-gitignore#2
  */
-function gitignore(...args): Stream {
-	const stream = require('gulp-gitignore')(...args);
+function gitignore(): Stream {
+	const stream = require('gulp-gitignore')();
 	if (stream instanceof Stream) {
 		return stream;
 	} else {
