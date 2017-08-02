@@ -40,11 +40,18 @@ describe('eclint cli', function() {
 	afterEach(function () {
 		process.exitCode = 0;
 		exit.restore();
+		if (log) {
+			log.restore();
+		}
 	});
 
 	it('Missing sub-command', () => {
+		log = sinon.stub(console, 'error');
 		const yargs = eclint([]);
+		expect(log.lastCall.args).to.have.lengthOf(1);
+		sinon.assert.calledWith(log, 'CommandError: Missing required sub-command.');
 		expect(yargs.stream).to.be.not.ok;
+		log.restore();
 	});
 
 	describe('check', () => {
