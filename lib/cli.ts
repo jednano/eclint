@@ -15,6 +15,7 @@ const pkg = require('../package.json');
 interface Argv extends yargs.Argv {
 	files: string[];
 	dest?: string;
+	stream?: Stream;
 }
 
 function excludeBinaryFile(file: eclint.EditorConfigLintFile) {
@@ -163,42 +164,35 @@ function pickSettings(yargs: yargs.Argv): eclint.CommandOptions {
 }
 
 function check(yargs: Argv): Stream.Transform {
-	return handler(yargs)
+	return yargs.stream = handler(yargs)
 		.pipe(eclint.check(pickSettings(yargs)))
 		.pipe(reporter({
 			console: console.error,
 			filter: null,
 		}))
-		.on('error', function (error) {
-			/* istanbul ignore if */
+		.on('error', error => {
 			if (error.plugin !== 'gulp-reporter') {
 				console.error(error);
 			}
-			process.exitCode = 1;
+			process.exitCode = -1;
 		}).resume();
 }
 
 function fix(yargs: Argv): Stream {
-	let stream = handler(yargs)
-		.pipe(eclint.fix(pickSettings(yargs)));
-
-	if (yargs.dest) {
-		return stream.pipe(vfs.dest(yargs.dest));
-	}
-	return stream.pipe(vfs.dest(function (file) {
-		return file.base;
-	}));
+	return yargs.stream = handler(yargs)
+		.pipe(eclint.fix(pickSettings(yargs)))
+		.pipe(yargs.dest ? vfs.dest(yargs.dest) : vfs.dest(file => file.base));
 }
 
 function infer(yargs: Argv): Stream {
-	return handler(yargs)
+	return yargs.stream = handler(yargs)
 		.pipe(eclint.infer(<eclint.InferOptions>_.pickBy(yargs)))
 		.pipe(tap(file => {
 			console.log(file.contents + '');
 		}));
 }
 
-yargs
+export = argv => yargs(argv)
 	.usage(i18n('Usage: $0 <command> [files...] [options]'))
 	.command({
 		command: 'check [files...]',
