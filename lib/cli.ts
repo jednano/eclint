@@ -156,7 +156,7 @@ function handler(yargs: Argv): Stream.Transform {
 			try {
 				stat = fs.statSync(file);
 			} catch (e) {
-				return file;
+				//
 			}
 
 			if (stat) {
@@ -198,7 +198,6 @@ function check(yargs: Argv): Stream.Transform {
 			filter: null,
 		}))
 		.on('error', error => {
-			/* istanbul ignore if */
 			if (error.plugin !== 'gulp-reporter') {
 				console.error(error);
 			}

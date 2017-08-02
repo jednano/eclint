@@ -10,29 +10,34 @@ const expect = common.expect;
 
 function eclint(args) {
 	const argv = proxyquire('./cli', {
-		'gulp-tap': gutil.noop,
+		'gulp-tap': (callback) => {
+			log = sinon.stub(console, 'log');
+			callback({
+				contents: 'test: console.mock',
+			});
+			expect(log.lastCall.args).to.be.deep.equal(['test: console.mock']);
+			log.restore();
+			return gutil.noop();
+		},
 		'gulp-reporter': gutil.noop,
 	})(args);
 	// const argv = require('./cli')(args);
 	if (argv.stream) {
-		argv.stream = getStream.array(argv.stream);
+		argv.then = (...args) => getStream.array(argv.stream).then(...args);
 	}
 	return argv;
 }
 
 let exit;
+let log;
 describe('eclint cli', function() {
 	this.timeout(6000);
-	before(() => {
-		exit = sinon.stub(process, 'exit');
-	});
-
 	beforeEach(function () {
+		exit = sinon.stub(process, 'exit');
 		process.exitCode = 0;
-		exit.reset();
 	});
 
-	after(function () {
+	afterEach(function () {
 		process.exitCode = 0;
 		exit.restore();
 	});
@@ -44,41 +49,59 @@ describe('eclint cli', function() {
 
 	describe('check', () => {
 		it('All Files', () => {
-			return eclint(['check']).stream.then(files => {
+			return eclint(['check']).then(files => {
 				expect(files).to.have.length.above(10);
 			});
 		});
 		it('Directories', () => {
-			return eclint(['check', 'locales']).stream.then(files => {
+			return eclint(['check', 'locales']).then(files => {
 				expect(files).to.have.length.above(2);
 			});
 		});
 		it('README.md', () => {
-			return eclint(['check', 'README.md']).stream.then(files => {
+			return eclint(['check', 'README.md']).then(files => {
 				expect(files).to.have.lengthOf(1);
 			});
 		});
 		it('images/*', () => {
-			return eclint(['check', 'images/**/*']).stream.then(files => {
+			return eclint(['check', 'images/**/*']).then(files => {
 				expect(files).have.lengthOf(0);
 			});
 		});
 		it('node_modules/.bin/_mocha', () => {
-			return eclint(['check', 'node_modules/.bin/_mocha']).stream.then(files => {
+			return eclint(['check', 'node_modules/.bin/_mocha']).then(files => {
 				expect(files).have.lengthOf(1);
 				expect(files[0]).haveOwnProperty('editorconfig').haveOwnProperty('errors').to.have.length.above(1);
 			});
 		});
+		it('not_exist.*', () => {
+			const result = eclint(['check', 'not_exist.*']);
+			let errListener = result.stream.listeners('error');
+			errListener = errListener[errListener.length - 1];
+			log = sinon.stub(console, 'error');
+			errListener(new Error('test: console.mock'));
+			expect(log.lastCall.args).to.have.lengthOf(1);
+			expect(log.lastCall.args[0]).to.be.match(/Error: test: console\.mock/);
+			log.reset();
+			errListener(new gutil.PluginError('gulp-reporter', 'test: console.mock'));
+			expect(log.lastCall).to.be.null;
+			log.restore();
+			process.exitCode = 0;
+			return result.then(files => {
+				expect(files).have.lengthOf(0);
+			});
+		});
 	});
 	describe('infer', function() {
+
 		it('lib/**/*', () => {
-			return eclint(['infer', '--ini', 'lib/**/*']).stream.then(files => {
+			return eclint(['infer', '--ini', 'lib/**/*']).then(files => {
 				expect(files).have.lengthOf(1);
 				expect(files[0].contents.toString()).to.be.match(/\bindent_style = tab\b/);
 			});
 		});
 		it('README.md', () => {
-			return eclint(['infer', 'README.md']).stream.then(files => {
+			return eclint(['infer', 'README.md']).then(files => {
 				expect(files).have.lengthOf(1);
 				const result = JSON.parse(files[0].contents);
 				expect(result).haveOwnProperty('end_of_line').and.equal('lf');
@@ -86,7 +109,7 @@ describe('eclint cli', function() {
 			});
 		});
 		it('All Files', () => {
-			return eclint(['infer']).stream.then(files => {
+			return eclint(['infer']).then(files => {
 				expect(files).have.lengthOf(1);
 				const result = JSON.parse(files[0].contents);
 				expect(result).to.deep.equal({
@@ -103,7 +126,7 @@ describe('eclint cli', function() {
 	});
 	describe('fix', function() {
 		it('README.md', () => {
-			eclint(['fix', 'README.md']).stream.then(files => {
+			eclint(['fix', 'README.md']).then(files => {
 				expect(files).to.have.lengthOf(1);
 			});
 		});
@@ -111,14 +134,14 @@ describe('eclint cli', function() {
 			it('All Files with `--dest`', () => {
 				return fs.mkdtemp(path.join(os.tmpdir(), 'eclint-')).then(tmpDir => {
 					expect(tmpDir).to.be.ok.and.be.a('string');
-					return eclint(['fix', '--dest', tmpDir]).stream;
+					return eclint(['fix', '--dest', tmpDir]);
 				}).then(files => {
 					expect(files).to.have.length.above(10);
 				});
 			});
 		}
 		it('All Files', () => {
-			eclint(['fix']).stream.then(files => {
+			eclint(['fix']).then(files => {
 				expect(files).to.have.length.above(10);
 			});
 		});
