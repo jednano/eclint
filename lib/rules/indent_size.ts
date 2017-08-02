@@ -22,25 +22,36 @@ function resolve(settings: eclint.Settings): number {
 }
 
 function checkLine(line: doc.Line, indentSize: number): EditorConfigError {
-	if (!line.prefix || !RE_LEADING_SPACES.test(line.prefix)) {
+	if (!RE_LEADING_SPACES.test(line.prefix)) {
 		return;
 	}
-	var leadingSpacesLength = line.prefix.length;
-	var padSpacesLength = leadingSpacesLength % indentSize;
-	var padSize = line.padSize || 0;
-
+	var indentLine: doc.Line;
+	var padSize: number;
+	if (line.isBlockComment) {
+		indentLine = line.blockCommentStart;
+		padSize = line.padSize;
+	} else if (!line.prefix) {
+		return;
+	} else {
+		indentLine = line;
+		padSize = 0;
+	}
+	var leadingSpacesLength = indentLine.prefix.length;
 	var softTabCount = leadingSpacesLength / indentSize;
+
 	if (indentSize % 2) {
 		softTabCount = Math.floor(softTabCount);
 	} else {
 		softTabCount = Math.round(softTabCount);
 	}
 
-	if (padSpacesLength !== 0 && padSpacesLength !== padSize) {
+	var expectedIndentSize = softTabCount * indentSize + padSize;
+
+	if (line.prefix.length !== expectedIndentSize) {
 		var error = new EditorConfigError([
 			'invalid indent size: %s, expected: %s',
-			leadingSpacesLength,
-			softTabCount * indentSize + padSize,
+			line.prefix.length,
+			expectedIndentSize,
 		]);
 		error.lineNumber = line.number;
 		error.rule = 'indent_size';
