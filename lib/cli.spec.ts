@@ -54,6 +54,17 @@ describe('eclint cli', function() {
 		log.restore();
 	});
 
+	if (os.platform() !== 'win32') {
+		it('thomas-lebeau/gulp-gitignore#2', () => {
+			const cwd = process.cwd();
+			process.chdir('/');
+			return eclint(['check', '/etc/hosts']).then(files => {
+				process.chdir(cwd);
+				expect(files).to.have.length.above(0);
+			});
+		});
+	}
+
 	describe('check', () => {
 		it('All Files', () => {
 			return eclint(['check']).then(files => {
