@@ -8,7 +8,7 @@ import path = require('path');
 var expect = common.expect;
 
 describe('eclint gulp plugin', () => {
-	before(() => {
+	afterEach(() => {
 		eclint.configure({
 			newlines: ['\n', '\r\n']
 		});
@@ -267,6 +267,69 @@ describe('eclint gulp plugin', () => {
 			});
 			vfs.src('package.json').pipe(stream);
 		});
+		it('package.json (score)', (done) => {
+			var stream = eclint.infer({
+				score: true
+			});
+			stream.on('data', (file: File) => {
+				var config = JSON.parse(String(file.contents));
+				expect(config).haveOwnProperty('trim_trailing_whitespace').haveOwnProperty('true').above(100);
+				done();
+			});
+			vfs.src('package.json').pipe(stream);
+		});
+		it('Cannot generate tallied scores as ini file format', () => {
+			expect(() => {
+				eclint.infer({
+					score: true,
+					ini: true,
+				});
+			}).to.throw('Cannot generate tallied scores as ini file format');
+		});
+		it('file is stream', done => {
+			const stream = eclint.infer();
+			stream.on('error', () => {
+				done();
+			});
+			stream.write({
+				isNull: () => false,
+				isStream: () => true,
+			});
+		});
+		it('file is null', () => {
+			const stream = eclint.infer();
+			stream.write({
+				isNull: () => true,
+				isStream: () => false,
+			});
+
+			expect(() => {
+				stream.end();
+			}).to.throw();
+		});
+		it('options.ini', (done) => {
+			var stream = eclint.infer({
+				ini: true,
+			});
+			stream.on('data', (file: File) => {
+				var config = String(file.contents);
+				expect(config).to.be.match(/^end_of_line = lf$/im);
+				done();
+			});
+			vfs.src('README.md').pipe(stream);
+		});
+		it('options.root', (done) => {
+			var stream = eclint.infer({
+				root: true,
+				ini: true,
+			});
+			stream.on('data', (file: File) => {
+				var config = String(file.contents);
+				expect(config).to.be.match(/^root = true$/im);
+				done();
+			});
+			vfs.src('README.md').pipe(stream);
+		});
 	});
 
 	describe('charset rule', () => {
@@ -379,5 +442,11 @@ describe('eclint gulp plugin', () => {
 			}));
 		});
 
+	});
+
+	it('eclint configure', () => {
+		expect(() => {
+			eclint.configure.call(null);
+		}).not.to.throw();
 	});
 });
