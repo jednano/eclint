@@ -64,7 +64,7 @@
     "file-type": "^5.2.0",
     "gulp-filter": "^5.0.0",
     "gulp-gitignore": "^0.1.0",
-    "gulp-reporter": "^1.9.1",
+    "gulp-reporter": "^2.2.0",
     "gulp-tap": "^1.0.1",
     "gulp-util": "^3.0.8",
     "linez": "^4.1.4",
