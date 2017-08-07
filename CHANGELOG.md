@@ -1,3 +1,12 @@
+## 2.4.0
+- Fix: [yargs/y18n#48](https://github.com/yargs/y18n/issues/48) [#93](https://github.com/jedmao/eclint/pull/93)
+- Fix: [thomas-lebeau/gulp-gitignore#2](https://github.com/thomas-lebeau/gulp-gitignore/issues/2) [#84](https://github.com/jedmao/eclint/pull/84)
+- Update: CLI & testcase, use mock. [#88](https://github.com/jedmao/eclint/pull/88)
+- Update: Output verbosity. [#92](https://github.com/jedmao/eclint/pull/92)
+- Update: dependencies. [#82](https://github.com/jedmao/eclint/pull/82) [#89](https://github.com/jedmao/eclint/pull/89) [#94](https://github.com/jedmao/eclint/pull/94)
+- Add: Support for non doc block comment. [#87](https://github.com/jedmao/eclint/pull/87)
+- Add: Support directories on CLI. [#86](https://github.com/jedmao/eclint/pull/86)
+
 ## 2.3.0
 - Added: Removes empty final new lines where there is more than one [#77](https://github.com/jedmao/eclint/pull/77)
 - Upgraded: dependencies. [#78](https://github.com/jedmao/eclint/pull/78)
