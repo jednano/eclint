@@ -207,7 +207,7 @@ function check(yargs: Argv): Stream.Transform {
 		.pipe(eclint.check(pickSettings(yargs)))
 		.pipe(reporter({
 			output: console.error,
-			blame: null,
+			blame: false,
 		}))
 		.on('error', error => {
 			if (error.plugin !== 'gulp-reporter') {
