@@ -8,8 +8,8 @@ import proxyquire = require('proxyquire');
 import getStream = require('get-stream');
 const expect = common.expect;
 
-function eclint(args) {
-	const argv = proxyquire('./cli', {
+function eclint(args, stubs?) {
+	const argv = proxyquire('./cli', stubs || {
 		'gulp-tap': (callback) => {
 			log = sinon.stub(console, 'log');
 			callback({
@@ -165,4 +165,13 @@ describe('eclint cli', function() {
 		});
 	});
 
+	it('thomas-lebeau/gulp-gitignore#2', () => {
+		return eclint(['check', 'dist/cli.js'], {
+			'gulp-tap': gutil.noop,
+			'gulp-reporter': gutil.noop,
+			'gulp-gitignore': () => [],
+		}).then(files => {
+			expect(files).to.have.length.above(0);
+		});
+	});
 });
