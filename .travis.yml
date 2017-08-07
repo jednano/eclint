@@ -7,6 +7,9 @@ node_js:
 
 sudo: false
 
+before_install:
+  - npm i npm@latest -g
+
 after_success:
   - npm install codecov
   - npm run codecov
