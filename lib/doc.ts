@@ -40,12 +40,12 @@ function updateDoc(doc: Document, settings?: eclint.Settings): Document {
 				docCommentLines.forEach(line => {
 					if (block_comment && _.startsWith(line.string, block_comment)) {
 						line.padSize = padSize;
+						line.isBlockComment = true;
 					} else if (line.isBlockCommentStart) {
 						return;
 					} else {
 						line.padSize = currPadSize;
 					}
-					line.isBlockComment = true;
 					line.blockCommentStart = blockCommentStart;
 				});
 			}

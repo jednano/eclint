@@ -220,12 +220,12 @@ describe('indent_style rule', () => {
 				);
 				expect(document.toString()).to.eq([
 					'/* block',
-					'   comment */',
+					'comment */',
 					'/*  block',
-					'    comment */',
+					'comment */',
 					'/*',
-					'   block',
-					'   comment',
+					'block',
+					'comment',
 					' */',
 					'/*',
 					' * document',

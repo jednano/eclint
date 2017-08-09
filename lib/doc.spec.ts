@@ -112,7 +112,7 @@ describe('eclint doc', function() {
 			block_comment_end: '<![endif]-->',
 		}).lines;
 		expect(lines[0]).haveOwnProperty('isBlockCommentStart').and.to.be.ok;
-		expect(lines[1]).haveOwnProperty('isBlockComment').and.to.be.ok;
+		expect(lines[1]).haveOwnProperty('isBlockComment').and.to.be.not.ok;
 		expect(lines[1]).haveOwnProperty('padSize').and.to.be.equal(13);
 		expect(lines[2]).haveOwnProperty('isBlockCommentEnd').and.to.be.ok;
 	});

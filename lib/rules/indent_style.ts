@@ -27,7 +27,7 @@ function checkLine(line: doc.Line, indentStyle: IndentStyle) {
 		return;
 	}
 
-	if (indentStyle === IndentStyle.tab && line.isBlockComment && /^\t* +$/.test(line.prefix)) {
+	if (indentStyle === IndentStyle.tab && line.blockCommentStart && /^\t* +$/.test(line.prefix)) {
 		return;
 	}
 

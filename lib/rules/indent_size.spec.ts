@@ -95,6 +95,52 @@ describe('indent_size rule', () => {
 			expect(errors).to.have.lengthOf(0);
 		});
 
+		it('document comment', () => {
+			var errors = rule.check({
+				indent_size: 2
+			}, doc.create([
+				'/*',
+				' * test',
+				' */',
+			].join('\n'), {
+				block_comment_start: '/*',
+				block_comment_end: '*/',
+			}));
+			expect(errors).to.have.lengthOf(0);
+		});
+
+		it('conditional comment', () => {
+			var errors = rule.check({
+				indent_size: 2
+			}, doc.create([
+				'// #if _DEBUG',
+				'const data = {',
+				"  key: 'value',",
+				'};',
+				'/* #else',
+				'const data = {',
+				"  key: 'value',",
+				'};',
+				'// #endif */'
+			].join('\n'), {
+				block_comment_start: '/*',
+				block_comment_end: '*/',
+			}));
+			expect(errors).to.have.lengthOf(0);
+		});
+
+		it('normal block comment', () => {
+			var errors = rule.check({
+				indent_size: 2
+			}, doc.create([
+				'/* foo',
+				'   bar */',
+			].join('\n'), {
+				block_comment_start: '/*',
+				block_comment_end: '*/',
+			}));
+			expect(errors).to.have.lengthOf(0);
+		});
 	});
 
 	describe('fix command', () => {
