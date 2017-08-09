@@ -22,22 +22,18 @@ function resolve(settings: eclint.Settings): number {
 }
 
 function checkLine(line: doc.Line, indentSize: number): EditorConfigError {
-	if (!RE_LEADING_SPACES.test(line.prefix)) {
+	if (
+		!line.prefix ||
+		!RE_LEADING_SPACES.test(line.prefix) ||
+		(line.blockCommentStart &&
+		line.prefix.length === (
+			line.blockCommentStart.prefix.length + line.padSize
+		))
+	) {
 		return;
 	}
-	var indentLine: doc.Line;
-	var padSize: number;
-	if (line.isBlockComment) {
-		indentLine = line.blockCommentStart;
-		padSize = line.padSize;
-	} else if (!line.prefix) {
-		return;
-	} else {
-		indentLine = line;
-		padSize = 0;
-	}
-	var leadingSpacesLength = indentLine.prefix.length;
-	var softTabCount = leadingSpacesLength / indentSize;
+
+	var softTabCount = line.prefix.length / indentSize;
 
 	if (indentSize % 2) {
 		softTabCount = Math.floor(softTabCount);
@@ -45,7 +41,7 @@ function checkLine(line: doc.Line, indentSize: number): EditorConfigError {
 		softTabCount = Math.round(softTabCount);
 	}
 
-	var expectedIndentSize = softTabCount * indentSize + padSize;
+	var expectedIndentSize = softTabCount * indentSize;
 
 	if (line.prefix.length !== expectedIndentSize) {
 		var error = new EditorConfigError([
