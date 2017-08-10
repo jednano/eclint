@@ -1,7 +1,8 @@
 ## 2.4.2
-bugfix: Break valid block comment. [#97](https://github.com/jedmao/eclint/pull/97)
-bugfix: Generated empty locales file after execute eclint command. [#99](https://github.com/jedmao/eclint/pull/99)
-bugfix: fail to recognize BOM [#98](https://github.com/jedmao/eclint/pull/98)
+- bugfix: Break valid block comment. [#97](https://github.com/jedmao/eclint/pull/97)
+- bugfix: Generated empty locales file after execute eclint command. [#99](https://github.com/jedmao/eclint/pull/99)
+- bugfix: fail to recognize BOM [#98](https://github.com/jedmao/eclint/pull/98)
+- update: coverage for `createPluginError` [#101](https://github.com/jedmao/eclint/pull/101)
 
 ## 2.4.1
 bugfix: Break valid block comment. [#97](https://github.com/jedmao/eclint/pull/97)
