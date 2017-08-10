@@ -1,6 +1,6 @@
 {
   "name": "eclint",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "description": "Validate or fix code that doesn't adhere to EditorConfig settings or infer settings from existing code.",
   "keywords": [
     "editorconfig",
@@ -89,7 +89,7 @@
     "@types/sinon-chai": "^2.7.28",
     "@types/through2": "^2.0.33",
     "@types/vinyl": "^2.0.0",
-    "@types/vinyl-fs": "^2.4.5",
+    "@types/vinyl-fs": "^2.4.6",
     "@types/yargs": "^8.0.2",
     "chai": "^4.1.0",
     "event-stream": "^3.3.4",

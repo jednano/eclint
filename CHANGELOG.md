@@ -1,3 +1,11 @@
+## 2.4.2
+bugfix: Break valid block comment. [#97](https://github.com/jedmao/eclint/pull/97)
+bugfix: Generated empty locales file after execute eclint command. [#99](https://github.com/jedmao/eclint/pull/99)
+bugfix: fail to recognize BOM [#98](https://github.com/jedmao/eclint/pull/98)
+
+## 2.4.1
+bugfix: Break valid block comment. [#97](https://github.com/jedmao/eclint/pull/97)
+
 ## 2.4.0
 - Fix: [yargs/y18n#48](https://github.com/yargs/y18n/issues/48) [#93](https://github.com/jedmao/eclint/pull/93)
 - Fix: [thomas-lebeau/gulp-gitignore#2](https://github.com/thomas-lebeau/gulp-gitignore/issues/2) [#84](https://github.com/jedmao/eclint/pull/84)

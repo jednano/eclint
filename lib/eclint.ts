@@ -3,7 +3,7 @@ import os = require('os');
 import _ = require('lodash');
 import gutil = require('gulp-util');
 import through = require('through2');
-var editorconfig = require('editorconfig');
+import editorconfig = require('editorconfig');
 
 import * as linez from 'linez';
 import * as doc from './doc';
@@ -119,9 +119,7 @@ module eclint {
 	var PLUGIN_NAME = 'ECLint';
 
 	function createPluginError(err: Error | string) {
-		return new PluginError(PLUGIN_NAME, _.get(err, 'message', <string>err), {
-			showStack: typeof err !== 'string'
-		});
+		return new PluginError(PLUGIN_NAME, err);
 	}
 
 	export var ruleNames = [
@@ -203,17 +201,13 @@ module eclint {
 						if (_.isUndefined(rule)) {
 							return;
 						}
-						try {
-							if (rule.type === 'DocumentRule') {
-								(<DocumentRule>rule).check(settings, document).forEach(addError);
-							} else {
-								var check = (<LineRule>rule).check;
-								document.lines.forEach(line => {
-									addError(check(settings, line));
-								});
-							}
-						} catch (err) {
-							done(createPluginError(err));
+						if (rule.type === 'DocumentRule') {
+							(<DocumentRule>rule).check(settings, document).forEach(addError);
+						} else {
+							var check = (<LineRule>rule).check;
+							document.lines.forEach(line => {
+								addError(check(settings, line));
+							});
 						}
 					});
 
@@ -229,7 +223,7 @@ module eclint {
 
 					done(null, file);
 
-				}, (err: Error) => {
+				}).catch((err: Error) => {
 					done(createPluginError(err));
 				});
 		});
@@ -262,17 +256,13 @@ module eclint {
 						if (_.isUndefined(rule)) {
 							return;
 						}
-						try {
-							if (rule.type === 'DocumentRule') {
-								(<DocumentRule>rule).fix(settings, document);
-							} else {
-								var fix = (<LineRule>rule).fix;
-								document.lines.forEach(line => {
-									fix(settings, line);
-								});
-							}
-						} catch (err) {
-							done(createPluginError(err));
+						if (rule.type === 'DocumentRule') {
+							(<DocumentRule>rule).fix(settings, document);
+						} else {
+							var fix = (<LineRule>rule).fix;
+							document.lines.forEach(line => {
+								fix(settings, line);
+							});
 						}
 					});
 
@@ -286,7 +276,7 @@ module eclint {
 
 					done(null, file);
 
-				}, (err: Error) => {
+				}).catch((err: Error) => {
 					done(createPluginError(err));
 				});
 		});

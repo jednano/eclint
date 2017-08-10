@@ -1,4 +1,5 @@
 import gutil = require('gulp-util');
+import sinon = require('sinon');
 import common = require('./test-common');
 import eclint = require('./eclint');
 import vfs = require('vinyl-fs');
@@ -448,5 +449,97 @@ describe('eclint gulp plugin', () => {
 		expect(() => {
 			eclint.configure.call(null);
 		}).not.to.throw();
+	});
+	describe('should plugin error', () => {
+		const charset = require('./rules/charset');
+		const editorconfig = require('editorconfig');
+		let stub;
+
+		afterEach(() => {
+			if (stub) {
+				stub.restore();
+				stub = null;
+			}
+		});
+
+		it('editorconfig.parse in eclint.check', done => {
+			stub = sinon.stub(editorconfig, 'parse').rejects(new Error('check editorconfig testcase'));
+			var stream = eclint.check();
+
+			stream.on('error', (error: gutil.PluginError) => {
+				expect(error).haveOwnProperty('plugin').and.to.be.equal('ECLint');
+				expect(error).haveOwnProperty('message').and.to.be.equal('check editorconfig testcase');
+				done();
+			});
+
+			stream.write(new File({
+				path: path.join(__dirname, 'testcase.js'),
+				contents: new Buffer('testcase')
+			}));
+		});
+
+		it('charset.check', done => {
+			stub = sinon.stub(charset, 'check').throws(new Error('check testcase'));
+			var stream = eclint.check();
+
+			stream.on('error', (error: gutil.PluginError) => {
+				expect(error).haveOwnProperty('plugin').and.to.be.equal('ECLint');
+				expect(error).haveOwnProperty('message').and.to.be.equal('check testcase');
+				done();
+			});
+
+			stream.write(new File({
+				path: path.join(__dirname, 'testcase.js'),
+				contents: new Buffer('testcase')
+			}));
+		});
+
+		it('editorconfig.parse in eclint.fix', done => {
+			stub = sinon.stub(editorconfig, 'parse').rejects(new Error('fix editorconfig testcase'));
+			var stream = eclint.fix();
+
+			stream.on('error', (error: gutil.PluginError) => {
+				expect(error).haveOwnProperty('plugin').and.to.be.equal('ECLint');
+				expect(error).haveOwnProperty('message').and.to.be.equal('fix editorconfig testcase');
+				done();
+			});
+
+			stream.write(new File({
+				path: path.join(__dirname, 'testcase.js'),
+				contents: new Buffer('testcase')
+			}));
+		});
+
+		it('charset.fix', done => {
+			stub = sinon.stub(charset, 'fix').throws(new Error('fix testcase'));
+			var stream = eclint.fix();
+
+			stream.on('error', (error: gutil.PluginError) => {
+				expect(error).haveOwnProperty('plugin').and.to.be.equal('ECLint');
+				expect(error).haveOwnProperty('message').and.to.be.equal('fix testcase');
+				done();
+			});
+
+			stream.write(new File({
+				path: path.join(__dirname, 'testcase.js'),
+				contents: new Buffer('testcase')
+			}));
+		});
+
+		it('charset.infer', done => {
+			stub = sinon.stub(charset, 'infer').throws(new Error('infer testcase'));
+			var stream = eclint.infer();
+
+			stream.on('error', (error: gutil.PluginError) => {
+				expect(error).haveOwnProperty('plugin').and.to.be.equal('ECLint');
+				expect(error).haveOwnProperty('message').and.to.be.equal('infer testcase');
+				done();
+			});
+
+			stream.write(new File({
+				path: path.join(__dirname, 'testcase.js'),
+				contents: new Buffer('testcase')
+			}));
+		});
 	});
 });
