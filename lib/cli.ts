@@ -190,7 +190,9 @@ function handler(yargs: Argv): Stream.Transform {
 
 	globs = globs.concat(ignore);
 	yargs.globs = globs;
-	return vfs.src(globs)
+	return vfs.src(globs, {
+		stripBOM: false,
+	})
 		.pipe(filter(excludeBinaryFile))
 		.pipe(gitignore());
 }
