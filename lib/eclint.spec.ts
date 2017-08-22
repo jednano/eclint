@@ -120,7 +120,6 @@ describe('eclint gulp plugin', () => {
 			});
 
 			stream.on('data', (file: File) => {
-				console.log(file.contents.toString())
 				expect(file.contents.toString()).to.be.equal([
 					'foo',
 					'\tbar',
