@@ -247,6 +247,15 @@ module eclint {
 
 			editorconfig.parse(file.path)
 				.then((fileSettings: Settings) => {
+					if ((commandSettings.indent_style || fileSettings.indent_style) === 'tab') {
+						fileSettings = _.omit(
+							fileSettings,
+							[
+								'tab_width',
+								'indent_size',
+							]
+						);
+					}
 
 					var settings = getSettings(fileSettings, commandSettings);
 					var document = doc.create(file.contents, settings);
