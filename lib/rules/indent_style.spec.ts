@@ -155,6 +155,34 @@ describe('indent_style rule', () => {
 				expect(document.toString()).to.eq('\t\tfoo');
 			});
 
+			it('replaces leading 2-space soft tabs with hard tabs when tab_width unset', () => {
+				var document = rule.fix(
+					{
+						indent_style: 'tab'
+					},
+					doc.create([
+						'foo',
+						'  bar',
+						'foo',
+					].join('\n'))
+				);
+				expect(document.toString()).to.eq('foo\n\tbar\nfoo');
+			});
+
+			it('replaces leading 4-space soft tabs with hard tabs when tab_width unset', () => {
+				var document = rule.fix(
+					{
+						indent_style: 'tab'
+					},
+					doc.create([
+						'foo',
+						'    bar',
+						'foo',
+					].join('\n'))
+				);
+				expect(document.toString()).to.eq('foo\n\tbar\nfoo');
+			});
+
 			it('fixes mixed hard tabs with soft tabs, preserving alignment', () => {
 				var document = rule.fix(
 					{

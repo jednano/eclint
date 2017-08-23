@@ -112,6 +112,36 @@ describe('eclint gulp plugin', () => {
 			}));
 		});
 
+		it('replaces leading 2-space soft tabs with hard tabs', (done) => {
+			var stream = eclint.fix({
+				settings: {
+					indent_style: 'tab'
+				}
+			});
+
+			stream.on('data', (file: File) => {
+				expect(file.contents.toString()).to.be.equal([
+					'foo',
+					'\tbar',
+					'foo',
+					'',
+				].join('\n'));
+				done();
+			});
+
+			stream.on('error', done);
+
+			stream.write(new File({
+				path: path.join(__dirname, 'testcase.js'),
+				contents: new Buffer([
+					'foo',
+					'  bar',
+					'foo',
+					'',
+				].join('\n'))
+			}));
+		});
+
 	});
 
 	describe('check file', () => {
