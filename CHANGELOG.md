@@ -1,3 +1,7 @@
+## 2.4.3
+- bugfix: Do not use index_size file config when converting indentation from space to tab. [#103](https://github.com/jedmao/eclint/pull/103)
+- update: dependencies. [#102](https://github.com/jedmao/eclint/pull/102)
+
 ## 2.4.2
 - bugfix: Break valid block comment. [#97](https://github.com/jedmao/eclint/pull/97)
 - bugfix: Generated empty locales file after execute eclint command. [#99](https://github.com/jedmao/eclint/pull/99)
