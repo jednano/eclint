@@ -1,14 +1,11 @@
+sudo: false
+dist: trusty
 language: node_js
 
 node_js:
   - stable
   - 6
   - 4
-
-sudo: false
-
-before_install:
-  - npm i npm@latest -g
 
 after_success:
   - npm install codecov
