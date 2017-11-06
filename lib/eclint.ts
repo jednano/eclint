@@ -183,7 +183,7 @@ module eclint {
 			}
 
 			editorconfig.parse(file.path)
-				.then((fileSettings: Settings) => {
+				.then((fileSettings: any) => {
 					var errors: EditorConfigError[] = [];
 
 					var settings = getSettings(fileSettings, commandSettings);
@@ -246,7 +246,7 @@ module eclint {
 			}
 
 			editorconfig.parse(file.path)
-				.then((fileSettings: Settings) => {
+				.then((fileSettings: any) => {
 					if ((commandSettings.indent_style || fileSettings.indent_style) === 'tab') {
 						fileSettings = _.omit(
 							fileSettings,
