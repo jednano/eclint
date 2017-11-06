@@ -2,6 +2,7 @@ import _ = require('lodash');
 import tap = require('gulp-tap');
 import vfs = require('vinyl-fs');
 import eclint = require('./eclint');
+import excludeGitignore = require('gulp-exclude-gitignore');
 import yargs = require('yargs');
 import reporter = require('gulp-reporter');
 import filter = require('gulp-filter');
@@ -13,15 +14,15 @@ import i18n = require('./i18n');
 import path = require('path');
 import fs = require('fs');
 
-/*
- * bugfix for thomas-lebeau/gulp-gitignore#2
- */
 function gitignore(): Stream {
-	const stream = require('gulp-gitignore')();
-	if (stream instanceof Stream) {
-		return stream;
-	} else {
-		return gutil.noop();
+	try {
+		return excludeGitignore();
+	} catch (ex) {
+		if (ex.code === 'ENOENT') {
+			return gutil.noop();
+		} else {
+			throw ex;
+		}
 	}
 }
 
@@ -191,6 +192,7 @@ function handler(yargs: Argv): Stream.Transform {
 	globs = globs.concat(ignore);
 	yargs.globs = globs;
 	return vfs.src(globs, {
+		dot: true,
 		stripBOM: false,
 		removeBOM: false,
 	})

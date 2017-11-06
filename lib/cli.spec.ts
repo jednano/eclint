@@ -68,7 +68,9 @@ describe('eclint cli', function() {
 	describe('check', () => {
 		it('All Files', () => {
 			return eclint(['check']).then(files => {
+				files = files.map(file => file.path);
 				expect(files).to.have.length.above(10);
+				expect(files).that.include(path.resolve(__dirname, '../.gitignore'));
 			});
 		});
 		it('Directories', () => {
@@ -109,6 +111,15 @@ describe('eclint cli', function() {
 				expect(files).have.lengthOf(0);
 			});
 		});
+		it('error of gulp-exclude-gitignore', () => {
+			return expect(() => {
+				eclint(['check', '/etc/hosts'], {
+					'gulp-exclude-gitignore': () => {
+						throw new Error('test: gulp-exclude-gitignore mock');
+					}
+				});
+			}).throws('test: gulp-exclude-gitignore mock');
+		});
 	});
 	describe('infer', function() {
 
@@ -142,6 +153,7 @@ describe('eclint cli', function() {
 			});
 		});
 	});
+
 	describe('fix', function() {
 		it('README.md', () => {
 			eclint(['fix', 'README.md']).then(files => {
