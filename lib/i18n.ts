@@ -1,10 +1,12 @@
-import path = require('path');
 import osLocale = require('os-locale');
+import util = require('util');
+let locale;
+try {
+	locale = require(`../locales/${osLocale.sync()}.json`);
+} catch (ex) {
+	locale = require('../locales/en.json');
+}
 
-const y18n = require('y18n')({
-	updateFiles: false,
-	directory: path.resolve(__dirname, '../locales'),
-	locale: osLocale.sync({ spawn: false })
-});
-
-export = y18n.__.bind(y18n);
+export = (str: string, ...args) => {
+	return util.format(locale[str] || str, ...args);
+};

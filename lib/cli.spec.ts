@@ -148,7 +148,7 @@ describe('eclint cli', function() {
 					'trim_trailing_whitespace': true,
 					'end_of_line': 'lf',
 					'insert_final_newline': true,
-					'max_line_length': 80
+					'max_line_length': 70
 				});
 			});
 		});

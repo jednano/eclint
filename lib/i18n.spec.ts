@@ -12,6 +12,8 @@ function i18n(lang) {
 describe('eclint i18n', function() {
 	it('zh_CN', () => {
 		expect(i18n('zh_CN')('CommandError: Missing required sub-command.')).to.be.equal('命令错误: 缺少必须的子命令。');
+		const message = 'string that not exist in locales';
+		expect(i18n('zh_CN')(message)).to.be.equal(message);
 	});
 	it('ja_JP', () => {
 		const message = 'CommandError: Missing required sub-command.';

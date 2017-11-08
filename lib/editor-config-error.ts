@@ -15,9 +15,9 @@ class EditorConfigError extends Error {
 			`    at (${ this.fileName }:${ this.lineNumber }:${ this.columnNumber })`
 		].join(os.EOL);
 	};
-	constructor(message: any[]) {
+	constructor(message: string, ...args) {
 		super();
-		this.message = i18n(...message);
+		this.message = i18n(message, ...args);
 	}
 }
 
