@@ -1,3 +1,7 @@
+## 2.5.0
+- remove: Dependence of [y18n](https://www.npmjs.com/package/y18n). [#109](https://github.com/jedmao/eclint/pull/109)
+- bugfix: Support dot files. [#106](https://github.com/jedmao/eclint/pull/106)
+
 ## 2.4.3
 - bugfix: Do not use index_size file config when converting indentation from space to tab. [#103](https://github.com/jedmao/eclint/pull/103)
 - update: dependencies. [#102](https://github.com/jedmao/eclint/pull/102)
