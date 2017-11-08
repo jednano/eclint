@@ -44,11 +44,11 @@ function checkLine(line: doc.Line, indentSize: number): EditorConfigError {
 	var expectedIndentSize = softTabCount * indentSize;
 
 	if (line.prefix.length !== expectedIndentSize) {
-		var error = new EditorConfigError([
+		var error = new EditorConfigError(
 			'invalid indent size: %s, expected: %s',
 			line.prefix.length,
 			expectedIndentSize,
-		]);
+		);
 		error.lineNumber = line.number;
 		error.rule = 'indent_size';
 		error.source = line.text;

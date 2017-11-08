@@ -16,8 +16,8 @@ function resolve(settings: eclint.Settings) {
 }
 
 function check(settings: eclint.Settings, document: doc.Document) {
-	function creatErrorArray(message: any[]) {
-		var error = new EditorConfigError(message);
+	function creatErrorArray(message: string, ...args) {
+		var error = new EditorConfigError(message, ...args);
 		var source = '';
 		document.lines.some(function(line) {
 			if (/\S/.test(line.text)) {
@@ -36,7 +36,7 @@ function check(settings: eclint.Settings, document: doc.Document) {
 	var configSetting = resolve(settings);
 	if (inferredSetting) {
 		if (inferredSetting !== settings.charset) {
-			return creatErrorArray(['invalid charset: %s, expected: %s', inferredSetting, configSetting]);
+			return creatErrorArray('invalid charset: %s, expected: %s', inferredSetting, configSetting);
 		}
 		return [];
 	}
@@ -45,7 +45,7 @@ function check(settings: eclint.Settings, document: doc.Document) {
 		return [].concat.apply([], errors);
 	}
 	if (_.includes(Object.keys(boms), configSetting)) {
-		return creatErrorArray(['expected charset: %s', settings.charset]);
+		return creatErrorArray('expected charset: %s', settings.charset);
 	}
 	return [];
 }
@@ -62,7 +62,7 @@ function infer(document: doc.Document): string {
 function checkLatin1TextRange(line: doc.Line) {
 	return [].slice.call(line.text, 0).map(function(character: string, i: number) {
 		if (character.charCodeAt(0) >= 0x80) {
-			var error = new EditorConfigError(['character out of latin1 range: %s', JSON.stringify(character)]);
+			var error = new EditorConfigError('character out of latin1 range: %s', JSON.stringify(character));
 			error.lineNumber = line.number;
 			error.columnNumber = i + 1;
 			error.source = line.text;

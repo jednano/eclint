@@ -11,11 +11,11 @@ function check(settings: eclint.Settings, line: doc.Line) {
 	var inferredSetting = infer(line);
 	var configSetting = resolve(settings);
 	if (inferredSetting > settings.max_line_length) {
-		var error = new EditorConfigError([
+		var error = new EditorConfigError(
 			'invalid line length: %s, exceeds: %s',
 			inferredSetting,
 			configSetting
-		]);
+		);
 		error.lineNumber = line.number;
 		error.columnNumber = settings.max_line_length;
 		error.rule = 'max_line_length';

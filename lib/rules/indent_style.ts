@@ -58,7 +58,7 @@ function checkLine(line: doc.Line, indentStyle: IndentStyle) {
 	}
 
 	if (errorColumnNumber) {
-		var error = new EditorConfigError([errorMessage]);
+		var error = new EditorConfigError(errorMessage);
 		error.lineNumber = line.number;
 		error.columnNumber = errorColumnNumber;
 		error.rule = 'indent_style';

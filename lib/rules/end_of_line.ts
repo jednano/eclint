@@ -34,11 +34,11 @@ function check(settings: eclint.Settings, line: doc.Line) {
 		return;
 	}
 	if (inferredSetting !== configSetting) {
-		var error = new EditorConfigError([
+		var error = new EditorConfigError(
 			'invalid newline: %s, expected: %s',
 			inferredSetting,
 			configSetting
-		]);
+		);
 		error.lineNumber = line.number;
 		error.columnNumber = line.text.length + 1;
 		error.rule = 'end_of_line';
