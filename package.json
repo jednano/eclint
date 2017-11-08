@@ -1,6 +1,6 @@
 {
   "name": "eclint",
-  "version": "2.4.3",
+  "version": "2.5.0",
   "description": "Validate or fix code that doesn't adhere to EditorConfig settings or infer settings from existing code.",
   "keywords": [
     "editorconfig",
@@ -62,8 +62,8 @@
   "dependencies": {
     "editorconfig": "^0.15.0",
     "file-type": "^7.2.0",
+    "gulp-exclude-gitignore": "^1.2.0",
     "gulp-filter": "^5.0.1",
-    "gulp-gitignore": "^0.1.0",
     "gulp-reporter": "^2.4.2",
     "gulp-tap": "^1.0.1",
     "gulp-util": "^3.0.8",
