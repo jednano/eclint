@@ -12,7 +12,7 @@
 
 ECLint is a tool for validating or fixing code that doesn't adhere to settings defined in `.editorconfig`. It also infers settings from existing code. See the [EditorConfig Project](http://editorconfig.org/) for details about the `.editorconfig` file.
 
-This version of ECLint runs on [EditorConfig Core](https://www.npmjs.com/package/editorconfig) 0.12.x.
+This version of ECLint runs on [EditorConfig Core](https://www.npmjs.com/package/editorconfig) 0.15.x.
 
 
 ## Installation
