@@ -1,7 +1,7 @@
 import os = require('os');
 
 import _ = require('lodash');
-import gutil = require('gulp-util');
+import PluginError = require('plugin-error');
 import through = require('through2');
 import editorconfig = require('editorconfig');
 
@@ -10,8 +10,6 @@ import * as doc from './doc';
 import File = require('vinyl');
 import EditorConfigError =  require('./editor-config-error');
 import stream = require('stream');
-
-var PluginError = gutil.PluginError;
 
 module eclint {
 
