@@ -193,7 +193,7 @@ function handler(yargs: Argv): Stream.Transform {
 	yargs.globs = globs;
 	return vfs.src(globs, {
 		dot: true,
-		stripBOM: false,
+		// stripBOM: false,
 		removeBOM: false,
 	})
 		.pipe(filter(excludeBinaryFile))
