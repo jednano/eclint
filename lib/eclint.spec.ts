@@ -1,4 +1,4 @@
-import gutil = require('gulp-util');
+import PluginError = require('plugin-error');
 import sinon = require('sinon');
 import common = require('./test-common');
 import eclint = require('./eclint');
@@ -66,7 +66,7 @@ describe('eclint gulp plugin', () => {
 				stripBOM: false
 			}).pipe(eclint.fix()).on('data', (file: eclint.EditorConfigLintFile) => {
 				expect(file.editorconfig).not.to.be.ok;
-			}).on('error', (error: gutil.PluginError) => {
+			}).on('error', (error: PluginError) => {
 				expect(error.message).to.be.equal('Streams are not supported');
 				expect(error.plugin).to.be.equal('ECLint');
 				expect(error.showStack).to.be.false;
@@ -162,7 +162,7 @@ describe('eclint gulp plugin', () => {
 				stripBOM: false
 			}).pipe(eclint.check()).on('data', (file: eclint.EditorConfigLintFile) => {
 				expect(file.editorconfig).not.to.be.ok;
-			}).on('error', (error: gutil.PluginError) => {
+			}).on('error', (error: PluginError) => {
 				expect(error.message).to.be.equal('Streams are not supported');
 				expect(error.plugin).to.be.equal('ECLint');
 				expect(error.showStack).to.be.false;
@@ -496,7 +496,7 @@ describe('eclint gulp plugin', () => {
 			stub = sinon.stub(editorconfig, 'parse').rejects(new Error('check editorconfig testcase'));
 			var stream = eclint.check();
 
-			stream.on('error', (error: gutil.PluginError) => {
+			stream.on('error', (error: PluginError) => {
 				expect(error).haveOwnProperty('plugin').and.to.be.equal('ECLint');
 				expect(error).haveOwnProperty('message').and.to.be.equal('check editorconfig testcase');
 				done();
@@ -512,7 +512,7 @@ describe('eclint gulp plugin', () => {
 			stub = sinon.stub(charset, 'check').throws(new Error('check testcase'));
 			var stream = eclint.check();
 
-			stream.on('error', (error: gutil.PluginError) => {
+			stream.on('error', (error: PluginError) => {
 				expect(error).haveOwnProperty('plugin').and.to.be.equal('ECLint');
 				expect(error).haveOwnProperty('message').and.to.be.equal('check testcase');
 				done();
@@ -528,7 +528,7 @@ describe('eclint gulp plugin', () => {
 			stub = sinon.stub(editorconfig, 'parse').rejects(new Error('fix editorconfig testcase'));
 			var stream = eclint.fix();
 
-			stream.on('error', (error: gutil.PluginError) => {
+			stream.on('error', (error: PluginError) => {
 				expect(error).haveOwnProperty('plugin').and.to.be.equal('ECLint');
 				expect(error).haveOwnProperty('message').and.to.be.equal('fix editorconfig testcase');
 				done();
@@ -544,7 +544,7 @@ describe('eclint gulp plugin', () => {
 			stub = sinon.stub(charset, 'fix').throws(new Error('fix testcase'));
 			var stream = eclint.fix();
 
-			stream.on('error', (error: gutil.PluginError) => {
+			stream.on('error', (error: PluginError) => {
 				expect(error).haveOwnProperty('plugin').and.to.be.equal('ECLint');
 				expect(error).haveOwnProperty('message').and.to.be.equal('fix testcase');
 				done();
@@ -560,7 +560,7 @@ describe('eclint gulp plugin', () => {
 			stub = sinon.stub(charset, 'infer').throws(new Error('infer testcase'));
 			var stream = eclint.infer();
 
-			stream.on('error', (error: gutil.PluginError) => {
+			stream.on('error', (error: PluginError) => {
 				expect(error).haveOwnProperty('plugin').and.to.be.equal('ECLint');
 				expect(error).haveOwnProperty('message').and.to.be.equal('infer testcase');
 				done();

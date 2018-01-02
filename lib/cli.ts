@@ -6,7 +6,7 @@ import excludeGitignore = require('gulp-exclude-gitignore');
 import yargs = require('yargs');
 import reporter = require('gulp-reporter');
 import filter = require('gulp-filter');
-import gutil = require('gulp-util');
+import through = require('through2');
 import minimatch = require('minimatch');
 import fileType = require('file-type');
 import Stream = require('stream');
@@ -19,7 +19,7 @@ function gitignore(): Stream {
 		return excludeGitignore();
 	} catch (ex) {
 		if (ex.code === 'ENOENT') {
-			return gutil.noop();
+			return through.obj();
 		} else {
 			throw ex;
 		}

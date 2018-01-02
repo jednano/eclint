@@ -3,10 +3,15 @@ import sinon = require('sinon');
 import path = require('path');
 import os = require('os');
 import fs = require('fs-extra');
-import gutil = require('gulp-util');
+import PluginError = require('plugin-error');
+import through = require('through2');
 import proxyquire = require('proxyquire');
 import getStream = require('get-stream');
 const expect = common.expect;
+
+function noop() {
+	return through.obj();
+}
 
 function eclint(args, stubs?) {
 	const argv = proxyquire('./cli', stubs || {
@@ -17,9 +22,9 @@ function eclint(args, stubs?) {
 			});
 			expect(log.lastCall.args).to.be.deep.equal(['test: console.mock']);
 			log.restore();
-			return gutil.noop();
+			return noop();
 		},
-		'gulp-reporter': gutil.noop,
+		'gulp-reporter': noop,
 	})(args);
 	// const argv = require('./cli')(args);
 	if (argv.stream) {
@@ -103,7 +108,7 @@ describe('eclint cli', function() {
 			expect(log.lastCall.args).to.have.lengthOf(1);
 			expect(log.lastCall.args[0]).to.be.match(/Error: test: console\.mock/);
 			log.reset();
-			errListener(new gutil.PluginError('gulp-reporter', 'test: console.mock'));
+			errListener(new PluginError('gulp-reporter', 'test: console.mock'));
 			expect(log.lastCall).to.be.null;
 			log.restore();
 			process.exitCode = 0;
@@ -179,8 +184,8 @@ describe('eclint cli', function() {
 
 	it('thomas-lebeau/gulp-gitignore#2', () => {
 		return eclint(['check', 'dist/cli.js'], {
-			'gulp-tap': gutil.noop,
-			'gulp-reporter': gutil.noop,
+			'gulp-tap': noop,
+			'gulp-reporter': noop,
 			'gulp-gitignore': () => [],
 		}).then(files => {
 			expect(files).to.have.length.above(0);
