@@ -1,65 +1,69 @@
-var _ = require('lodash');
+import * as _ from 'lodash';
 import * as doc from '../doc';
 
-import eclint = require('../eclint');
-import EditorConfigError =  require('../editor-config-error');
+import * as eclint from '../eclint';
+import EditorConfigError = require('../editor-config-error');
 
-var newlines = {
-	lf: '\n',
+const newlines = {
+	cr: '\r',
 	crlf: '\r\n',
-	cr: '\r'
+	lf: '\n',
 };
 
-function resolve(settings: eclint.Settings) {
+function resolve(settings: eclint.ISettings) {
 	if (_.isBoolean(settings.insert_final_newline)) {
 		return settings.insert_final_newline;
 	}
 	return void(0);
 }
 
-function check(settings: eclint.Settings, document: doc.Document) {
-	var configSetting = resolve(settings);
-	var inferredSetting = infer(document);
+function check(settings: eclint.ISettings, document: doc.IDocument) {
+	const configSetting = resolve(settings);
+	const inferredSetting = infer(document);
 	if (configSetting == null || inferredSetting === configSetting) {
 		return [];
 	}
-	var message: string;
+	let message: string;
 	if (configSetting) {
 		message = 'expected final newline';
 	} else {
 		message = 'unexpected final newline';
 	}
 
-	var error = new EditorConfigError(message);
+	const error = new EditorConfigError(message);
 	error.lineNumber = document.lines.length;
-	var lastLine: doc.Line = document.lines[document.lines.length - 1];
+	const lastLine: doc.Line = document.lines[document.lines.length - 1];
 	error.columnNumber = lastLine.text.length + lastLine.ending.length;
 	error.rule = 'insert_final_newline';
 	error.source = lastLine.text + lastLine.ending;
 	return [error];
 }
 
-function fix(settings: eclint.Settings, document: doc.Document) {
-	var lastLine: doc.Line;
-	var ending: string;
-	var configSetting = resolve(settings);
+function fix(settings: eclint.ISettings, document: doc.IDocument) {
+	let lastLine: doc.Line;
+	let ending: string;
+	const configSetting = resolve(settings);
+	function hasFinalNewline() {
+		lastLine = document.lines[document.lines.length - 1];
+		return lastLine && !lastLine.text;
+	}
 	if (configSetting) {
-		var endOfLineSetting = settings.end_of_line || 'lf';
+		const endOfLineSetting = settings.end_of_line || 'lf';
 		ending = newlines[endOfLineSetting];
 	} else {
 		ending = '';
 	}
-	while ((lastLine = document.lines[document.lines.length - 1]) && !lastLine.text) {
+	while (hasFinalNewline()) {
 		document.lines.pop();
 	}
 	if (lastLine) {
 		lastLine.ending = ending;
 	} else {
 		lastLine = new doc.Line({
+			ending,
 			number: 1,
+			offset: 0,
 			text: '',
-			ending: ending,
-			offset: 0
 		});
 		document.lines.push(lastLine);
 	}
@@ -67,20 +71,20 @@ function fix(settings: eclint.Settings, document: doc.Document) {
 	return document;
 }
 
-function infer(document: doc.Document) {
-	var lastLine = document.lines[document.lines.length - 1];
+function infer(document: doc.IDocument) {
+	const lastLine = document.lines[document.lines.length - 1];
 	if (lastLine && lastLine.ending) {
 		return true;
 	}
 	return false;
 }
 
-var InsertFinalNewlineRule: eclint.DocumentRule = {
+const InsertFinalNewlineRule: eclint.IDocumentRule = {
+	check,
+	fix,
+	infer,
+	resolve,
 	type: 'DocumentRule',
-	resolve: resolve,
-	check: check,
-	fix: fix,
-	infer: infer
 };
 
 export = InsertFinalNewlineRule;

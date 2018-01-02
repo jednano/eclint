@@ -1,19 +1,17 @@
 import * as doc from '../doc';
-import eclint = require('../eclint');
-import EditorConfigError =  require('../editor-config-error');
+import * as eclint from '../eclint';
+import EditorConfigError = require('../editor-config-error');
 
-var newlines = {
-	lf: '\n',
+const newlines = {
 	'\n': 'lf',
-
-	crlf: '\r\n',
+	'\r': 'cr',
 	'\r\n': 'crlf',
-
-	cr: '\r',
-	'\r': 'cr'
+	'cr': '\r',
+	'crlf': '\r\n',
+	'lf': '\n',
 };
 
-function resolve(settings: eclint.Settings) {
+function resolve(settings: eclint.ISettings) {
 	switch (settings.end_of_line) {
 		case 'lf':
 		case 'crlf':
@@ -24,20 +22,20 @@ function resolve(settings: eclint.Settings) {
 	}
 }
 
-function check(settings: eclint.Settings, line: doc.Line) {
-	var configSetting = resolve(settings);
+function check(settings: eclint.ISettings, line: doc.Line) {
+	const configSetting = resolve(settings);
 	if (!configSetting) {
 		return;
 	}
-	var inferredSetting = infer(line);
+	const inferredSetting = infer(line);
 	if (!inferredSetting) {
 		return;
 	}
 	if (inferredSetting !== configSetting) {
-		var error = new EditorConfigError(
+		const error = new EditorConfigError(
 			'invalid newline: %s, expected: %s',
 			inferredSetting,
-			configSetting
+			configSetting,
 		);
 		error.lineNumber = line.number;
 		error.columnNumber = line.text.length + 1;
@@ -47,8 +45,8 @@ function check(settings: eclint.Settings, line: doc.Line) {
 	}
 }
 
-function fix(settings: eclint.Settings, line: doc.Line) {
-	var configSetting = resolve(settings);
+function fix(settings: eclint.ISettings, line: doc.Line) {
+	const configSetting = resolve(settings);
 	if (line.ending && configSetting) {
 		line.ending = newlines[configSetting];
 	}
@@ -59,12 +57,12 @@ function infer(line: doc.Line): string {
 	return newlines[line.ending];
 }
 
-var EndOfLineRule: eclint.LineRule = {
+const EndOfLineRule: eclint.ILineRule = {
+	check,
+	fix,
+	infer,
+	resolve,
 	type: 'LineRule',
-	resolve: resolve,
-	check: check,
-	fix: fix,
-	infer: infer
 };
 
 export = EndOfLineRule;

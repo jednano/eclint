@@ -1,25 +1,27 @@
-import PluginError = require('plugin-error');
-import sinon = require('sinon');
-import common = require('./test-common');
-import eclint = require('./eclint');
-import vfs = require('vinyl-fs');
-import File = require('vinyl');
-import path = require('path');
-
-var expect = common.expect;
+import * as editorconfig from 'editorconfig';
+import * as path from 'path';
+import * as PluginError from 'plugin-error';
+import * as sinon from 'sinon';
+import * as File from 'vinyl';
+import * as vfs from 'vinyl-fs';
+import * as eclint from './eclint';
+import charset = require('./rules/charset');
+import * as common from './test-common';
+const expect = common.expect;
+/* tslint:disable:no-unused-expression */
 
 describe('eclint gulp plugin', () => {
 	afterEach(() => {
 		eclint.configure({
-			newlines: ['\n', '\r\n']
+			newlines: ['\n', '\r\n'],
 		});
 	});
 	describe('fix file', () => {
 
 		it('fix by default options', (done) => {
-			var stream = eclint.fix();
+			const stream = eclint.fix();
 
-			stream.on('data', (file: eclint.EditorConfigLintFile) => {
+			stream.on('data', (file: eclint.IEditorConfigLintFile) => {
 				expect(file.editorconfig).to.be.ok;
 				expect(file.editorconfig.fixed).to.be.ok;
 				expect(file.editorconfig.errors).to.have.lengthOf(0);
@@ -29,15 +31,15 @@ describe('eclint gulp plugin', () => {
 			stream.on('error', done);
 
 			stream.write(new File({
+				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a]),
 				path: path.join(__dirname, 'testcase.js'),
-				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a])
 			}));
 		});
 
 		it('checks after fix', (done) => {
-			var stream = eclint.fix();
+			const stream = eclint.fix();
 
-			stream.pipe(eclint.check()).on('data', (file: eclint.EditorConfigLintFile) => {
+			stream.pipe(eclint.check()).on('data', (file: eclint.IEditorConfigLintFile) => {
 				expect(file.editorconfig).to.be.ok;
 				expect(file.editorconfig.fixed).to.be.ok;
 				expect(file.editorconfig.errors).to.have.lengthOf(0);
@@ -45,15 +47,15 @@ describe('eclint gulp plugin', () => {
 			}).on('error', done);
 
 			stream.write(new File({
+				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a]),
 				path: path.join(__dirname, 'testcase.js'),
-				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a])
 			}));
 		});
 
 		it('should skip null', (done) => {
 			vfs.src('lib', {
-				stripBOM: false
-			}).pipe(eclint.fix()).on('data', (file: eclint.EditorConfigLintFile) => {
+				stripBOM: false,
+			}).pipe(eclint.fix()).on('data', (file: eclint.IEditorConfigLintFile) => {
 				expect(file.editorconfig).not.to.be.ok;
 			}).on('end', () => {
 				done();
@@ -63,8 +65,8 @@ describe('eclint gulp plugin', () => {
 		it('should error for stream', (done) => {
 			vfs.src('package.json', {
 				buffer: false,
-				stripBOM: false
-			}).pipe(eclint.fix()).on('data', (file: eclint.EditorConfigLintFile) => {
+				stripBOM: false,
+			}).pipe(eclint.fix()).on('data', (file: eclint.IEditorConfigLintFile) => {
 				expect(file.editorconfig).not.to.be.ok;
 			}).on('error', (error: PluginError) => {
 				expect(error.message).to.be.equal('Streams are not supported');
@@ -75,7 +77,7 @@ describe('eclint gulp plugin', () => {
 		});
 
 		it('fix block comment', (done) => {
-			var stream = eclint.fix();
+			const stream = eclint.fix();
 
 			stream.on('data', (file: File) => {
 				expect(file.contents.toString()).to.be.equal([
@@ -88,7 +90,7 @@ describe('eclint gulp plugin', () => {
 					'\t/**',
 					'\t * indent 1',
 					'\t */',
-					''
+					'',
 				].join('\n'));
 				done();
 			});
@@ -96,7 +98,6 @@ describe('eclint gulp plugin', () => {
 			stream.on('error', done);
 
 			stream.write(new File({
-				path: path.join(__dirname, 'testcase.js'),
 				contents: new Buffer([
 					'  /**',
 					'    * indent 1',
@@ -107,16 +108,17 @@ describe('eclint gulp plugin', () => {
 					'  /**',
 					'  * indent 1',
 					'  */',
-					''
-				].join('\n'))
+					'',
+				].join('\n')),
+				path: path.join(__dirname, 'testcase.js'),
 			}));
 		});
 
 		it('replaces leading 2-space soft tabs with hard tabs', (done) => {
-			var stream = eclint.fix({
+			const stream = eclint.fix({
 				settings: {
-					indent_style: 'tab'
-				}
+					indent_style: 'tab',
+				},
 			});
 
 			stream.on('data', (file: File) => {
@@ -132,13 +134,13 @@ describe('eclint gulp plugin', () => {
 			stream.on('error', done);
 
 			stream.write(new File({
-				path: path.join(__dirname, 'testcase.js'),
 				contents: new Buffer([
 					'foo',
 					'  bar',
 					'foo',
 					'',
-				].join('\n'))
+				].join('\n')),
+				path: path.join(__dirname, 'testcase.js'),
 			}));
 		});
 
@@ -148,8 +150,8 @@ describe('eclint gulp plugin', () => {
 
 		it('should skip null', (done) => {
 			vfs.src('lib', {
-				stripBOM: false
-			}).pipe(eclint.check()).on('data', (file: eclint.EditorConfigLintFile) => {
+				stripBOM: false,
+			}).pipe(eclint.check()).on('data', (file: eclint.IEditorConfigLintFile) => {
 				expect(file.editorconfig).not.to.be.ok;
 			}).on('end', () => {
 				done();
@@ -159,8 +161,8 @@ describe('eclint gulp plugin', () => {
 		it('should error for stream', (done) => {
 			vfs.src('package.json', {
 				buffer: false,
-				stripBOM: false
-			}).pipe(eclint.check()).on('data', (file: eclint.EditorConfigLintFile) => {
+				stripBOM: false,
+			}).pipe(eclint.check()).on('data', (file: eclint.IEditorConfigLintFile) => {
 				expect(file.editorconfig).not.to.be.ok;
 			}).on('error', (error: PluginError) => {
 				expect(error.message).to.be.equal('Streams are not supported');
@@ -171,9 +173,9 @@ describe('eclint gulp plugin', () => {
 		});
 
 		it('fixes after check', (done) => {
-			var stream = eclint.check();
+			const stream = eclint.check();
 
-			stream.pipe(eclint.fix()).on('data', (file: eclint.EditorConfigLintFile) => {
+			stream.pipe(eclint.fix()).on('data', (file: eclint.IEditorConfigLintFile) => {
 				expect(file.editorconfig).to.be.ok;
 				expect(file.editorconfig.fixed).to.be.ok;
 				expect(file.editorconfig.errors).to.have.lengthOf(1);
@@ -181,27 +183,27 @@ describe('eclint gulp plugin', () => {
 			}).on('error', done);
 
 			stream.write(new File({
+				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a]),
 				path: path.join(__dirname, 'testcase.js'),
-				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a])
 			}));
 		});
 
 		it('options.reporter', (done) => {
-			var stream = eclint.check({
-				reporter: (_file: eclint.EditorConfigLintFile, error: Error) => {
+			const stream = eclint.check({
+				reporter: (_file: eclint.IEditorConfigLintFile, error: Error) => {
 					expect(error.message).to.have.equal('invalid charset: utf-8-bom, expected: utf-8');
 					done();
-				}
+				},
 			});
 
 			stream.write(new File({
+				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a]),
 				path: path.join(__dirname, 'testcase.js'),
-				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a])
 			}));
 		});
 
 		it('check block comment', (done) => {
-			var stream = eclint.check();
+			const stream = eclint.check();
 
 			stream.on('data', (file: File) => {
 				expect(file.editorconfig.errors).to.have.lengthOf(2);
@@ -218,7 +220,6 @@ describe('eclint gulp plugin', () => {
 			stream.on('error', done);
 
 			stream.write(new File({
-				path: path.join(__dirname, 'testcase.js'),
 				contents: new Buffer([
 					'  /**',
 					'    * indent 1',
@@ -229,19 +230,20 @@ describe('eclint gulp plugin', () => {
 					'  /**',
 					'  * indent 1',
 					'  */',
-					''
-				].join('\n'))
+					'',
+				].join('\n')),
+				path: path.join(__dirname, 'testcase.js'),
 			}));
 		});
 
 		it('check non doc block comment', (done) => {
-			var stream = eclint.check({
+			const stream = eclint.check({
 				settings: {
-					indent_style: 'space',
-					indent_size: 2,
-					block_comment_start: '/*',
 					block_comment_end: '*/',
-				}
+					block_comment_start: '/*',
+					indent_size: 2,
+					indent_style: 'space',
+				},
 			});
 
 			stream.on('data', (file: File) => {
@@ -252,7 +254,6 @@ describe('eclint gulp plugin', () => {
 			stream.on('error', done);
 
 			stream.write(new File({
-				path: path.join(__dirname, 'testcase.js'),
 				contents: new Buffer([
 					'function() {',
 					'  /* block',
@@ -266,8 +267,9 @@ describe('eclint gulp plugin', () => {
 					'    }',
 					'  }',
 					'}',
-					''
-				].join('\n'))
+					'',
+				].join('\n')),
+				path: path.join(__dirname, 'testcase.js'),
 			}));
 		});
 
@@ -275,9 +277,9 @@ describe('eclint gulp plugin', () => {
 
 	describe('infer file', () => {
 		it('README.md', (done) => {
-			var stream = eclint.infer();
+			const stream = eclint.infer();
 			stream.on('data', (file: File) => {
-				var config = JSON.parse(String(file.contents));
+				const config = JSON.parse(String(file.contents));
 				expect(config.indent_style).to.be.equal('space');
 				expect(config.indent_size).to.be.equal(2);
 				expect(config.trim_trailing_whitespace).to.be.equal(true);
@@ -287,9 +289,9 @@ describe('eclint gulp plugin', () => {
 			vfs.src('README.md').pipe(stream);
 		});
 		it('package.json', (done) => {
-			var stream = eclint.infer();
+			const stream = eclint.infer();
 			stream.on('data', (file: File) => {
-				var config = JSON.parse(String(file.contents));
+				const config = JSON.parse(String(file.contents));
 				expect(config.indent_style).to.be.equal('space');
 				expect(config.indent_size).to.be.equal(2);
 				expect(config.trim_trailing_whitespace).to.be.equal(true);
@@ -299,11 +301,11 @@ describe('eclint gulp plugin', () => {
 			vfs.src('package.json').pipe(stream);
 		});
 		it('package.json (score)', (done) => {
-			var stream = eclint.infer({
-				score: true
+			const stream = eclint.infer({
+				score: true,
 			});
 			stream.on('data', (file: File) => {
-				var config = JSON.parse(String(file.contents));
+				const config = JSON.parse(String(file.contents));
 				expect(config).haveOwnProperty('trim_trailing_whitespace').haveOwnProperty('true').above(100);
 				done();
 			});
@@ -312,12 +314,12 @@ describe('eclint gulp plugin', () => {
 		it('Cannot generate tallied scores as ini file format', () => {
 			expect(() => {
 				eclint.infer({
-					score: true,
 					ini: true,
+					score: true,
 				});
 			}).to.throw('Cannot generate tallied scores as ini file format');
 		});
-		it('file is stream', done => {
+		it('file is stream', (done) => {
 			const stream = eclint.infer();
 			stream.on('error', () => {
 				done();
@@ -339,23 +341,23 @@ describe('eclint gulp plugin', () => {
 			}).to.throw();
 		});
 		it('options.ini', (done) => {
-			var stream = eclint.infer({
+			const stream = eclint.infer({
 				ini: true,
 			});
 			stream.on('data', (file: File) => {
-				var config = String(file.contents);
+				const config = String(file.contents);
 				expect(config).to.be.match(/^end_of_line = lf$/im);
 				done();
 			});
 			vfs.src('README.md').pipe(stream);
 		});
 		it('options.root', (done) => {
-			var stream = eclint.infer({
-				root: true,
+			const stream = eclint.infer({
 				ini: true,
+				root: true,
 			});
 			stream.on('data', (file: File) => {
-				var config = String(file.contents);
+				const config = String(file.contents);
 				expect(config).to.be.match(/^root = true$/im);
 				done();
 			});
@@ -366,11 +368,11 @@ describe('eclint gulp plugin', () => {
 	describe('charset rule', () => {
 
 		it('invalid charset: utf-8-bom, expected: utf-8', (done) => {
-			var stream = eclint.check();
+			const stream = eclint.check();
 
-			stream.on('data', (file: eclint.EditorConfigLintFile) => {
+			stream.on('data', (file: eclint.IEditorConfigLintFile) => {
 				expect(file.editorconfig.errors).to.have.lengthOf(1);
-				var error = file.editorconfig.errors[0];
+				const error = file.editorconfig.errors[0];
 				expect(error.lineNumber).to.equal(1);
 				expect(error.columnNumber).to.equal(1);
 				expect(error.name).to.equal('EditorConfigError');
@@ -386,8 +388,8 @@ describe('eclint gulp plugin', () => {
 			stream.on('error', done);
 
 			stream.write(new File({
+				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a]),
 				path: path.join(__dirname, 'testcase.js'),
-				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a])
 			}));
 		});
 
@@ -396,11 +398,11 @@ describe('eclint gulp plugin', () => {
 	describe('end_of_line rule', () => {
 
 		it('throws invalid "invalid newline: crlf, expected: lf"', (done) => {
-			var stream = eclint.check();
+			const stream = eclint.check();
 
-			stream.on('data', (file: eclint.EditorConfigLintFile) => {
+			stream.on('data', (file: eclint.IEditorConfigLintFile) => {
 				expect(file.editorconfig.errors).to.have.lengthOf(1);
-				var error = file.editorconfig.errors[0];
+				const error = file.editorconfig.errors[0];
 				expect(error.lineNumber).to.equal(1);
 				expect(error.columnNumber).to.equal(9);
 				expect(error.name).to.equal('EditorConfigError');
@@ -414,8 +416,8 @@ describe('eclint gulp plugin', () => {
 			stream.on('error', done);
 
 			stream.write(new File({
+				contents: new Buffer('testcase\r\n'),
 				path: path.join(__dirname, 'testcase.js'),
-				contents: new Buffer('testcase\r\n')
 			}));
 		});
 
@@ -424,11 +426,11 @@ describe('eclint gulp plugin', () => {
 	describe('insert_final_newline rule', () => {
 
 		it('expects final newline', (done) => {
-			var stream = eclint.check();
+			const stream = eclint.check();
 
-			stream.on('data', (file: eclint.EditorConfigLintFile) => {
+			stream.on('data', (file: eclint.IEditorConfigLintFile) => {
 				expect(file.editorconfig.errors).to.have.lengthOf(1);
-				var error = file.editorconfig.errors[0];
+				const error = file.editorconfig.errors[0];
 				expect(error.lineNumber).to.equal(1);
 				expect(error.name).to.equal('EditorConfigError');
 				expect(error.message).to.equal('expected final newline');
@@ -441,21 +443,21 @@ describe('eclint gulp plugin', () => {
 			stream.on('error', done);
 
 			stream.write(new File({
+				contents: new Buffer('testcase'),
 				path: path.join(__dirname, 'testcase.js'),
-				contents: new Buffer('testcase')
 			}));
 		});
 
 		it('unexpected final newline', (done) => {
-			var stream = eclint.check({
+			const stream = eclint.check({
 				settings: {
-					insert_final_newline: false
-				}
+					insert_final_newline: false,
+				},
 			});
 
-			stream.on('data', (file: eclint.EditorConfigLintFile) => {
+			stream.on('data', (file: eclint.IEditorConfigLintFile) => {
 				expect(file.editorconfig.errors).to.have.lengthOf(1);
-				var error = file.editorconfig.errors[0];
+				const error = file.editorconfig.errors[0];
 				expect(error.lineNumber).to.equal(1);
 				expect(error.name).to.equal('EditorConfigError');
 				expect(error.message).to.equal('unexpected final newline');
@@ -468,8 +470,8 @@ describe('eclint gulp plugin', () => {
 			stream.on('error', done);
 
 			stream.write(new File({
+				contents: new Buffer('testcase\n'),
 				path: path.join(__dirname, 'testcase.js'),
-				contents: new Buffer('testcase\n')
 			}));
 		});
 
@@ -481,8 +483,6 @@ describe('eclint gulp plugin', () => {
 		}).not.to.throw();
 	});
 	describe('should plugin error', () => {
-		const charset = require('./rules/charset');
-		const editorconfig = require('editorconfig');
 		let stub;
 
 		afterEach(() => {
@@ -492,9 +492,9 @@ describe('eclint gulp plugin', () => {
 			}
 		});
 
-		it('editorconfig.parse in eclint.check', done => {
+		it('editorconfig.parse in eclint.check', (done) => {
 			stub = sinon.stub(editorconfig, 'parse').rejects(new Error('check editorconfig testcase'));
-			var stream = eclint.check();
+			const stream = eclint.check();
 
 			stream.on('error', (error: PluginError) => {
 				expect(error).haveOwnProperty('plugin').and.to.be.equal('ECLint');
@@ -503,14 +503,14 @@ describe('eclint gulp plugin', () => {
 			});
 
 			stream.write(new File({
+				contents: new Buffer('testcase'),
 				path: path.join(__dirname, 'testcase.js'),
-				contents: new Buffer('testcase')
 			}));
 		});
 
-		it('charset.check', done => {
+		it('charset.check', (done) => {
 			stub = sinon.stub(charset, 'check').throws(new Error('check testcase'));
-			var stream = eclint.check();
+			const stream = eclint.check();
 
 			stream.on('error', (error: PluginError) => {
 				expect(error).haveOwnProperty('plugin').and.to.be.equal('ECLint');
@@ -519,14 +519,14 @@ describe('eclint gulp plugin', () => {
 			});
 
 			stream.write(new File({
+				contents: new Buffer('testcase'),
 				path: path.join(__dirname, 'testcase.js'),
-				contents: new Buffer('testcase')
 			}));
 		});
 
-		it('editorconfig.parse in eclint.fix', done => {
+		it('editorconfig.parse in eclint.fix', (done) => {
 			stub = sinon.stub(editorconfig, 'parse').rejects(new Error('fix editorconfig testcase'));
-			var stream = eclint.fix();
+			const stream = eclint.fix();
 
 			stream.on('error', (error: PluginError) => {
 				expect(error).haveOwnProperty('plugin').and.to.be.equal('ECLint');
@@ -535,14 +535,14 @@ describe('eclint gulp plugin', () => {
 			});
 
 			stream.write(new File({
+				contents: new Buffer('testcase'),
 				path: path.join(__dirname, 'testcase.js'),
-				contents: new Buffer('testcase')
 			}));
 		});
 
-		it('charset.fix', done => {
+		it('charset.fix', (done) => {
 			stub = sinon.stub(charset, 'fix').throws(new Error('fix testcase'));
-			var stream = eclint.fix();
+			const stream = eclint.fix();
 
 			stream.on('error', (error: PluginError) => {
 				expect(error).haveOwnProperty('plugin').and.to.be.equal('ECLint');
@@ -551,14 +551,14 @@ describe('eclint gulp plugin', () => {
 			});
 
 			stream.write(new File({
+				contents: new Buffer('testcase'),
 				path: path.join(__dirname, 'testcase.js'),
-				contents: new Buffer('testcase')
 			}));
 		});
 
-		it('charset.infer', done => {
+		it('charset.infer', (done) => {
 			stub = sinon.stub(charset, 'infer').throws(new Error('infer testcase'));
-			var stream = eclint.infer();
+			const stream = eclint.infer();
 
 			stream.on('error', (error: PluginError) => {
 				expect(error).haveOwnProperty('plugin').and.to.be.equal('ECLint');
@@ -567,8 +567,8 @@ describe('eclint gulp plugin', () => {
 			});
 
 			stream.write(new File({
+				contents: new Buffer('testcase'),
 				path: path.join(__dirname, 'testcase.js'),
-				contents: new Buffer('testcase')
 			}));
 		});
 	});

@@ -1,25 +1,25 @@
-import _ = require('lodash');
+import * as _ from 'lodash';
 import * as doc from '../doc';
-import eclint = require('../eclint');
-import EditorConfigError =  require('../editor-config-error');
+import * as eclint from '../eclint';
+import EditorConfigError = require('../editor-config-error');
 
-var boms = {
-	'utf-8-bom': '\u00EF\u00BB\u00BF',
+const boms = {
 	'utf-16be': '\u00FE\u00FF',
-	'utf-32le': '\u00FF\u00FE\u0000\u0000',
 	'utf-16le': '\u00FF\u00FE',
-	'utf-32be': '\u0000\u0000\u00FE\u00FF'
+	'utf-32be': '\u0000\u0000\u00FE\u00FF',
+	'utf-32le': '\u00FF\u00FE\u0000\u0000',
+	'utf-8-bom': '\u00EF\u00BB\u00BF',
 };
 
-function resolve(settings: eclint.Settings) {
+function resolve(settings: eclint.ISettings) {
 	return settings.charset;
 }
 
-function check(settings: eclint.Settings, document: doc.Document) {
+function check(settings: eclint.ISettings, document: doc.IDocument) {
 	function creatErrorArray(message: string, ...args) {
-		var error = new EditorConfigError(message, ...args);
-		var source = '';
-		document.lines.some(function(line) {
+		const error = new EditorConfigError(message, ...args);
+		let source = '';
+		document.lines.some((line) => {
 			if (/\S/.test(line.text)) {
 				source += line.text;
 				return true;
@@ -32,8 +32,8 @@ function check(settings: eclint.Settings, document: doc.Document) {
 		error.rule = 'charset';
 		return [error];
 	}
-	var inferredSetting = infer(document);
-	var configSetting = resolve(settings);
+	const inferredSetting = infer(document);
+	const configSetting = resolve(settings);
 	if (inferredSetting) {
 		if (inferredSetting !== settings.charset) {
 			return creatErrorArray('invalid charset: %s, expected: %s', inferredSetting, configSetting);
@@ -41,7 +41,7 @@ function check(settings: eclint.Settings, document: doc.Document) {
 		return [];
 	}
 	if (configSetting === 'latin1') {
-		var errors = document.lines.map(checkLatin1TextRange);
+		const errors = document.lines.map(checkLatin1TextRange);
 		return [].concat.apply([], errors);
 	}
 	if (_.includes(Object.keys(boms), configSetting)) {
@@ -50,19 +50,19 @@ function check(settings: eclint.Settings, document: doc.Document) {
 	return [];
 }
 
-function fix(settings: eclint.Settings, document: doc.Document) {
+function fix(settings: eclint.ISettings, document: doc.IDocument) {
 	document.charset = resolve(settings);
 	return document;
 }
 
-function infer(document: doc.Document): string {
+function infer(document: doc.IDocument): string {
 	return document.charset;
 }
 
 function checkLatin1TextRange(line: doc.Line) {
-	return [].slice.call(line.text, 0).map(function(character: string, i: number) {
+	return [].slice.call(line.text, 0).map((character: string, i: number) => {
 		if (character.charCodeAt(0) >= 0x80) {
-			var error = new EditorConfigError('character out of latin1 range: %s', JSON.stringify(character));
+			const error = new EditorConfigError('character out of latin1 range: %s', JSON.stringify(character));
 			error.lineNumber = line.number;
 			error.columnNumber = i + 1;
 			error.source = line.text;
@@ -72,12 +72,12 @@ function checkLatin1TextRange(line: doc.Line) {
 	}).filter(Boolean);
 }
 
-var CharsetRule: eclint.DocumentRule = {
+const CharsetRule: eclint.IDocumentRule = {
+	check,
+	fix,
+	infer,
+	resolve,
 	type: 'DocumentRule',
-	resolve: resolve,
-	check: check,
-	fix: fix,
-	infer: infer
 };
 
 export = CharsetRule;

@@ -1,8 +1,14 @@
 {
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended"
+  ],
   "rules": {
     "class-name": true,
     "curly": true,
     "eofline": true,
+    "forin":false,
+    "indent": [true, "tabs"],
     "label-position": true,
     "max-line-length": [true, 120],
     "no-arg": true,

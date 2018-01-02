@@ -1,9 +1,9 @@
-import chai = require('chai');
-import sinonChai = require('sinon-chai');
-import doc = require('./doc');
+import * as chai from 'chai';
+import * as sinonChai from 'sinon-chai';
+import * as doc from './doc';
 
 chai.use(sinonChai);
-export var expect = chai.expect;
+export let expect = chai.expect;
 
 export function createLine(text: string, options?: {
 	number?: number;
@@ -12,9 +12,9 @@ export function createLine(text: string, options?: {
 }) {
 	options = options || {};
 	return new doc.Line({
+		ending: options.ending || '',
 		number: options.number || 1,
 		offset: options.offset || 0,
-		text: text,
-		ending: options.ending || ''
+		text,
 	});
 }

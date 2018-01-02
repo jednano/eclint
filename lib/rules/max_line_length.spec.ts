@@ -1,16 +1,16 @@
-import common = require('../test-common');
+import * as common from '../test-common';
 import rule = require('./max_line_length');
-var createLine = common.createLine;
-
-var expect = common.expect;
+const createLine = common.createLine;
+const expect = common.expect;
+/* tslint:disable:no-unused-expression */
 
 describe('max_line_length rule', () => {
 
 	describe('check command', () => {
 
 		it('validates max_line_length setting',() => {
-			var fooLine = createLine('foo', { number: 1 });
-			var error;
+			const fooLine = createLine('foo', { number: 1 });
+			let error;
 			error = rule.check({}, fooLine);
 			expect(error).to.be.undefined;
 			error = rule.check({ max_line_length: 3 }, fooLine);
@@ -28,8 +28,8 @@ describe('max_line_length rule', () => {
 	describe('fix command', () => {
 
 		it('returns the line as-is',() => {
-			var line = createLine('foobar');
-			var fixedLine = rule.fix({ max_line_length: 2 }, createLine('foobar'));
+			const line = createLine('foobar');
+			const fixedLine = rule.fix({ max_line_length: 2 }, createLine('foobar'));
 			expect(fixedLine).to.deep.equal(line);
 		});
 
@@ -38,12 +38,12 @@ describe('max_line_length rule', () => {
 	describe('infer command', () => {
 
 		it('infers max line length', () => {
-			var maxLineLength = rule.infer(createLine('foo'));
+			const maxLineLength = rule.infer(createLine('foo'));
 			expect(maxLineLength).to.eq(3);
 		});
 
 		it('ignores newline characters', () => {
-			var maxLineLength = rule.infer(createLine('foo', { ending: '\n'}));
+			const maxLineLength = rule.infer(createLine('foo', { ending: '\n'}));
 			expect(maxLineLength).to.eq(3);
 		});
 

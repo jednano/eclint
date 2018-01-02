@@ -1,19 +1,20 @@
-import common = require('./test-common');
-import doc = require('./doc');
-var expect = common.expect;
+import * as doc from './doc';
+import * as common from './test-common';
+const expect = common.expect;
+/* tslint:disable:no-unused-expression */
 
-describe('eclint doc', function() {
+describe('eclint doc', () => {
 	it('block comment rule', () => {
-		var lines = doc.create([
+		const lines = doc.create([
 			'\tfoo',
 			'/*',
 			' *',
 			' */',
 			'bar',
 		].join('\n'), {
-			block_comment_start: '/*',
 			block_comment: '*',
 			block_comment_end: '*/',
+			block_comment_start: '/*',
 		}).lines;
 
 		expect(lines).to.have.length(5);
@@ -44,15 +45,15 @@ describe('eclint doc', function() {
 	});
 
 	it('block comment start & end', () => {
-		var lines = doc.create([
+		const lines = doc.create([
 			'\tfoo',
 			'/*',
 			' *',
 			' */',
 			'bar',
 		].join('\n'), {
-			block_comment_start: '/*',
 			block_comment_end: '*/',
+			block_comment_start: '/*',
 		}).lines;
 
 		expect(lines).to.have.length(5);
@@ -83,13 +84,13 @@ describe('eclint doc', function() {
 	});
 
 	it('broken block comment', () => {
-		var lines = doc.create([
+		const lines = doc.create([
 			' */',
 			' *',
 			'/*',
 		].join('\n'), {
-			block_comment_start: '/*',
 			block_comment_end: '*/',
+			block_comment_start: '/*',
 		}).lines;
 
 		expect(lines).to.have.length(3);
@@ -103,13 +104,13 @@ describe('eclint doc', function() {
 	});
 
 	it('config without block_comment', () => {
-		var lines = doc.create([
+		const lines = doc.create([
 			'<!--[if IE]>',
 			'You are useing IE.',
 			'<![endif]-->',
 		].join('\n'), {
-			block_comment_start: '<!--[if IE]>',
 			block_comment_end: '<![endif]-->',
+			block_comment_start: '<!--[if IE]>',
 		}).lines;
 		expect(lines[0]).haveOwnProperty('isBlockCommentStart').and.to.be.ok;
 		expect(lines[1]).haveOwnProperty('isBlockComment').and.to.be.not.ok;

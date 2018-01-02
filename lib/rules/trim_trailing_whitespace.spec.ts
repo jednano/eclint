@@ -1,14 +1,15 @@
-import common = require('../test-common');
+import * as common from '../test-common';
 import rule = require('./trim_trailing_whitespace');
-var createLine = common.createLine;
+const createLine = common.createLine;
 
-var expect = common.expect;
+const expect = common.expect;
+/* tslint:disable:no-unused-expression */
 
 describe('trim_trailing_whitespace rule', () => {
 
-	var settings = {
+	const settings = {
+		false: { trim_trailing_whitespace: false },
 		true: { trim_trailing_whitespace: true },
-		false: { trim_trailing_whitespace: false }
 	};
 
 	describe('check command', () => {
@@ -16,7 +17,7 @@ describe('trim_trailing_whitespace rule', () => {
 		describe('true setting', () => {
 
 			it('reports trailing whitespace', () => {
-				var error;
+				let error;
 				error = rule.check(settings.true, createLine('foo '));
 				expect(error).to.be.ok;
 				expect(error.rule).to.equal('trim_trailing_whitespace');
@@ -38,7 +39,7 @@ describe('trim_trailing_whitespace rule', () => {
 			});
 
 			it('remains silent when no trailing whitespace is found', () => {
-				var error;
+				let error;
 				error = rule.check(settings.true, createLine('foo'));
 				expect(error).to.be.undefined;
 				error = rule.check(settings.true, createLine(''));
@@ -49,7 +50,7 @@ describe('trim_trailing_whitespace rule', () => {
 		describe('false setting', () => {
 
 			it('remains silent when trailing whitespace is found', () => {
-				var error;
+				let error;
 				error = rule.check(settings.false, createLine('foo '));
 				expect(error).to.be.undefined;
 				error = rule.check(settings.false, createLine('foo\t '));
@@ -59,7 +60,7 @@ describe('trim_trailing_whitespace rule', () => {
 			});
 
 			it('remains silent when no trailing whitespace is found', () => {
-				var error;
+				let error;
 				error = rule.check(settings.false, createLine('foo'));
 				expect(error).to.be.undefined;
 				error = rule.check(settings.false, createLine(''));
@@ -71,7 +72,7 @@ describe('trim_trailing_whitespace rule', () => {
 	describe('fix command', () => {
 
 		it('true setting replaces trailing whitespace with nothing', () => {
-			var line = rule.fix(settings.true, createLine('foo '));
+			let line = rule.fix(settings.true, createLine('foo '));
 			expect(line.text).to.equal('foo');
 			line = rule.fix(settings.true, createLine('foo\t '));
 			expect(line.text).to.equal('foo');
@@ -80,7 +81,7 @@ describe('trim_trailing_whitespace rule', () => {
 		});
 
 		it('false setting leaves trailing whitespace alone', () => {
-			var line = rule.fix(settings.false, createLine('foo '));
+			let line = rule.fix(settings.false, createLine('foo '));
 			expect(line.text).to.equal('foo ');
 			line = rule.fix(settings.false, createLine('foo\t '));
 			expect(line.text).to.equal('foo\t ');
@@ -89,7 +90,7 @@ describe('trim_trailing_whitespace rule', () => {
 		});
 
 		it('no setting does not affect the line', () => {
-			var line = rule.fix({}, createLine('foo '));
+			let line = rule.fix({}, createLine('foo '));
 			expect(line.text).to.equal('foo ');
 			line = rule.fix({}, createLine('foo\t '));
 			expect(line.text).to.equal('foo\t ');
@@ -101,14 +102,14 @@ describe('trim_trailing_whitespace rule', () => {
 	describe('infer command', () => {
 
 		it('infers true when no trailing whitespace is found', () => {
-			var setting = rule.infer(createLine('foo'));
+			let setting = rule.infer(createLine('foo'));
 			expect(setting).to.be.true;
 			setting = rule.infer(createLine(''));
 			expect(setting).to.be.true;
 		});
 
 		it('infers undefined when trailing whitespace is found', () => {
-			var setting = rule.infer(createLine('foo '));
+			let setting = rule.infer(createLine('foo '));
 			expect(setting).to.be.undefined;
 			setting = rule.infer(createLine('foo\t '));
 			expect(setting).to.be.undefined;

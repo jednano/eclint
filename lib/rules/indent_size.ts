@@ -1,10 +1,10 @@
 import * as doc from '../doc';
-import eclint = require('../eclint');
-import EditorConfigError =  require('../editor-config-error');
+import * as eclint from '../eclint';
+import EditorConfigError = require('../editor-config-error');
 
-var RE_LEADING_SPACES = /^ *$/;
+const RE_LEADING_SPACES = /^ *$/;
 
-function getNumber(num: string | number, fallback?: Function) {
+function getNumber(num: string | number, fallback?: () => number): number {
 	num = +num;
 
 	if (isNaN(num)) {
@@ -13,8 +13,8 @@ function getNumber(num: string | number, fallback?: Function) {
 	return num;
 }
 
-function resolve(settings: eclint.Settings): number {
-	var result = (settings.indent_size === 'tab')
+function resolve(settings: eclint.ISettings): number {
+	const result = (settings.indent_size === 'tab')
 		? settings.tab_width
 		: settings.indent_size;
 
@@ -33,7 +33,7 @@ function checkLine(line: doc.Line, indentSize: number): EditorConfigError {
 		return;
 	}
 
-	var softTabCount = line.prefix.length / indentSize;
+	let softTabCount = line.prefix.length / indentSize;
 
 	if (indentSize % 2) {
 		softTabCount = Math.floor(softTabCount);
@@ -41,10 +41,10 @@ function checkLine(line: doc.Line, indentSize: number): EditorConfigError {
 		softTabCount = Math.round(softTabCount);
 	}
 
-	var expectedIndentSize = softTabCount * indentSize;
+	const expectedIndentSize = softTabCount * indentSize;
 
 	if (line.prefix.length !== expectedIndentSize) {
-		var error = new EditorConfigError(
+		const error = new EditorConfigError(
 			'invalid indent size: %s, expected: %s',
 			line.prefix.length,
 			expectedIndentSize,
@@ -56,27 +56,27 @@ function checkLine(line: doc.Line, indentSize: number): EditorConfigError {
 	}
 }
 
-function check(settings: eclint.Settings, document: doc.Document): EditorConfigError[] {
+function check(settings: eclint.ISettings, document: doc.IDocument): EditorConfigError[] {
 	if (settings.indent_style === 'tab') {
 		return [];
 	}
-	var indentSize = resolve(settings);
+	const indentSize = resolve(settings);
 	if (indentSize) {
-		return document.lines.map(line => {
+		return document.lines.map((line) => {
 			return checkLine(line, indentSize);
 		}).filter(Boolean);
 	}
 	return [];
 }
 
-function fix(_settings: eclint.Settings, document: doc.Document) {
+function fix(_settings: eclint.ISettings, document: doc.IDocument) {
 	return document; // noop
 }
 
-function infer(document: doc.Document): number {
-	var scores = {};
-	var lastIndentSize = 0;
-	var lastLeadingSpacesLength = 0;
+function infer(document: doc.IDocument): number {
+	const scores = {};
+	let lastIndentSize = 0;
+	let lastLeadingSpacesLength = 0;
 
 	function vote(leadingSpacesLength: number) {
 		if (leadingSpacesLength) {
@@ -91,17 +91,17 @@ function infer(document: doc.Document): number {
 		lastLeadingSpacesLength = leadingSpacesLength;
 	}
 
-	document.lines.forEach(line => {
+	document.lines.forEach((line) => {
 		if (!line.isBlockComment && line.string && RE_LEADING_SPACES.test(line.prefix)) {
 			vote(line.prefix.length);
 		}
 	});
 
-	var bestScore = 0;
-	var result = 0;
+	let bestScore = 0;
+	let result = 0;
 
-	for (var indentSize in scores) {
-		var score = scores[indentSize];
+	for (const indentSize in scores) {
+		const score = scores[indentSize];
 		if (score > bestScore) {
 			bestScore = score;
 			result = +indentSize;
@@ -111,12 +111,12 @@ function infer(document: doc.Document): number {
 	return result;
 }
 
-var IndentSizeRule: eclint.DocumentRule = {
+const IndentSizeRule: eclint.IDocumentRule = {
+	check,
+	fix,
+	infer,
+	resolve,
 	type: 'DocumentRule',
-	resolve: resolve,
-	check: check,
-	fix: fix,
-	infer: infer
 };
 
 export = IndentSizeRule;

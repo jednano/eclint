@@ -1,20 +1,20 @@
 import * as doc from '../doc';
 
-import eclint = require('../eclint');
-import EditorConfigError =  require('../editor-config-error');
+import * as eclint from '../eclint';
+import EditorConfigError = require('../editor-config-error');
 
-function resolve(settings: eclint.Settings) {
+function resolve(settings: eclint.ISettings) {
 	return settings.max_line_length > 0 ? settings.max_line_length : void(0);
 }
 
-function check(settings: eclint.Settings, line: doc.Line) {
-	var inferredSetting = infer(line);
-	var configSetting = resolve(settings);
+function check(settings: eclint.ISettings, line: doc.Line) {
+	const inferredSetting = infer(line);
+	const configSetting = resolve(settings);
 	if (inferredSetting > settings.max_line_length) {
-		var error = new EditorConfigError(
+		const error = new EditorConfigError(
 			'invalid line length: %s, exceeds: %s',
 			inferredSetting,
-			configSetting
+			configSetting,
 		);
 		error.lineNumber = line.number;
 		error.columnNumber = settings.max_line_length;
@@ -24,7 +24,7 @@ function check(settings: eclint.Settings, line: doc.Line) {
 	}
 }
 
-function fix(_settings: eclint.Settings, line: doc.Line) {
+function fix(_settings: eclint.ISettings, line: doc.Line) {
 	return line; // noop
 }
 
@@ -32,12 +32,12 @@ function infer(line: doc.Line) {
 	return line.text.length;
 }
 
-var MaxLineLengthRule: eclint.LineRule = {
+const MaxLineLengthRule: eclint.ILineRule = {
+	check,
+	fix,
+	infer,
+	resolve,
 	type: 'LineRule',
-	resolve: resolve,
-	check: check,
-	fix: fix,
-	infer: infer
 };
 
 export = MaxLineLengthRule;
