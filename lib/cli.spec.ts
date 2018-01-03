@@ -1,13 +1,14 @@
-import common = require('./test-common');
-import sinon = require('sinon');
-import path = require('path');
-import os = require('os');
-import fs = require('fs-extra');
-import PluginError = require('plugin-error');
-import through = require('through2');
-import proxyquire = require('proxyquire');
-import getStream = require('get-stream');
+import * as fs from 'fs-extra';
+import * as getStream from 'get-stream';
+import * as os from 'os';
+import * as path from 'path';
+import * as PluginError from 'plugin-error';
+import * as proxyquire from 'proxyquire';
+import * as sinon from 'sinon';
+import * as through from 'through2';
+import * as common from './test-common';
 const expect = common.expect;
+/* tslint:disable:no-unused-expression */
 
 function noop() {
 	return through.obj();
@@ -15,6 +16,7 @@ function noop() {
 
 function eclint(args, stubs?) {
 	const argv = proxyquire('./cli', stubs || {
+		'gulp-reporter': noop,
 		'gulp-tap': (callback) => {
 			log = sinon.stub(console, 'log');
 			callback({
@@ -24,11 +26,10 @@ function eclint(args, stubs?) {
 			log.restore();
 			return noop();
 		},
-		'gulp-reporter': noop,
 	})(args);
 	// const argv = require('./cli')(args);
 	if (argv.stream) {
-		argv.then = (...args) => getStream.array(argv.stream).then(...args);
+		argv.then = (...promiseArgs) => getStream.array(argv.stream).then(...promiseArgs);
 	}
 	return argv;
 }
@@ -37,12 +38,12 @@ let exit;
 let log;
 describe('eclint cli', function() {
 	this.timeout(6000);
-	beforeEach(function () {
+	beforeEach(() => {
 		exit = sinon.stub(process, 'exit');
 		process.exitCode = 0;
 	});
 
-	afterEach(function () {
+	afterEach(() => {
 		process.exitCode = 0;
 		exit.restore();
 		if (log) {
@@ -59,42 +60,46 @@ describe('eclint cli', function() {
 		log.restore();
 	});
 
-	if (os.platform() !== 'win32') {
-		it('thomas-lebeau/gulp-gitignore#2', () => {
-			const cwd = process.cwd();
-			process.chdir('/');
-			return eclint(['check', '/etc/hosts']).then(files => {
-				process.chdir(cwd);
-				expect(files).to.have.length.above(0);
-			});
+	it('thomas-lebeau/gulp-gitignore#2', () => {
+		let hostsFile;
+		if (os.platform() === 'win32') {
+			hostsFile = path.join(process.env.SystemRoot, 'System32/drivers/etc/hosts');
+		} else {
+			hostsFile = '/etc/hosts';
+		}
+		const cwd = process.cwd();
+		process.chdir(path.resolve(hostsFile, '/'));
+		return eclint(['check', hostsFile]).then((files) => {
+			process.chdir(cwd);
+			expect(files).to.have.length.above(0);
 		});
-	}
+	});
 
 	describe('check', () => {
 		it('All Files', () => {
-			return eclint(['check']).then(files => {
-				files = files.map(file => file.path);
+			return eclint(['check']).then((files) => {
+				files = files.map((file) => file.path);
 				expect(files).to.have.length.above(10);
 				expect(files).that.include(path.resolve(__dirname, '../.gitignore'));
 			});
 		});
 		it('Directories', () => {
-			return eclint(['check', 'locales']).then(files => {
+			return eclint(['check', 'locales']).then((files) => {
 				expect(files).to.have.length.above(2);
 			});
 		});
 		it('README.md', () => {
-			return eclint(['check', 'README.md']).then(files => {
+			return eclint(['check', 'README.md']).then((files) => {
 				expect(files).to.have.lengthOf(1);
 			});
 		});
 		it('images/*', () => {
-			return eclint(['check', 'images/**/*']).then(files => {
+			return eclint(['check', 'images/**/*']).then((files) => {
 				expect(files).have.lengthOf(0);
 			});
 		});
 		it('node_modules/.bin/_mocha', () => {
-			return eclint(['check', 'node_modules/.bin/_mocha']).then(files => {
+			return eclint(['check', 'node_modules/.bin/_mocha']).then((files) => {
 				expect(files).have.lengthOf(1);
 				expect(files[0]).haveOwnProperty('editorconfig').haveOwnProperty('errors').to.have.length.above(1);
 			});
@@ -112,7 +117,7 @@ describe('eclint cli', function() {
 			expect(log.lastCall).to.be.null;
 			log.restore();
 			process.exitCode = 0;
-			return result.then(files => {
+			return result.then((files) => {
 				expect(files).have.lengthOf(0);
 			});
 		});
@@ -121,21 +126,21 @@ describe('eclint cli', function() {
 				eclint(['check', '/etc/hosts'], {
 					'gulp-exclude-gitignore': () => {
 						throw new Error('test: gulp-exclude-gitignore mock');
-					}
+					},
 				});
 			}).throws('test: gulp-exclude-gitignore mock');
 		});
 	});
-	describe('infer', function() {
+	describe('infer', () => {
 
 		it('lib/**/*', () => {
-			return eclint(['infer', '--ini', 'lib/**/*']).then(files => {
+			return eclint(['infer', '--ini', 'lib/**/*']).then((files) => {
 				expect(files).have.lengthOf(1);
 				expect(files[0].contents.toString()).to.be.match(/\bindent_style = tab\b/);
 			});
 		});
 		it('README.md', () => {
-			return eclint(['infer', 'README.md']).then(files => {
+			return eclint(['infer', 'README.md']).then((files) => {
 				expect(files).have.lengthOf(1);
 				const result = JSON.parse(files[0].contents);
 				expect(result).haveOwnProperty('end_of_line').and.equal('lf');
@@ -143,40 +148,40 @@ describe('eclint cli', function() {
 			});
 		});
 		it('All Files', () => {
-			return eclint(['infer']).then(files => {
+			return eclint(['infer']).then((files) => {
 				expect(files).have.lengthOf(1);
 				const result = JSON.parse(files[0].contents);
 				expect(result).to.deep.equal({
-					'charset': '',
-					'indent_style': 'tab',
-					'indent_size': 0,
-					'trim_trailing_whitespace': true,
-					'end_of_line': 'lf',
-					'insert_final_newline': true,
-					'max_line_length': 70
+					charset: '',
+					end_of_line: 'lf',
+					indent_size: 0,
+					indent_style: 'tab',
+					insert_final_newline: true,
+					max_line_length: 80,
+					trim_trailing_whitespace: true,
 				});
 			});
 		});
 	});
 
-	describe('fix', function() {
+	describe('fix', () => {
 		it('README.md', () => {
-			eclint(['fix', 'README.md']).then(files => {
+			eclint(['fix', 'README.md']).then((files) => {
 				expect(files).to.have.lengthOf(1);
 			});
 		});
 		if (os.tmpdir && fs.mkdtemp) {
 			it('All Files with `--dest`', () => {
-				return fs.mkdtemp(path.join(os.tmpdir(), 'eclint-')).then(tmpDir => {
+				return fs.mkdtemp(path.join(os.tmpdir(), 'eclint-')).then((tmpDir) => {
 					expect(tmpDir).to.be.ok.and.be.a('string');
 					return eclint(['fix', '--dest', tmpDir]);
-				}).then(files => {
+				}).then((files) => {
 					expect(files).to.have.length.above(10);
 				});
 			});
 		}
 		it('All Files', () => {
-			eclint(['fix']).then(files => {
+			eclint(['fix']).then((files) => {
 				expect(files).to.have.length.above(10);
 			});
 		});
@@ -184,10 +189,10 @@ describe('eclint cli', function() {
 
 	it('thomas-lebeau/gulp-gitignore#2', () => {
 		return eclint(['check', 'dist/cli.js'], {
-			'gulp-tap': noop,
-			'gulp-reporter': noop,
 			'gulp-gitignore': () => [],
-		}).then(files => {
+			'gulp-reporter': noop,
+			'gulp-tap': noop,
+		}).then((files) => {
 			expect(files).to.have.length.above(0);
 		});
 	});

@@ -1,9 +1,9 @@
-import _ = require('lodash');
+import * as _ from 'lodash';
 import * as doc from '../doc';
 
-import eclint = require('../eclint');
+import * as eclint from '../eclint';
+import EditorConfigError = require('../editor-config-error');
 import IndentSizeRule = require('./indent_size');
-import EditorConfigError =  require('../editor-config-error');
 
 enum IndentStyle {
 	ignore,
@@ -11,7 +11,7 @@ enum IndentStyle {
 	space,
 }
 
-function resolve(settings: eclint.Settings): IndentStyle {
+function resolve(settings: eclint.ISettings): IndentStyle {
 	switch (settings.indent_style) {
 		case 'tab':
 			return IndentStyle.tab;
@@ -32,17 +32,17 @@ function checkLine(line: doc.Line, indentStyle: IndentStyle) {
 	}
 
 	function searchString(searchValue: string): number {
-		var index = line.prefix.indexOf(searchValue);
+		const index = line.prefix.indexOf(searchValue);
 		if (index < 0) {
 			return 0;
 		}
 		return index + searchValue.length;
 	}
 
-	var tabColumnNumber = searchString('\t');
-	var spaceColumnNumber = searchString(' ');
-	var errorMessage: string;
-	var errorColumnNumber: number;
+	const tabColumnNumber = searchString('\t');
+	const spaceColumnNumber = searchString(' ');
+	let errorMessage: string;
+	let errorColumnNumber: number;
 
 	if (indentStyle === IndentStyle.space) {
 		errorColumnNumber = tabColumnNumber;
@@ -58,7 +58,7 @@ function checkLine(line: doc.Line, indentStyle: IndentStyle) {
 	}
 
 	if (errorColumnNumber) {
-		var error = new EditorConfigError(errorMessage);
+		const error = new EditorConfigError(errorMessage);
 		error.lineNumber = line.number;
 		error.columnNumber = errorColumnNumber;
 		error.rule = 'indent_style';
@@ -67,21 +67,21 @@ function checkLine(line: doc.Line, indentStyle: IndentStyle) {
 	}
 }
 
-function check(settings: eclint.Settings, document: doc.Document): EditorConfigError[] {
-	var indentStyle = resolve(settings);
-	return document.lines.map(line => {
+function check(settings: eclint.ISettings, document: doc.IDocument): EditorConfigError[] {
+	const indentStyle = resolve(settings);
+	return document.lines.map((line) => {
 		return checkLine(line, indentStyle);
 	}).filter(Boolean);
 }
 
 function identifyIndentation(indentSize: number, line: doc.Line): number {
 
-	var spaceCount = 0;
-	var hardTabCount = line.prefix.replace(/ /g, () => {
+	let spaceCount = 0;
+	const hardTabCount = line.prefix.replace(/ /g, () => {
 		spaceCount++;
 		return '';
 	}).length;
-	var softTabCount = 0;
+	let softTabCount = 0;
 	if (spaceCount) {
 		softTabCount = spaceCount / indentSize;
 		if (indentSize > 2 && softTabCount % 0.5) {
@@ -93,20 +93,20 @@ function identifyIndentation(indentSize: number, line: doc.Line): number {
 	return hardTabCount + softTabCount;
 }
 
-function getTabWidth(settings: eclint.Settings, document: doc.Document): number {
-	var tabWidth = IndentSizeRule.resolve(settings);
-	if (isNaN(tabWidth)) {
+function getTabWidth(settings: eclint.ISettings, document: doc.IDocument): number {
+	let tabWidth = IndentSizeRule.resolve(settings);
+	if (isNaN(tabWidth as any)) {
 		tabWidth = IndentSizeRule.infer(document);
 	}
-	return tabWidth;
+	return tabWidth as number;
 }
 
 function fixLine(line: doc.Line, indentStyle: IndentStyle, tabWidth: number) {
-	var fixedIndentation;
+	let fixedIndentation;
 	if (line.isBlockComment) {
 		fixedIndentation = line.blockCommentStart.prefix + _.repeat(' ', line.padSize);
 	} else if (indentStyle !== IndentStyle.ignore && tabWidth) {
-		var indentCount = identifyIndentation(tabWidth, line);
+		const indentCount = identifyIndentation(tabWidth, line);
 		switch (indentStyle) {
 			case IndentStyle.space:
 				fixedIndentation = _.repeat(' ', indentCount * tabWidth);
@@ -124,18 +124,18 @@ function fixLine(line: doc.Line, indentStyle: IndentStyle, tabWidth: number) {
 	return line;
 }
 
-function fix(settings: eclint.Settings, document: doc.Document) {
-	var indentStyle = resolve(settings);
-	var tabWidth = getTabWidth(settings, document);
-	document.lines.map(line => {
+function fix(settings: eclint.ISettings, document: doc.IDocument) {
+	const indentStyle = resolve(settings);
+	const tabWidth = getTabWidth(settings, document);
+	document.lines.map((line) => {
 		return fixLine(line, indentStyle, tabWidth);
 	});
 	return document;
 }
-function infer(document: doc.Document): string {
-	var tabCount = 0;
-	var spaceCount = 0;
-	document.lines.forEach(line => {
+function infer(document: doc.IDocument): string {
+	let tabCount = 0;
+	let spaceCount = 0;
+	document.lines.forEach((line) => {
 		if (!line.prefix) {
 			return;
 		} else if (line.prefix[0] === '\t') {
@@ -150,12 +150,12 @@ function infer(document: doc.Document): string {
 	return spaceCount > tabCount ? 'space' : 'tab';
 }
 
-var IndentStyleRule: eclint.DocumentRule = {
+const IndentStyleRule: eclint.IDocumentRule = {
+	check,
+	fix,
+	infer,
+	resolve,
 	type: 'DocumentRule',
-	resolve: resolve,
-	check: check,
-	fix: fix,
-	infer: infer
 };
 
 export = IndentStyleRule;

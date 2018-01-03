@@ -1,18 +1,22 @@
-import _ = require('lodash');
-import tap = require('gulp-tap');
-import vfs = require('vinyl-fs');
-import eclint = require('./eclint');
-import excludeGitignore = require('gulp-exclude-gitignore');
-import yargs = require('yargs');
-import reporter = require('gulp-reporter');
-import filter = require('gulp-filter');
-import through = require('through2');
-import minimatch = require('minimatch');
-import fileType = require('file-type');
-import Stream = require('stream');
+import * as fileType from 'file-type';
+import * as fs from 'fs';
+import * as excludeGitignore from 'gulp-exclude-gitignore';
+import * as filter from 'gulp-filter';
+import * as reporter from 'gulp-reporter';
+import * as tap from 'gulp-tap';
+import * as _ from 'lodash';
+import * as minimatch from 'minimatch';
+import * as path from 'path';
+import * as Stream from 'stream';
+import * as through from 'through2';
+import * as vfs from 'vinyl-fs';
+import * as yargs from 'yargs';
+import * as eclint from './eclint';
 import i18n = require('./i18n');
-import path = require('path');
-import fs = require('fs');
+
+/* tslint:disable:no-var-requires */
+const pkg = require('../package.json');
+/* tslint:enable:no-var-requires */
 
 function gitignore(): Stream {
 	try {
@@ -26,116 +30,114 @@ function gitignore(): Stream {
 	}
 }
 
-const pkg = require('../package.json');
-
-interface Argv extends yargs.Argv {
+interface IArgv extends yargs.Argv {
 	globs: string[];
 	dest?: string;
 	stream?: Stream;
 }
 
-function excludeBinaryFile(file: eclint.EditorConfigLintFile) {
+function excludeBinaryFile(file: eclint.IEditorConfigLintFile) {
 	return !(file && file.isBuffer() && fileType(file.contents));
 }
 
-function builder(yargs: yargs.Argv): yargs.Argv {
-	return yargs.option('indent_style', {
+function builder(argv: yargs.Argv): yargs.Argv {
+	return argv.option('indent_style', {
 		alias: 'i',
-		describe: i18n('Indentation Style'),
-		requiresArg: false,
 		choices: [
 			'tab',
 			'space',
-			undefined
-		]
+			undefined,
+		],
+		describe: i18n('Indentation Style'),
+		requiresArg: false,
 	})
 		.option('indent_size', {
 			alias: 's',
 			describe: i18n('Indentation Size (in single-spaced characters)'),
-			type: 'number'
+			type: 'number',
 		})
 		.option('tab_width', {
 			alias: 't',
 			describe: i18n('Width of a single tabstop character'),
-			type: 'number'
+			type: 'number',
 		})
 		.option('end_of_line', {
 			alias: 'e',
-			describe: i18n('Line ending file format (Unix, DOS, Mac)'),
 			choices: [
 				'lf',
 				'crlf',
 				'cr',
-				undefined
-			]
+				undefined,
+			],
+			describe: i18n('Line ending file format (Unix, DOS, Mac)'),
 		})
 		.option('charset', {
 			alias: 'c',
-			describe: i18n('File character encoding'),
 			choices: [
 				'latin1',
 				'utf-8',
 				'utf-8-bom',
 				'utf-16le',
 				'utf-16be',
-				undefined
-			]
+				undefined,
+			],
+			describe: i18n('File character encoding'),
 		})
 		.option('trim_trailing_whitespace', {
 			alias: 'w',
-			describe: i18n('Denotes whether whitespace is allowed at the end of lines'),
 			default: undefined,
-			type: 'boolean'
+			describe: i18n('Denotes whether whitespace is allowed at the end of lines'),
+			type: 'boolean',
 		})
 		.option('insert_final_newline', {
 			alias: 'n',
-			describe: i18n('Denotes whether file should end with a newline'),
 			default: undefined,
-			type: 'boolean'
+			describe: i18n('Denotes whether file should end with a newline'),
+			type: 'boolean',
 		})
 		.option('max_line_length', {
 			alias: 'm',
-			describe: i18n('Forces hard line wrapping after the amount of characters specified'),
 			default: undefined,
-			type: 'number'
+			describe: i18n('Forces hard line wrapping after the amount of characters specified'),
+			type: 'number',
 		})
 		.option('block_comment_start', {
-			describe: i18n('Block comments start with'),
 			default: undefined,
-			type: 'string'
+			describe: i18n('Block comments start with'),
+			type: 'string',
 		})
 		.option('block_comment', {
-			describe: i18n('Lines in block comment start with'),
 			default: undefined,
-			type: 'string'
+			describe: i18n('Lines in block comment start with'),
+			type: 'string',
 		})
 		.option('block_comment_end', {
-			describe: i18n('Block comments end with'),
 			default: undefined,
-			type: 'string'
+			describe: i18n('Block comments end with'),
+			type: 'string',
 		});
 }
 
-function inferBuilder(yargs: yargs.Argv): yargs.Argv {
-	return yargs
+function inferBuilder(argv: yargs.Argv): yargs.Argv {
+	return argv
 		.option('score', {
 			alias: 's',
 			describe: i18n('Shows the tallied score for each setting'),
-			type: 'boolean'
+			type: 'boolean',
 		})
 		.option('ini', {
 			alias: 'i',
 			describe: i18n('Exports file as ini file type'),
-			type: 'boolean'
+			type: 'boolean',
 		})
 		.option('root', {
 			alias: 'r',
 			describe: i18n('Adds root = true to your ini file, if any'),
-			type: 'boolean'
+			type: 'boolean',
 		});
 }
 
-function handler(yargs: Argv): Stream.Transform {
+function handler(argv: IArgv): Stream.Transform {
 	let ignore = [
 		// # Repository
 		// Git
@@ -162,9 +164,9 @@ function handler(yargs: Argv): Stream.Transform {
 		// Folder config file
 		'!**/ehthumbs.db',
 	];
-	let globs = yargs.globs;
+	let globs = argv.globs;
 	if (globs && globs.length) {
-		globs = globs.map(file => {
+		globs = globs.map((file) => {
 			let stat;
 			try {
 				stat = fs.statSync(file);
@@ -176,7 +178,7 @@ function handler(yargs: Argv): Stream.Transform {
 				if (stat.isDirectory()) {
 					return path.join(file, '**/*');
 				} else {
-					ignore = ignore.filter(glob => (
+					ignore = ignore.filter((glob) => (
 						!minimatch(file, glob.slice(1), {
 							dot: true,
 						})
@@ -190,7 +192,7 @@ function handler(yargs: Argv): Stream.Transform {
 	}
 
 	globs = globs.concat(ignore);
-	yargs.globs = globs;
+	argv.globs = globs;
 	return vfs.src(globs, {
 		dot: true,
 		// stripBOM: false,
@@ -200,21 +202,21 @@ function handler(yargs: Argv): Stream.Transform {
 		.pipe(gitignore());
 }
 
-function pickSettings(yargs: yargs.Argv): eclint.CommandOptions {
-	const settings = _.pickBy(_.pick(yargs, eclint.ruleNames));
+function pickSettings(argv: yargs.Argv): eclint.ICommandOptions {
+	const settings = _.pickBy(_.pick(argv, eclint.ruleNames));
 	return {
-		settings: <eclint.Settings>settings
+		settings: settings as eclint.ISettings,
 	};
 }
 
-function check(yargs: Argv): Stream.Transform {
-	return yargs.stream = handler(yargs)
-		.pipe(eclint.check(pickSettings(yargs)))
+function check(argv: IArgv): Stream.Transform {
+	return argv.stream = handler(argv)
+		.pipe(eclint.check(pickSettings(argv)))
 		.pipe(reporter({
-			output: console.error,
 			blame: false,
+			output: console.error,
 		}))
-		.on('error', error => {
+		.on('error', (error) => {
 			if (error.plugin !== 'gulp-reporter') {
 				console.error(error);
 			}
@@ -222,45 +224,45 @@ function check(yargs: Argv): Stream.Transform {
 		}).resume();
 }
 
-function fix(yargs: Argv): Stream {
-	return yargs.stream = handler(yargs)
-		.pipe(eclint.fix(pickSettings(yargs)))
-		.pipe(yargs.dest ? vfs.dest(yargs.dest) : vfs.dest(file => file.base));
+function fix(argv: IArgv): Stream {
+	return argv.stream = handler(argv)
+		.pipe(eclint.fix(pickSettings(argv)))
+		.pipe(argv.dest ? vfs.dest(argv.dest) : vfs.dest((file) => file.base));
 }
 
-function infer(yargs: Argv): Stream {
-	return yargs.stream = handler(yargs)
-		.pipe(eclint.infer(<eclint.InferOptions>_.pickBy(yargs)))
-		.pipe(tap(file => {
+function infer(argv: IArgv): Stream {
+	return argv.stream = handler(argv)
+		.pipe(eclint.infer(_.pickBy(argv) as eclint.InferOptions))
+		.pipe(tap((file) => {
 			console.log(file.contents + '');
 		}));
 }
 
-export = argv => yargs(argv)
+export = (argv) => yargs(argv)
 	.usage(i18n('Usage: $0 <command> [globs...] [<options>]'))
 	.command({
+		builder,
 		command: 'check [globs...]',
 		describe: i18n('Validate that file(s) adhere to .editorconfig settings'),
-		builder: builder,
-		handler: check
+		handler: check,
 	})
 	.command({
-		command: 'fix   [globs...]',
-		describe: i18n('Fix formatting errors that disobey .editorconfig settings'),
-		builder: yargs => (
-			builder(yargs).option('dest', {
+		builder: (fixArgv) => (
+			builder(fixArgv).option('dest', {
 				alias: 'd',
 				describe: i18n('Destination folder to pipe source files'),
-				type: 'string'
+				type: 'string',
 			})
 		),
-		handler: fix
+		command: 'fix   [globs...]',
+		describe: i18n('Fix formatting errors that disobey .editorconfig settings'),
+		handler: fix,
 	})
 	.command({
+		builder: inferBuilder,
 		command: 'infer [globs...]',
 		describe: i18n('Infer .editorconfig settings from one or more files'),
-		builder: inferBuilder,
-		handler: infer
+		handler: infer,
 	})
 	.demandCommand(1, 1, i18n('CommandError: Missing required sub-command.'))
 	.help()

@@ -1,16 +1,16 @@
-import _ = require('lodash');
-import common = require('../test-common');
+import * as _ from 'lodash';
 import * as doc from '../doc';
+import * as common from '../test-common';
 import rule = require('./indent_size');
-
-var expect = common.expect;
+const expect = common.expect;
+/* tslint:disable:no-unused-expression */
 
 describe('indent_size rule', () => {
 
 	describe('check command', () => {
 
 		it('reports invalid indent size: 2, expected: 4', () => {
-			var errors = rule.check({ indent_size: 4 }, doc.create('  foo'));
+			const errors = rule.check({ indent_size: 4 }, doc.create('  foo'));
 			expect(errors).to.have.lengthOf(1);
 			expect(errors[0].rule).to.equal('indent_size');
 			expect(errors[0].message).to.equal('invalid indent size: 2, expected: 4');
@@ -19,7 +19,7 @@ describe('indent_size rule', () => {
 		});
 
 		it('reports invalid indent size: 3, expected: 4', () => {
-			var errors = rule.check({ indent_size: 2 }, doc.create('   foo'));
+			const errors = rule.check({ indent_size: 2 }, doc.create('   foo'));
 			expect(errors).to.have.lengthOf(1);
 			expect(errors[0].rule).to.equal('indent_size');
 			expect(errors[0].message).to.equal('invalid indent size: 3, expected: 4');
@@ -28,27 +28,27 @@ describe('indent_size rule', () => {
 		});
 
 		it('remains silent when indent size is an unsupported string', () => {
-			var errors = rule.check({ indent_size: 'foo' }, doc.create(''));
+			const errors = rule.check({ indent_size: 'foo' }, doc.create(''));
 			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('remains silent when inferred indent size is tab', () => {
-			var errors = rule.check({ indent_size: 4 }, doc.create('\tfoo'));
+			const errors = rule.check({ indent_size: 4 }, doc.create('\tfoo'));
 			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('remains silent when the indent style setting is tab', () => {
-			var errors = rule.check({ indent_size: 4, indent_style: 'tab' }, doc.create('  foo'));
+			const errors = rule.check({ indent_size: 4, indent_style: 'tab' }, doc.create('  foo'));
 			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('remains silent when indent size is indeterminate', () => {
-			var errors = rule.check({ indent_size: 4 }, doc.create('foo'));
+			const errors = rule.check({ indent_size: 4 }, doc.create('foo'));
 			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('remains silent when indent size is valid', () => {
-			var errors;
+			let errors;
 			errors = rule.check({ indent_size: 0 }, doc.create('foo'));
 			expect(errors).to.have.lengthOf(0);
 			errors = rule.check({ indent_size: 1 }, doc.create(' foo'));
@@ -96,22 +96,22 @@ describe('indent_size rule', () => {
 		});
 
 		it('document comment', () => {
-			var errors = rule.check({
-				indent_size: 2
+			const errors = rule.check({
+				indent_size: 2,
 			}, doc.create([
 				'/*',
 				' * test',
 				' */',
 			].join('\n'), {
-				block_comment_start: '/*',
 				block_comment_end: '*/',
+				block_comment_start: '/*',
 			}));
 			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('conditional comment', () => {
-			var errors = rule.check({
-				indent_size: 2
+			const errors = rule.check({
+				indent_size: 2,
 			}, doc.create([
 				'// #if _DEBUG',
 				'const data = {',
@@ -121,23 +121,23 @@ describe('indent_size rule', () => {
 				'const data = {',
 				"  key: 'value',",
 				'};',
-				'// #endif */'
+				'// #endif */',
 			].join('\n'), {
-				block_comment_start: '/*',
 				block_comment_end: '*/',
+				block_comment_start: '/*',
 			}));
 			expect(errors).to.have.lengthOf(0);
 		});
 
 		it('normal block comment', () => {
-			var errors = rule.check({
-				indent_size: 2
+			const errors = rule.check({
+				indent_size: 2,
 			}, doc.create([
 				'/* foo',
 				'   bar */',
 			].join('\n'), {
-				block_comment_start: '/*',
 				block_comment_end: '*/',
+				block_comment_start: '/*',
 			}));
 			expect(errors).to.have.lengthOf(0);
 		});
@@ -146,10 +146,10 @@ describe('indent_size rule', () => {
 	describe('fix command', () => {
 
 		it('returns the line as-is', () => {
-			var document = doc.create('  \t foo');
-			var fixedLine = rule.fix({
+			const document = doc.create('  \t foo');
+			const fixedLine = rule.fix({
+				indent_size: 4,
 				indent_style: 'space',
-				indent_size: 4
 			}, document);
 			expect(fixedLine).to.deep.equal(document);
 		});
@@ -158,7 +158,7 @@ describe('indent_size rule', () => {
 
 	describe('infer command', () => {
 
-		_.range(2, 9).forEach(n => {
+		_.range(2, 9).forEach((n) => {
 			it('infers ' + n + '-space setting', () => {
 				expect(rule.infer(doc.create(_.repeat(' ', n) + 'foo'))).to.eq(n);
 			});
@@ -180,9 +180,9 @@ describe('indent_size rule', () => {
 				'bar',
 				'bar',
 			].join('\n'), {
-				block_comment_start: '/**',
 				block_comment: '*',
 				block_comment_end: '*/',
+				block_comment_start: '/**',
 			}))).to.eq(2);
 		});
 
