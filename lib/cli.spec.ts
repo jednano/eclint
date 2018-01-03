@@ -60,7 +60,7 @@ describe('eclint cli', function() {
 		log.restore();
 	});
 
-	it('thomas-lebeau/gulp-gitignore#2', () => {
+	it('thomas-lebeau/gulp-gitignore#2', async () => {
 		let hostsFile;
 		if (os.platform() === 'win32') {
 			hostsFile = path.join(process.env.SystemRoot, 'System32/drivers/etc/hosts');
@@ -69,42 +69,36 @@ describe('eclint cli', function() {
 		}
 		const cwd = process.cwd();
 		process.chdir(path.resolve(hostsFile, '/'));
-		return eclint(['check', hostsFile]).then((files) => {
-			process.chdir(cwd);
-			expect(files).to.have.length.above(0);
-		});
+		const files = await eclint(['check', hostsFile]);
+		process.chdir(cwd);
+		expect(files).to.have.length.above(0);
 	});
 
 	describe('check', () => {
-		it('All Files', () => {
-			return eclint(['check']).then((files) => {
-				files = files.map((file) => file.path);
-				expect(files).to.have.length.above(10);
-				expect(files).that.include(path.resolve(__dirname, '../.gitignore'));
-			});
+		it('All Files', async () => {
+			let files = await eclint(['check']);
+			files = files.map((file) => file.path);
+			expect(files).to.have.length.above(10);
+			expect(files).that.include(path.resolve(__dirname, '../.gitignore'));
 		});
-		it('Directories', () => {
-			return eclint(['check', 'locales']).then((files) => {
-				expect(files).to.have.length.above(2);
-			});
+		it('Directories', async () => {
+			const files = await eclint(['check', 'locales']);
+			expect(files).to.have.length.above(2);
 		});
-		it('README.md', () => {
-			return eclint(['check', 'README.md']).then((files) => {
-				expect(files).to.have.lengthOf(1);
-			});
+		it('README.md', async () => {
+			const files = await eclint(['check', 'README.md']);
+			expect(files).to.have.lengthOf(1);
 		});
-		it('images/*', () => {
-			return eclint(['check', 'images/**/*']).then((files) => {
-				expect(files).have.lengthOf(0);
-			});
+		it('images/*', async () => {
+			const files = await eclint(['check', 'images/**/*']);
+			expect(files).have.lengthOf(0);
 		});
-		it('node_modules/.bin/_mocha', () => {
-			return eclint(['check', 'node_modules/.bin/_mocha']).then((files) => {
-				expect(files).have.lengthOf(1);
-				expect(files[0]).haveOwnProperty('editorconfig').haveOwnProperty('errors').to.have.length.above(1);
-			});
+		it('node_modules/.bin/_mocha', async () => {
+			const files = await eclint(['check', 'node_modules/.bin/_mocha']);
+			expect(files).have.lengthOf(1);
+			expect(files[0]).haveOwnProperty('editorconfig').haveOwnProperty('errors').to.have.length.above(1);
 		});
-		it('not_exist.*', () => {
+		it('not_exist.*', async () => {
 			const result = eclint(['check', 'not_exist.*']);
 			let errListener = result.stream.listeners('error');
 			errListener = errListener[errListener.length - 1];
@@ -117,9 +111,8 @@ describe('eclint cli', function() {
 			expect(log.lastCall).to.be.null;
 			log.restore();
 			process.exitCode = 0;
-			return result.then((files) => {
-				expect(files).have.lengthOf(0);
-			});
+			const files = await result;
+			expect(files).have.lengthOf(0);
 		});
 		it('error of gulp-exclude-gitignore', () => {
 			return expect(() => {
@@ -133,67 +126,59 @@ describe('eclint cli', function() {
 	});
 	describe('infer', () => {
 
-		it('lib/**/*', () => {
-			return eclint(['infer', '--ini', 'lib/**/*']).then((files) => {
-				expect(files).have.lengthOf(1);
-				expect(files[0].contents.toString()).to.be.match(/\bindent_style = tab\b/);
-			});
+		it('lib/**/*', async () => {
+			const files = await eclint(['infer', '--ini', 'lib/**/*']);
+			expect(files).have.lengthOf(1);
+			expect(files[0].contents.toString()).to.be.match(/\bindent_style = tab\b/);
 		});
-		it('README.md', () => {
-			return eclint(['infer', 'README.md']).then((files) => {
-				expect(files).have.lengthOf(1);
-				const result = JSON.parse(files[0].contents);
-				expect(result).haveOwnProperty('end_of_line').and.equal('lf');
-				expect(result).haveOwnProperty('insert_final_newline').and.to.be.ok;
-			});
+		it('README.md', async () => {
+			const files = await eclint(['infer', 'README.md']);
+			expect(files).have.lengthOf(1);
+			const result = JSON.parse(files[0].contents);
+			expect(result).haveOwnProperty('end_of_line').and.equal('lf');
+			expect(result).haveOwnProperty('insert_final_newline').and.to.be.ok;
 		});
-		it('All Files', () => {
-			return eclint(['infer']).then((files) => {
-				expect(files).have.lengthOf(1);
-				const result = JSON.parse(files[0].contents);
-				expect(result).to.deep.equal({
-					charset: '',
-					end_of_line: 'lf',
-					indent_size: 0,
-					indent_style: 'tab',
-					insert_final_newline: true,
-					max_line_length: 80,
-					trim_trailing_whitespace: true,
-				});
+		it('All Files', async () => {
+			const files = await eclint(['infer']);
+			expect(files).have.lengthOf(1);
+			const result = JSON.parse(files[0].contents);
+			expect(result).to.deep.equal({
+				charset: '',
+				end_of_line: 'lf',
+				indent_size: 0,
+				indent_style: 'tab',
+				insert_final_newline: true,
+				max_line_length: 80,
+				trim_trailing_whitespace: true,
 			});
 		});
 	});
 
 	describe('fix', () => {
-		it('README.md', () => {
-			eclint(['fix', 'README.md']).then((files) => {
-				expect(files).to.have.lengthOf(1);
-			});
+		it('README.md', async () => {
+			const files = await eclint(['fix', 'README.md']);
+			expect(files).to.have.lengthOf(1);
 		});
 		if (os.tmpdir && fs.mkdtemp) {
-			it('All Files with `--dest`', () => {
-				return fs.mkdtemp(path.join(os.tmpdir(), 'eclint-')).then((tmpDir) => {
-					expect(tmpDir).to.be.ok.and.be.a('string');
-					return eclint(['fix', '--dest', tmpDir]);
-				}).then((files) => {
-					expect(files).to.have.length.above(10);
-				});
-			});
-		}
-		it('All Files', () => {
-			eclint(['fix']).then((files) => {
+			it('All Files with `--dest`', async () => {
+				const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'eclint-'));
+				expect(tmpDir).to.be.ok.and.be.a('string');
+				const files = await eclint(['fix', '--dest', tmpDir]);
 				expect(files).to.have.length.above(10);
 			});
+		}
+		it('All Files', async () => {
+			const files = await eclint(['fix']);
+			expect(files).to.have.length.above(10);
 		});
 	});
 
-	it('thomas-lebeau/gulp-gitignore#2', () => {
-		return eclint(['check', 'dist/cli.js'], {
+	it('thomas-lebeau/gulp-gitignore#2', async () => {
+		const files = await eclint(['check', 'dist/cli.js'], {
 			'gulp-gitignore': () => [],
 			'gulp-reporter': noop,
 			'gulp-tap': noop,
-		}).then((files) => {
-			expect(files).to.have.length.above(0);
 		});
+		expect(files).to.have.length.above(0);
 	});
 });
