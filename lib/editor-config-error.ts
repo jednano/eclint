@@ -2,9 +2,9 @@ import * as os from 'os';
 import i18n = require('./i18n');
 
 class EditorConfigError extends Error {
-	public columnNumber? = 1;
-	public fileName? = '<anonymous>';
-	public lineNumber? = 1;
+	public columnNumber ? = 1;
+	public fileName ? = '<anonymous>';
+	public lineNumber ? = 1;
 	public message = '';
 	public rule = '';
 	public source = '';
