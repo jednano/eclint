@@ -108,8 +108,8 @@ type Done = (err?: Error, file?: File) => void;
 
 const PLUGIN_NAME = 'ECLint';
 
-function createPluginError(err: Error | string) {
-	return new PluginError(PLUGIN_NAME, err);
+function createPluginError(err: Error | string, options?: PluginError.Options): PluginError {
+	return new PluginError(PLUGIN_NAME, err, options);
 }
 
 export let ruleNames = [
@@ -318,7 +318,7 @@ export function infer(options?: InferOptions): stream.Transform {
 	options = options || {};
 
 	if (options.score && options.ini) {
-		throw new PluginError(PLUGIN_NAME, 'Cannot generate tallied scores as ini file format');
+		throw createPluginError('Cannot generate tallied scores as ini file format');
 	}
 
 	const settings: IScoredSettings = {};
@@ -330,7 +330,7 @@ export function infer(options?: InferOptions): stream.Transform {
 		}
 
 		if (file.isStream()) {
-			done(new PluginError(PLUGIN_NAME, 'Streaming not supported'));
+			done(createPluginError('Streaming not supported'));
 			return;
 		}
 
