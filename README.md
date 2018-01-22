@@ -4,9 +4,9 @@
 [![npm version](https://badge.fury.io/js/eclint.svg)](http://badge.fury.io/js/eclint)
 [![codecov](https://codecov.io/gh/jedmao/eclint/branch/master/graph/badge.svg)](https://codecov.io/gh/jedmao/eclint)
 [![npm license](http://img.shields.io/npm/l/eclint.svg?style=flat-square)](https://www.npmjs.org/package/eclint)
+[![dependencies Status](https://david-dm.org/jedmao/eclint/status.svg)](https://david-dm.org/jedmao/eclint)
 
 [![npm](https://nodei.co/npm/eclint.svg?downloads=true)](https://nodei.co/npm/eclint/)
-
 
 ## Introduction
 
