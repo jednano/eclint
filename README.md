@@ -253,6 +253,13 @@ insert_final_newline = true
 max_line_length = 90
 ```
 
+## Respect .gitignore
+
+```bash
+$ env eclint check $(git ls-files)
+```
+for compatible with Windows, you can install [exec-extra](https://github.com/gucong3000/exec-extra)
+
 ## Locales currently supported:
 
 - en: English.
