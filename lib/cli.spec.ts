@@ -115,8 +115,8 @@ describe('eclint cli', function() {
 			expect(files).have.lengthOf(0);
 		});
 		it('error of gulp-exclude-gitignore', () => {
-			return expect(() => {
-				eclint(['check', '/etc/hosts'], {
+			expect(() => {
+				eclint(['check', 'README.md'], {
 					'gulp-exclude-gitignore': () => {
 						throw new Error('test: gulp-exclude-gitignore mock');
 					},
