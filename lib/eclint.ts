@@ -139,11 +139,17 @@ _.without(
 	rules[name] = require('./rules/' + name);
 });
 
-function getSettings(fileSettings: ISettings, commandSettings: ISettings) {
-	return _.omit(
-		_.assign(fileSettings, commandSettings),
-		['tab_width'],
-	);
+function getSettings(fileSettings: editorconfig.KnownProps, commandSettings: ISettings | editorconfig.KnownProps) {
+	return _.pickBy(
+		_.omit(
+			_.assign(
+				fileSettings,
+				commandSettings,
+			),
+			['tab_width'],
+		),
+		(value) => value !== 'unset',
+	) as ISettings;
 }
 
 function updateResult(file: IEditorConfigLintFile, options: any) {
@@ -178,7 +184,7 @@ export function check(options?: ICheckCommandOptions): stream.Transform {
 			.then((fileSettings: editorconfig.KnownProps) => {
 				const errors: EditorConfigError[] = [];
 
-				const settings = getSettings(fileSettings as ISettings, commandSettings);
+				const settings = getSettings(fileSettings, commandSettings);
 				const document = doc.create(file.contents, settings);
 
 				function addError(error?: EditorConfigError) {
@@ -249,7 +255,7 @@ export function fix(options?: ICommandOptions): stream.Transform {
 					);
 				}
 
-				const settings = getSettings(fileSettings as ISettings, commandSettings);
+				const settings = getSettings(fileSettings, commandSettings);
 				const document = doc.create(file.contents, settings);
 
 				Object.keys(settings).forEach((setting) => {

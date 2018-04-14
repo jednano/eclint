@@ -36,6 +36,31 @@ describe('eclint gulp plugin', () => {
 			}));
 		});
 
+		it('fix by "unset" options', (done) => {
+
+			const stream = eclint.fix({
+				settings: {
+					charset: 'unset',
+					end_of_line: 'unset',
+					indent_style: 'unset',
+				},
+			});
+
+			stream.on('data', (file: eclint.IEditorConfigLintFile) => {
+				expect(file.editorconfig).to.be.ok;
+				expect(file.editorconfig.fixed).to.be.ok;
+				expect(file.editorconfig.errors).to.have.lengthOf(0);
+				done();
+			});
+
+			stream.on('error', done);
+
+			stream.write(new File({
+				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a]),
+				path: path.join(__dirname, 'testcase.js'),
+			}));
+		});
+
 		it('checks after fix', (done) => {
 			const stream = eclint.fix();
 
@@ -147,6 +172,30 @@ describe('eclint gulp plugin', () => {
 	});
 
 	describe('check file', () => {
+
+		it('check by "unset" options', (done) => {
+
+			const stream = eclint.check({
+				settings: {
+					charset: 'unset',
+					end_of_line: 'unset',
+					indent_style: 'unset',
+				},
+			});
+
+			stream.on('data', (file: eclint.IEditorConfigLintFile) => {
+				expect(file.editorconfig).to.be.ok;
+				expect(file.editorconfig.errors).to.have.lengthOf(0);
+				done();
+			});
+
+			stream.on('error', done);
+
+			stream.write(new File({
+				contents: new Buffer([0xef, 0xbb, 0xbf, 0x74, 0x65, 0x73, 0x74, 0x63, 0x61, 0x73, 0x65, 0x0a]),
+				path: path.join(__dirname, 'testcase.js'),
+			}));
+		});
 
 		it('should skip null', (done) => {
 			vfs.src('lib', {
