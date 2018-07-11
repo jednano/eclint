@@ -102,7 +102,9 @@ describe('eclint gulp plugin', () => {
 		});
 
 		it('fix block comment', (done) => {
-			const stream = eclint.fix();
+			const stream = eclint.default({
+				fix: true,
+			});
 
 			stream.on('data', (file: File) => {
 				expect(file.contents.toString()).to.be.equal([
@@ -286,7 +288,7 @@ describe('eclint gulp plugin', () => {
 		});
 
 		it('check non doc block comment', (done) => {
-			const stream = eclint.check({
+			const stream = eclint.default({
 				settings: {
 					block_comment_end: '*/',
 					block_comment_start: '/*',
@@ -531,6 +533,11 @@ describe('eclint gulp plugin', () => {
 			eclint.configure.call(null);
 		}).not.to.throw();
 	});
+
+	it('export default', () => {
+		expect(eclint).to.equal(eclint.default);
+	});
+
 	describe('should plugin error', () => {
 		let stub;
 

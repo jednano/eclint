@@ -477,11 +477,8 @@ This project's API is written in [TypeScript](http://www.typescriptlang.org/), a
 
 If you have an IDE that supports TypeScript, this saves you time by letting you stay in your editor instead of constantly looking up documentation online to figure out the arguments, types and interfaces you can pass-in to API functions.
 
-To use the definition files for this project, include a reference to [eclint.d.ts](https://github.com/jedmao/eclint/blob/master/eclint.d.ts) and then require eclint as you would in a Node project:
-
 ```ts
-///<reference path="node_modules/eclint/eclint.d.ts" />
-import eclint = require('eclint');
+import * as eclint from 'eclint';
 ```
 
 In JavaScript, you just need to require the package:

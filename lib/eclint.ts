@@ -448,3 +448,17 @@ export function infer(options?: InferOptions): stream.Transform {
 
 	return through.obj(bufferContents, endStream);
 }
+
+export interface IOptions extends ICheckCommandOptions {
+	fix?: boolean;
+}
+
+export default function eclint(options?: IOptions): stream.Transform {
+	if (options && options.fix) {
+		return fix(options);
+	} else {
+		return check(options);
+	}
+}
+
+module.exports = Object.assign(eclint, exports);
