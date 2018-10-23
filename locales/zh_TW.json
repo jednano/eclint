@@ -28,7 +28,7 @@
   "invalid indent style: space, expected: tab": "無效的縮排風格：空格，預期：tab",
   "invalid indent style: tab, expected: space": "無效的縮排風格：tab，預期：空格",
   "invalid line length: %s, exceeds: %s": "無效的行長度：%s，超出了：%s",
-  "invalid newline: %s, expected: %s": "無效的縮排尺寸：%s，預期：%s",
+  "invalid newline: %s, expected: %s": "無效的新行字元：%s，預期：%s",
   "unexpected final newline": "非預期的檔案結尾新行",
   "unexpected trailing whitespace": "非預期的行尾空白"
 }

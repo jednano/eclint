@@ -1,22 +1,19 @@
+# EditorConfig is awesome: http://EditorConfig.org
+
+# top-most EditorConfig file
 root = true
 
 [*]
 charset = utf-8
-indent_style = tab
-trim_trailing_whitespace = true
 end_of_line = lf
+indent_style = tab
+indent_size = 2
+tab_width = 4
 insert_final_newline = true
+trim_trailing_whitespace = true
 block_comment_start = /*
 block_comment = *
 block_comment_end = */
 
-[{*.json,*.yml}]
+[*.{json,yml,md}]
 indent_style = space
-indent_size = 2
-
-[README.md]
-indent_style = space
-indent_size = 2
-
-[{*.json}]
-insert_final_newline = false
