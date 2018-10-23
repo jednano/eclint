@@ -28,7 +28,7 @@
   "invalid indent style: space, expected: tab": "无效的缩进风格：空格，预期：tab",
   "invalid indent style: tab, expected: space": "无效的缩进风格：tab，预期：空格",
   "invalid line length: %s, exceeds: %s": "无效的行长度：%s，超出了：%s",
-  "invalid newline: %s, expected: %s": "无效的缩进尺寸：%s，预期：%s",
+  "invalid newline: %s, expected: %s": "无效的换行符：%s，预期：%s",
   "unexpected final newline": "非预期的文件结尾换行",
   "unexpected trailing whitespace": "非预期的行尾空白"
 }
