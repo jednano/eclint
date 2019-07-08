@@ -540,3 +540,4 @@ Have a look at this project's [check](https://github.com/jedmao/eclint/blob/mast
 ## Related Projects
 
 * [editorconfig-tools](https://github.com/treyhunner/editorconfig-tools)
+* [EditorConfig-Action](https://github.com/marketplace/actions/editorconfig-action)
