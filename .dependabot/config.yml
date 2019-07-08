@@ -8,11 +8,11 @@ update_configs:
     default_labels:
       - "dependabot"
       - "npm bump"
-  - allowed_updates:
+    allowed_updates:
       - match:
           update_type: "security"
       - match:
           dependency_type: "direct"
-  - commit_message:
+    commit_message:
       prefix: "update"
       include_scope: true
