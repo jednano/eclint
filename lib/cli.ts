@@ -232,7 +232,7 @@ function fix(argv: IArgv): Stream {
 
 function infer(argv: IArgv): Stream {
 	return argv.stream = handler(argv)
-		.pipe(eclint.infer(_.pickBy(argv) as eclint.InferOptions))
+		.pipe(eclint.infer(_.pickBy(argv) as eclint.IInferOptions))
 		.pipe(tap((file) => {
 			console.log(file.contents + '');
 		}));
