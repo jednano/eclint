@@ -230,7 +230,7 @@ function fix(argv: IArgv): Stream {
 		.pipe(argv.dest ? vfs.dest(argv.dest) : vfs.dest((file) => file.base));
 }
 
-function infer(argv: IArgv): Stream {
+function infer(argv: any): Stream {
 	return argv.stream = handler(argv)
 		.pipe(eclint.infer(_.pickBy(argv) as eclint.IInferOptions))
 		.pipe(tap((file) => {
