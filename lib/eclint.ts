@@ -289,7 +289,7 @@ export function fix(options?: ICommandOptions): stream.Transform {
 	});
 }
 
-export interface InferOptions {
+export interface IInferOptions {
 	/**
 	 * Shows the tallied score for each setting.
 	 */
@@ -320,7 +320,7 @@ export interface IScoredSettings {
 	max_line_length?: number;
 }
 
-export function infer(options?: InferOptions): stream.Transform {
+export function infer(options?: IInferOptions): stream.Transform {
 	options = options || {};
 
 	if (options.score && options.ini) {

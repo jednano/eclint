@@ -1,0 +1,18 @@
+version: 1
+update_configs:
+  # Keep package.json (& lockfiles) up to date as soon as
+  # new versions are published to the npm registry
+  - package_manager: "javascript"
+    directory: "/"
+    update_schedule: "daily"
+    default_labels:
+      - "dependabot"
+      - "npm bump"
+    allowed_updates:
+      - match:
+          update_type: "security"
+      - match:
+          dependency_type: "direct"
+    commit_message:
+      prefix: "update"
+      include_scope: true
